@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-ink: #12172B;
+  --color-ink-secondary: #1A2039;
+  --color-ivory: #F6F2E9;
+  --color-gold: #C9A227;
+  --color-corail: #E5604D;
+  --color-vert: #2E7D6B;
+  --color-prune: #5B3A5C;
+  --color-bleu: #3A5A8C;
+  --color-rouille: #B5563F;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-ink: var(--color-ink);
+  --color-ink-secondary: var(--color-ink-secondary);
+  --color-ivory: var(--color-ivory);
+  --color-gold: var(--color-gold);
+  --color-corail: var(--color-corail);
+  --color-vert: var(--color-vert);
+  --color-prune: var(--color-prune);
+  --color-bleu: var(--color-bleu);
+  --color-rouille: var(--color-rouille);
+  --font-fraunces: var(--font-fraunces);
+  --font-inter: var(--font-inter);
+  --font-space-mono: var(--font-space-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-ivory);
+  font-family: var(--font-inter);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-fraunces);
+}
+
+.text-technique {
+  font-family: var(--font-space-mono);
+  text-transform: uppercase;
 }
