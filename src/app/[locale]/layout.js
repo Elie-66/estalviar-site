@@ -2,6 +2,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Fraunces, Inter, Space_Mono } from "next/font/google";
 import "./globals.css";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { PanierProvider } from "./context/PanierContext";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -38,7 +41,11 @@ export default async function RootLayout({ children, params }) {
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <PanierProvider>
+            <Header />
+            {children}
+            <Footer />
+          </PanierProvider>
         </NextIntlClientProvider>
       </body>
     </html>

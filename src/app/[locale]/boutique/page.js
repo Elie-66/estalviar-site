@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 const cartes = [
   { slug: "amazon", nom: "Amazon", montantMin: 15, image: "/logos/amazon.svg" },
   { slug: "fnac", nom: "Fnac", montantMin: 15, image: "/logos/fnac.svg" },
@@ -12,8 +13,8 @@ export default function Boutique() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {cartes.map((carte) => (
-          
-           <a key={carte.slug}
+          <a
+            key={carte.slug}
             href={`/fr/boutique/${carte.slug}`}
             className="border border-ivory/10 rounded-lg p-6 text-center hover:border-gold/50 transition-colors"
           >

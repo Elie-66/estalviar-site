@@ -1,10 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { usePanier } from "../context/PanierContext";
+
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations("nav");
+  const { articles } = usePanier();
   const segments = pathname.split("/");
   const pathWithoutLocale = "/" + segments.slice(2).join("/");
 
@@ -34,7 +38,7 @@ export default function Header() {
           <select
             defaultValue={segments[1]}
             onChange={(e) => {
-              window.location.href = `/${e.target.value}${pathWithoutLocale}`;
+              router.push(`/${e.target.value}${pathWithoutLocale}`);
             }}
             className="bg-transparent text-ivory/80 hover:text-ivory text-sm border border-ivory/20 rounded px-2 py-1"
           >
@@ -44,7 +48,14 @@ export default function Header() {
               </option>
             ))}
           </select>
-         <a href={`/${segments[1]}/panier`} className="text-ivory/80 hover:text-ivory">🛒</a>
+          <a href={`/${segments[1]}/panier`} className="relative text-ivory/80 hover:text-ivory">
+            🛒
+            {articles.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-gold text-ink text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                {articles.length}
+              </span>
+            )}
+          </a>
           <a href={`/${segments[1]}/connexion`} className="text-ivory/80 hover:text-ivory text-sm">{t("connexion")}</a>
         </div>
 
