@@ -1,0 +1,31 @@
+{
+  "accueil": {
+    "titre": "Estalviar",
+    "sousTitre": "Die Website wird gerade erstellt."
+  },
+  "nav": {
+    "boutique": "Shop",
+    "professionnels": "Firmenkunden",
+    "fidelite": "Treueprogramm",
+    "aide": "Hilfe",
+    "connexion": "Anmelden",
+    "panier": "Warenkorb"
+  },
+  "footer": {
+    "accroche": "Geschenkkarten, ganz einfach.",
+    "boutique": "Shop",
+    "toutesEnseignes": "Alle Marken",
+    "offrePro": "Firmenangebot",
+    "monCompte": "Mein Konto",
+    "programmeFidelite": "Treueprogramm",
+    "aide": "Hilfe",
+    "centreAide": "Hilfecenter",
+    "contact": "Kontakt",
+    "mentionsLegales": "Impressum",
+    "cgv": "AGB",
+    "confidentialite": "Datenschutz",
+    "cookies": "Cookies",
+    "paiementSecurise": "Sichere Zahlung",
+    "copyright": "Estalviar. Alle Rechte vorbehalten."
+  }
+}

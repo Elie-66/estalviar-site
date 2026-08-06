@@ -1,0 +1,31 @@
+{
+  "accueil": {
+    "titre": "Estalviar",
+    "sousTitre": "El sitio está en construcción."
+  },
+  "nav": {
+    "boutique": "Tienda",
+    "professionnels": "Empresas",
+    "fidelite": "Fidelidad",
+    "aide": "Ayuda",
+    "connexion": "Iniciar sesión",
+    "panier": "Carrito"
+  },
+  "footer": {
+    "accroche": "Tarjetas regalo, de forma sencilla.",
+    "boutique": "Tienda",
+    "toutesEnseignes": "Todas las marcas",
+    "offrePro": "Oferta para empresas",
+    "monCompte": "Mi cuenta",
+    "programmeFidelite": "Programa de fidelidad",
+    "aide": "Ayuda",
+    "centreAide": "Centro de ayuda",
+    "contact": "Contacto",
+    "mentionsLegales": "Aviso legal",
+    "cgv": "Condiciones",
+    "confidentialite": "Privacidad",
+    "cookies": "Cookies",
+    "paiementSecurise": "Pago seguro",
+    "copyright": "Estalviar. Todos los derechos reservados."
+  }
+}

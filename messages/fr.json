@@ -1,0 +1,31 @@
+{
+  "accueil": {
+    "titre": "Estalviar",
+    "sousTitre": "Le site est en construction."
+  },
+  "nav": {
+    "boutique": "Boutique",
+    "professionnels": "Professionnels",
+    "fidelite": "Fidélité",
+    "aide": "Aide",
+    "connexion": "Connexion",
+    "panier": "Panier"
+  },
+  "footer": {
+    "accroche": "La carte cadeau, offerte simplement.",
+    "boutique": "Boutique",
+    "toutesEnseignes": "Toutes les enseignes",
+    "offrePro": "Offre professionnelle",
+    "monCompte": "Mon compte",
+    "programmeFidelite": "Programme fidélité",
+    "aide": "Aide",
+    "centreAide": "Centre d'aide",
+    "contact": "Contact",
+    "mentionsLegales": "Mentions légales",
+    "cgv": "CGV",
+    "confidentialite": "Confidentialité",
+    "cookies": "Cookies",
+    "paiementSecurise": "Paiement sécurisé",
+    "copyright": "Estalviar. Tous droits réservés."
+  }
+}

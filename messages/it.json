@@ -1,0 +1,31 @@
+{
+  "accueil": {
+    "titre": "Estalviar",
+    "sousTitre": "Il sito è in costruzione."
+  },
+  "nav": {
+    "boutique": "Negozio",
+    "professionnels": "Aziende",
+    "fidelite": "Fedeltà",
+    "aide": "Assistenza",
+    "connexion": "Accedi",
+    "panier": "Carrello"
+  },
+  "footer": {
+    "accroche": "Carte regalo, in modo semplice.",
+    "boutique": "Negozio",
+    "toutesEnseignes": "Tutti i marchi",
+    "offrePro": "Offerta aziende",
+    "monCompte": "Il mio account",
+    "programmeFidelite": "Programma fedeltà",
+    "aide": "Assistenza",
+    "centreAide": "Centro assistenza",
+    "contact": "Contatto",
+    "mentionsLegales": "Note legali",
+    "cgv": "Termini",
+    "confidentialite": "Privacy",
+    "cookies": "Cookie",
+    "paiementSecurise": "Pagamento sicuro",
+    "copyright": "Estalviar. Tutti i diritti riservati."
+  }
+}

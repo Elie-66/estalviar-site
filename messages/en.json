@@ -1,0 +1,31 @@
+{
+  "accueil": {
+    "titre": "Estalviar",
+    "sousTitre": "The site is under construction."
+  },
+  "nav": {
+    "boutique": "Shop",
+    "professionnels": "Business",
+    "fidelite": "Loyalty",
+    "aide": "Help",
+    "connexion": "Sign in",
+    "panier": "Cart"
+  },
+  "footer": {
+    "accroche": "Gift cards, made simple.",
+    "boutique": "Shop",
+    "toutesEnseignes": "All brands",
+    "offrePro": "Business offer",
+    "monCompte": "My account",
+    "programmeFidelite": "Loyalty program",
+    "aide": "Help",
+    "centreAide": "Help center",
+    "contact": "Contact",
+    "mentionsLegales": "Legal notice",
+    "cgv": "Terms",
+    "confidentialite": "Privacy",
+    "cookies": "Cookies",
+    "paiementSecurise": "Secure payment",
+    "copyright": "Estalviar. All rights reserved."
+  }
+}
