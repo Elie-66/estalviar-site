@@ -1,4 +1,5 @@
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-ink">
@@ -11,6 +12,7 @@ export default function Home() {
           Le site est en construction.
         </p>
       </main>
+      <Footer />
     </div>
   );
 }
