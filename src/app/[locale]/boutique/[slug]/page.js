@@ -47,15 +47,41 @@ export default function FicheCarte({ params }) {
       setCarte(data);
       if (data) setMontant(data.montant_min);
 
-      const { data: autres } = await supabase
+      const { data: memeCategorie } = await supabase
         .from("catalogue")
         .select("*")
         .eq("actif", true)
+        .eq("categorie", data?.categorie || "")
         .neq("slug", slug)
-        .order("ordre", { ascending: true })
-        .limit(2);
+        .order("ordre", { ascending: true });
 
-      setAutresCartes(autres || []);
+      let suggestions = memeCategorie || [];
+
+      if (suggestions.length < 2) {
+        const { data: toutesCartes } = await supabase
+          .from("catalogue")
+          .select("*")
+          .eq("actif", true)
+          .neq("slug", slug);
+
+        const resTop = await fetch("/api/top-ventes");
+        const { classement } = await resTop.json();
+
+        const dejaAjoutees = new Set(suggestions.map((c) => c.slug));
+        const restantes = (toutesCartes || []).filter((c) => !dejaAjoutees.has(c.slug));
+
+        restantes.sort((a, b) => {
+          const posA = classement.indexOf(a.nom);
+          const posB = classement.indexOf(b.nom);
+          const rangA = posA === -1 ? 999 : posA;
+          const rangB = posB === -1 ? 999 : posB;
+          return rangA - rangB;
+        });
+
+        suggestions = [...suggestions, ...restantes];
+      }
+
+      setAutresCartes(suggestions.slice(0, 2));
       setChargement(false);
     };
     charger();
@@ -123,7 +149,7 @@ export default function FicheCarte({ params }) {
             <img
               src={carte.image}
               alt={carte.nom}
-              className="h-8 object-contain opacity-95 drop-shadow-md"
+              className="h-10 object-contain opacity-95 drop-shadow-md"
             />
             <span className={`text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${texteFonce ? "text-ink/50" : "text-gold/70"}`}>
               Estalviar

@@ -87,7 +87,7 @@ export default function Boutique() {
             >
               <div className="h-24 flex items-center justify-center bg-white rounded-md">
                 {carte.image ? (
-                  <Image src={carte.image} alt={carte.nom} width={80} height={80} className="object-contain" />
+                  <Image src={carte.image} alt={carte.nom} width={100} height={100} className="object-contain" />
                 ) : (
                   <span className="text-ink text-sm">{carte.nom}</span>
                 )}

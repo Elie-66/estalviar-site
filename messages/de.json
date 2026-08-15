@@ -28,5 +28,16 @@
     "cookies": "Cookies",
     "paiementSecurise": "Sichere Zahlung",
     "copyright": "Estalviar. Alle Rechte vorbehalten."
+  },
+  "accueilVitrine": {
+    "accroche": "Personalisierbare Geschenkkarten",
+    "titre1": "Das perfekte Geschenk,",
+    "titre2": "wirklich persönlich.",
+    "description": "Wählen Sie den Betrag, fügen Sie einen Namen und eine Nachricht hinzu, und verschenken Sie eine Geschenkkarte, die wirklich persönlich wirkt.",
+    "bouton": "Shop entdecken",
+    "pour": "Für",
+    "messageSteam": "GG gut gespielt!",
+    "messageFnac": "Alles Gute zum Geburtstag!",
+    "messageAmazon": "Nur für dich"
   }
 }

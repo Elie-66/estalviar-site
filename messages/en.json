@@ -28,5 +28,16 @@
     "cookies": "Cookies",
     "paiementSecurise": "Secure payment",
     "copyright": "Estalviar. All rights reserved."
+  },
+  "accueilVitrine": {
+    "accroche": "Personalized gift cards",
+    "titre1": "The perfect gift,",
+    "titre2": "truly personalized.",
+    "description": "Choose the amount, add a name and a message, and give a gift card that feels made for them — not just another generic one.",
+    "bouton": "Discover the shop",
+    "pour": "For",
+    "messageSteam": "GG well played!",
+    "messageFnac": "Happy birthday!",
+    "messageAmazon": "Just for you"
   }
 }

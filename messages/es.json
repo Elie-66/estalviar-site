@@ -28,5 +28,16 @@
     "cookies": "Cookies",
     "paiementSecurise": "Pago seguro",
     "copyright": "Estalviar. Todos los derechos reservados."
+  },
+  "accueilVitrine": {
+    "accroche": "Tarjetas regalo personalizables",
+    "titre1": "El regalo perfecto,",
+    "titre2": "verdaderamente personalizado.",
+    "description": "Elige el importe, añade un nombre y un mensaje, y regala una tarjeta que realmente parezca hecha para esa persona.",
+    "bouton": "Descubrir la tienda",
+    "pour": "Para",
+    "messageSteam": "¡GG bien jugado!",
+    "messageFnac": "¡Feliz cumpleaños!",
+    "messageAmazon": "Solo para ti"
   }
 }

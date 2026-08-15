@@ -28,5 +28,16 @@
     "cookies": "Cookies",
     "paiementSecurise": "Paiement sécurisé",
     "copyright": "Estalviar. Tous droits réservés."
+  },
+  "accueilVitrine": {
+    "accroche": "Cartes cadeaux personnalisables",
+    "titre1": "Le bon cadeau,",
+    "titre2": "personnalisé pour de vrai.",
+    "description": "Choisissez le montant, ajoutez un nom et un message, et offrez une carte cadeau qui a l'air faite pour la personne — pas une carte cadeau générique de plus.",
+    "bouton": "Découvrir la boutique",
+    "pour": "Pour",
+    "messageSteam": "GG bien joué !",
+    "messageFnac": "Joyeux anniversaire !",
+    "messageAmazon": "Pour te faire plaisir"
   }
 }
