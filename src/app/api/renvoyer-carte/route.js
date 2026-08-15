@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { dechiffrerCode } from '../../../lib/chiffrement';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -40,6 +41,15 @@ export async function POST(req) {
     const logoUrl = `${origin}${infosCarte.image}`;
     const destinataire = commande.email_destinataire || commande.email_acheteur;
 
+    let codeClair = '';
+    if (commande.code) {
+      try {
+        codeClair = dechiffrerCode(commande.code);
+      } catch (e) {
+        codeClair = commande.code;
+      }
+    }
+
     await resend.emails.send({
       from: 'Estalviar <onboarding@resend.dev>',
       to: destinataire,
@@ -57,7 +67,7 @@ export async function POST(req) {
             <p style="color:#F6F2E9; font-size:36px; font-weight:bold; margin:0;">
               ${commande.montant} <span style="color:#C9A227; font-size:18px;">€</span>
             </p>
-            <p style="color:rgba(246,242,233,0.6); font-size:11px; letter-spacing:2px; margin-top:16px;">${commande.code || ''}</p>
+            <p style="color:rgba(246,242,233,0.6); font-size:11px; letter-spacing:2px; margin-top:16px;">${codeClair}</p>
           </div>
           <p style="color:rgba(246,242,233,0.4); font-size:11px; text-align:center; margin-top:16px;">
             Ceci est un renvoi de votre carte cadeau.

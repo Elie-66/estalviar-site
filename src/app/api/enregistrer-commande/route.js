@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { chiffrerCode } from '../../../lib/chiffrement';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const supabase = createClient(
@@ -82,7 +83,7 @@ export async function POST(req) {
         beneficiaire: article.beneficiaire || null,
         message: article.message || null,
         design: article.design,
-        code,
+        code: chiffrerCode(code),
         date_envoi: article.dateEnvoi || null,
         heure_envoi: article.heureEnvoi || null,
         statut,

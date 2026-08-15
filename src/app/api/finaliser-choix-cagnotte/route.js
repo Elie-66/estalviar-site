@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { chiffrerCode } from '../../../../lib/chiffrement';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -13,20 +14,22 @@ function genererCode() {
   return `${bloc()}-${bloc()}-${bloc()}-${bloc()}`;
 }
 
-function blocCarte({ marque, image, background, montant, code, origin, beneficiaire }) {
+function blocCarte({ marque, image, background, texteFonce, montant, code, origin, beneficiaire }) {
   const logoUrl = `${origin}${image}`;
+  const couleurTexte = texteFonce ? '#12172B' : '#F6F2E9';
+  const couleurTexteAtt = texteFonce ? 'rgba(18,23,43,0.6)' : 'rgba(246,242,233,0.6)';
   return `
     <div style="border-radius: 16px; padding: 28px; background: ${background}; border: 1px solid rgba(201,162,39,0.3); margin-bottom: 20px;">
       <div style="display: flex; align-items: center; justify-content: space-between;">
         <img src="${logoUrl}" alt="${marque}" height="28" style="display:block;" />
         <span style="color:#C9A227; font-size:10px; letter-spacing:2px; text-transform:uppercase;">Estalviar</span>
       </div>
-      <p style="color:#F6F2E9; font-size:14px; margin:20px 0 0;">Pour ${beneficiaire}</p>
+      <p style="color:${couleurTexte}; font-size:14px; margin:20px 0 0;">Pour ${beneficiaire}</p>
       <div style="height:1px; background:rgba(201,162,39,0.3); margin:16px 0;"></div>
-      <p style="color:#F6F2E9; font-size:36px; font-weight:bold; margin:0;">
+      <p style="color:${couleurTexte}; font-size:36px; font-weight:bold; margin:0;">
         ${montant} <span style="color:#C9A227; font-size:18px;">€</span>
       </p>
-      <p style="color:rgba(246,242,233,0.6); font-size:11px; letter-spacing:2px; margin-top:16px;">${code}</p>
+      <p style="color:${couleurTexteAtt}; font-size:11px; letter-spacing:2px; margin-top:16px;">${code}</p>
     </div>
   `;
 }
@@ -73,7 +76,7 @@ export async function POST(req) {
         beneficiaire: cagnotte.beneficiaire,
         message: cagnotte.message,
         design: 'Marque',
-        code,
+        code: chiffrerCode(code),
         statut: 'payee',
       });
 
@@ -81,6 +84,7 @@ export async function POST(req) {
         marque: carte.marque,
         image: carte.image,
         background: carte.background,
+        texteFonce: carte.texteFonce,
         montant: carte.montant,
         code,
         origin,

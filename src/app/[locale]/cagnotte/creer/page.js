@@ -4,12 +4,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
 import SelecteurCarte from "../../components/SelecteurCarte";
 
-const cartes = {
-  amazon: { nom: "Amazon", image: "/logos/amazon.svg", couleur: "#1b3a5c" },
-  fnac: { nom: "Fnac", image: "/logos/fnac.svg", couleur: "#1b3a5c" },
-  steam: { nom: "Steam", image: "/logos/steam.svg", couleur: "#1b3a5c" },
-};
-
 const designs = [
   { id: "marque", nom: "Marque", background: (couleur = "#1b3a5c") => `linear-gradient(150deg, ${couleur} 0%, #0d1022 100%)` },
   { id: "or", nom: "Or", background: () => "linear-gradient(150deg, #C9A227 0%, #4a3a10 100%)" },
@@ -22,7 +16,9 @@ const designs = [
 ];
 
 export default function CreerCagnotte() {
-  const [slugCarte, setSlugCarte] = useState("amazon");
+  const [cartes, setCartes] = useState({});
+  const [chargementCatalogue, setChargementCatalogue] = useState(true);
+  const [slugCarte, setSlugCarte] = useState("");
   const [designId, setDesignId] = useState("marque");
   const [carteChoisie, setCarteChoisie] = useState(true);
   const [beneficiaire, setBeneficiaire] = useState("");
@@ -47,6 +43,20 @@ export default function CreerCagnotte() {
 
   useEffect(() => {
     const charger = async () => {
+      const { data } = await supabase
+        .from("catalogue")
+        .select("*")
+        .eq("actif", true)
+        .order("ordre", { ascending: true });
+
+      const cartesParSlug = {};
+      (data || []).forEach((c) => {
+        cartesParSlug[c.slug] = { nom: c.nom, image: c.image, couleur: c.couleur };
+      });
+      setCartes(cartesParSlug);
+      if (data && data.length > 0) setSlugCarte(data[0].slug);
+      setChargementCatalogue(false);
+
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUtilisateurConnecte(user);
@@ -93,6 +103,14 @@ export default function CreerCagnotte() {
       setErreur(data.error || "Une erreur est survenue.");
     }
   };
+
+  if (chargementCatalogue || !carte) {
+    return (
+      <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
+        Chargement...
+      </div>
+    );
+  }
 
   if (lienCree) {
     const lien = typeof window !== "undefined" ? `${window.location.origin}/fr/cagnotte/${lienCree}` : "";

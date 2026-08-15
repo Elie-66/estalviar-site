@@ -12,6 +12,7 @@ export default function AdminCommandes() {
   const [filtreType, setFiltreType] = useState("toutes");
   const [recherche, setRecherche] = useState("");
   const [modificationEnCours, setModificationEnCours] = useState(null);
+  const [codesDechiffres, setCodesDechiffres] = useState({});
 
   useEffect(() => {
     const verifier = async () => {
@@ -28,6 +29,23 @@ export default function AdminCommandes() {
         .order("created_at", { ascending: false });
 
       setCommandes(data || []);
+
+      const items = (data || [])
+        .filter((c) => c.code)
+        .map((c) => ({ id: c.id, code: c.code }));
+
+      if (items.length > 0) {
+        const res = await fetch("/api/dechiffrer-commandes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items }),
+        });
+        const { resultats } = await res.json();
+        const map = {};
+        resultats.forEach((r) => { map[r.id] = r.code; });
+        setCodesDechiffres(map);
+      }
+
       setChargement(false);
     };
     verifier();
@@ -71,8 +89,7 @@ export default function AdminCommandes() {
       c.email_acheteur?.toLowerCase().includes(recherche.toLowerCase()) ||
       c.email_beneficiaire?.toLowerCase().includes(recherche.toLowerCase()) ||
       c.email_destinataire?.toLowerCase().includes(recherche.toLowerCase()) ||
-      c.marque?.toLowerCase().includes(recherche.toLowerCase()) ||
-      c.code?.toLowerCase().includes(recherche.toLowerCase());
+      c.marque?.toLowerCase().includes(recherche.toLowerCase());
 
     const estCagnotte = c.marque?.startsWith("Cagnotte");
     const matchType =
@@ -94,7 +111,7 @@ export default function AdminCommandes() {
       c.email_destinataire || "",
       c.beneficiaire || "",
       statutLabel[c.statut] || c.statut,
-      c.code || "",
+      codesDechiffres[c.id] || "",
     ]);
 
     const contenu = [entetes, ...lignes]
@@ -128,7 +145,7 @@ export default function AdminCommandes() {
           type="text"
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
-          placeholder="Rechercher (email, marque, code)..."
+          placeholder="Rechercher (email, marque)..."
           className="flex-1 bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
         />
         <select
@@ -180,7 +197,7 @@ export default function AdminCommandes() {
                   <p className="text-sm text-ivory/50">Pour {c.beneficiaire}</p>
                 )}
                 {c.code && (
-                  <p className="text-xs text-gold/70 mt-1 font-mono">{c.code}</p>
+                  <p className="text-xs text-gold/70 mt-1 font-mono">{codesDechiffres[c.id] || "..."}</p>
                 )}
               </div>
               <div className="text-right flex-shrink-0">
