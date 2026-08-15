@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { PanierProvider } from "./context/PanierContext";
+import BanniereCookies from "./components/BanniereCookies";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -45,6 +46,7 @@ export default async function RootLayout({ children, params }) {
             <Header />
             {children}
             <Footer />
+            <BanniereCookies />
           </PanierProvider>
         </NextIntlClientProvider>
       </body>
