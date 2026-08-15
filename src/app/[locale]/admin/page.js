@@ -71,7 +71,7 @@ export default function Admin() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         <a href="/fr/admin/commandes" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
           <p className="text-ivory font-medium">Commandes</p>
           <p className="text-sm text-ivory/50 mt-1">Voir et gérer toutes les commandes</p>
@@ -91,6 +91,10 @@ export default function Admin() {
         <a href="/fr/admin/catalogue" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
           <p className="text-ivory font-medium">Catalogue</p>
           <p className="text-sm text-ivory/50 mt-1">Ajouter, modifier, désactiver des enseignes</p>
+        </a>
+        <a href="/fr/admin/statistiques" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
+          <p className="text-ivory font-medium">Statistiques</p>
+          <p className="text-sm text-ivory/50 mt-1">Ventes, top enseignes, top bénéficiaires</p>
         </a>
       </div>
     </div>
