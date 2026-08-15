@@ -39,5 +39,20 @@
     "messageSteam": "GG bien joué !",
     "messageFnac": "Joyeux anniversaire !",
     "messageAmazon": "Pour te faire plaisir"
+  },
+  "boutiqueVitrine": {
+    "titre": "Toutes les enseignes",
+    "recherchePlaceholder": "Rechercher une enseigne...",
+    "toutes": "Toutes",
+    "aucunResultat": "Aucune enseigne ne correspond à votre recherche.",
+    "apartirDe": "à partir de",
+    "chargement": "Chargement..."
+  },
+  "categories": {
+    "Shopping": "Shopping",
+    "Culture & High-tech": "Culture & High-tech",
+    "Jeux vidéo": "Jeux vidéo",
+    "Sport": "Sport",
+    "Mode": "Mode"
   }
 }

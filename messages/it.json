@@ -39,5 +39,20 @@
     "messageSteam": "GG ben giocato!",
     "messageFnac": "Buon compleanno!",
     "messageAmazon": "Solo per te"
+  },
+  "boutiqueVitrine": {
+    "titre": "Tutti i marchi",
+    "recherchePlaceholder": "Cerca un marchio...",
+    "toutes": "Tutti",
+    "aucunResultat": "Nessun marchio corrisponde alla tua ricerca.",
+    "apartirDe": "da",
+    "chargement": "Caricamento..."
+  },
+  "categories": {
+    "Shopping": "Shopping",
+    "Culture & High-tech": "Cultura e tecnologia",
+    "Jeux vidéo": "Videogiochi",
+    "Sport": "Sport",
+    "Mode": "Moda"
   }
 }

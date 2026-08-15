@@ -2,13 +2,24 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { supabase } from "../../../lib/supabase";
 
 export default function Boutique() {
+  const t = useTranslations("boutiqueVitrine");
+  const tCategories = useTranslations("categories");
   const [cartes, setCartes] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [recherche, setRecherche] = useState("");
   const [categorie, setCategorie] = useState("Toutes");
+
+  const traduireCategorie = (cat) => {
+    try {
+      return tCategories(cat);
+    } catch {
+      return cat;
+    }
+  };
 
   useEffect(() => {
     const charger = async () => {
@@ -35,14 +46,14 @@ export default function Boutique() {
   if (chargement) {
     return (
       <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
-        Chargement...
+        {t("chargement")}
       </div>
     );
   }
 
   return (
     <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-20">
-      <h1 className="text-3xl font-semibold text-ivory mb-8">Toutes les enseignes</h1>
+      <h1 className="text-3xl font-semibold text-ivory mb-8">{t("titre")}</h1>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="relative flex-1">
@@ -57,7 +68,7 @@ export default function Boutique() {
             type="text"
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
-            placeholder="Rechercher une enseigne..."
+            placeholder={t("recherchePlaceholder")}
             className="w-full bg-transparent border border-ivory/20 rounded-lg pl-11 pr-4 py-3 text-ivory text-sm"
           />
         </div>
@@ -67,16 +78,17 @@ export default function Boutique() {
           onChange={(e) => setCategorie(e.target.value)}
           className="bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory text-sm"
         >
-          {categories.map((cat) => (
+          <option value="Toutes" className="bg-ink">{t("toutes")}</option>
+          {categories.filter((cat) => cat !== "Toutes").map((cat) => (
             <option key={cat} value={cat} className="bg-ink">
-              {cat}
+              {traduireCategorie(cat)}
             </option>
           ))}
         </select>
       </div>
 
       {cartesFiltrees.length === 0 ? (
-        <p className="text-ivory/50 text-sm">Aucune enseigne ne correspond à votre recherche.</p>
+        <p className="text-ivory/50 text-sm">{t("aucunResultat")}</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {cartesFiltrees.map((carte) => (
@@ -93,8 +105,8 @@ export default function Boutique() {
                 )}
               </div>
               <p className="mt-4 text-ivory">{carte.nom}</p>
-              <p className="text-xs text-gold/60 mt-0.5">{carte.categorie}</p>
-              <p className="text-sm text-ivory/50">à partir de {carte.montant_min} €</p>
+              <p className="text-xs text-gold/60 mt-0.5">{traduireCategorie(carte.categorie)}</p>
+              <p className="text-sm text-ivory/50">{t("apartirDe")} {carte.montant_min} €</p>
             </a>
           ))}
         </div>
