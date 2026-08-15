@@ -1,30 +1,44 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState } from "react";
 import { usePanier } from "../../context/PanierContext";
-import { supabase } from "../../../../lib/supabase";
-import SelecteurCarte from "../../components/SelecteurCarte";
 
-const designs = [
-  { id: "marque", nom: "Marque", background: (couleur = "#1b3a5c") => `linear-gradient(150deg, ${couleur} 0%, #0d1022 100%)` },
-  { id: "or", nom: "Or", background: () => "linear-gradient(150deg, #C9A227 0%, #4a3a10 100%)" },
-  { id: "ivoire", nom: "Ivoire", background: () => "linear-gradient(150deg, #F6F2E9 0%, #d9cdae 100%)", texteFonce: true },
-  { id: "corail", nom: "Corail", background: () => "linear-gradient(150deg, #E5604D 0%, #5B3A5C 100%)" },
-  { id: "ambre", nom: "Ambre", background: () => "linear-gradient(150deg, #C9A227 0%, #E5604D 100%)" },
-  { id: "vert", nom: "Vert", background: () => "linear-gradient(150deg, #1f5c45 0%, #0d1022 100%)" },
-  { id: "rouge", nom: "Rouge", background: () => "linear-gradient(150deg, #9c2b2b 0%, #0d1022 100%)" },
-  { id: "rose", nom: "Rose", background: () => "linear-gradient(150deg, #e8a4c4 0%, #6b2f4d 100%)" },
-];
+const cartes = {
+  amazon: {
+    nom: "Amazon",
+    montantMin: 15,
+    montantMax: 200,
+    image: "/logos/amazon.svg",
+    description: "Des millions de produits, livrés rapidement. La carte cadeau Amazon s'utilise sur tout le catalogue.",
+    suggestions: [15, 25, 50, 100],
+    couleur: "#1b3a5c",
+  },
+  fnac: {
+    nom: "Fnac",
+    montantMin: 15,
+    montantMax: 200,
+    image: "/logos/fnac.svg",
+    description: "Livres, high-tech, culture et loisirs. La carte cadeau Fnac fait toujours plaisir.",
+    suggestions: [15, 30, 50, 100],
+    couleur: "#1b3a5c",
+  },
+  steam: {
+    nom: "Steam",
+    montantMin: 10,
+    montantMax: 100,
+    image: "/logos/steam.svg",
+    description: "Des milliers de jeux vidéo à portée de clic. Idéal pour tout joueur PC.",
+    suggestions: [10, 20, 50, 100],
+    couleur: "#1b3a5c",
+  },
+};
 
 export default function FicheCarte({ params }) {
   const { slug } = use(params);
+  const carte = cartes[slug];
   const { ajouterArticle } = usePanier();
 
-  const [carte, setCarte] = useState(null);
-  const [autresCartes, setAutresCartes] = useState([]);
-  const [chargement, setChargement] = useState(true);
-
-  const [montant, setMontant] = useState(0);
+  const [montant, setMontant] = useState(carte?.montantMin ?? 0);
   const [beneficiaire, setBeneficiaire] = useState("");
   const [message, setMessage] = useState("");
   const [designId, setDesignId] = useState("marque");
@@ -35,40 +49,6 @@ export default function FicheCarte({ params }) {
   const [minuteEnvoi, setMinuteEnvoi] = useState("");
   const [confirmationVisible, setConfirmationVisible] = useState(false);
 
-  useEffect(() => {
-    const charger = async () => {
-      const { data } = await supabase
-        .from("catalogue")
-        .select("*")
-        .eq("slug", slug)
-        .eq("actif", true)
-        .single();
-
-      setCarte(data);
-      if (data) setMontant(data.montant_min);
-
-      const { data: autres } = await supabase
-        .from("catalogue")
-        .select("*")
-        .eq("actif", true)
-        .neq("slug", slug)
-        .order("ordre", { ascending: true })
-        .limit(2);
-
-      setAutresCartes(autres || []);
-      setChargement(false);
-    };
-    charger();
-  }, [slug]);
-
-  if (chargement) {
-    return (
-      <div className="max-w-[800px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
-        Chargement...
-      </div>
-    );
-  }
-
   if (!carte) {
     return (
       <div className="max-w-[800px] mx-auto px-6 pt-32 pb-20 text-ivory">
@@ -77,12 +57,57 @@ export default function FicheCarte({ params }) {
     );
   }
 
+  const designs = [
+    {
+      id: "marque",
+      nom: "Marque",
+      background: `linear-gradient(150deg, ${carte.couleur} 0%, #0d1022 100%)`,
+    },
+    {
+      id: "or",
+      nom: "Or",
+      background: "linear-gradient(150deg, #C9A227 0%, #4a3a10 100%)",
+    },
+    {
+      id: "ivoire",
+      nom: "Ivoire",
+      background: "linear-gradient(150deg, #F6F2E9 0%, #d9cdae 100%)",
+      texteFonce: true,
+    },
+    {
+      id: "corail",
+      nom: "Corail",
+      background: "linear-gradient(150deg, #E5604D 0%, #5B3A5C 100%)",
+    },
+    {
+      id: "ambre",
+      nom: "Ambre",
+      background: "linear-gradient(150deg, #C9A227 0%, #E5604D 100%)",
+      accentClair: true,
+    },
+    {
+      id: "vert",
+      nom: "Vert",
+      background: "linear-gradient(150deg, #1f5c45 0%, #0d1022 100%)",
+    },
+    {
+      id: "rouge",
+      nom: "Rouge",
+      background: "linear-gradient(150deg, #9c2b2b 0%, #0d1022 100%)",
+    },
+    {
+      id: "rose",
+      nom: "Rose",
+      background: "linear-gradient(150deg, #e8a4c4 0%, #6b2f4d 100%)",
+    },
+  ];
+
   const design = designs.find((d) => d.id === designId) ?? designs[0];
   const texteFonce = !!design.texteFonce;
+  const accentClair = !!design.accentClair;
   const couleurTexte = texteFonce ? "text-ink" : "text-white";
   const couleurTexteAtt = texteFonce ? "text-ink/60" : "text-white/60";
   const couleurTexteAtt2 = texteFonce ? "text-ink/40" : "text-white/40";
-  const backgroundActuel = design.background(carte.couleur);
 
   const aujourdHui = new Date();
   const annees = [aujourdHui.getFullYear(), aujourdHui.getFullYear() + 1];
@@ -108,7 +133,7 @@ export default function FicheCarte({ params }) {
         <div
           className="relative overflow-hidden rounded-2xl p-8 aspect-[1.6/1] flex flex-col justify-between border border-gold/30"
           style={{
-            background: backgroundActuel,
+            background: design.background,
             boxShadow: `0 25px 60px -15px #00000066, 0 0 0 1px rgba(255,255,255,0.03)`,
           }}
         >
@@ -125,7 +150,7 @@ export default function FicheCarte({ params }) {
               alt={carte.nom}
               className="h-8 object-contain opacity-95 drop-shadow-md"
             />
-            <span className={`text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${texteFonce ? "text-ink/50" : "text-gold/70"}`}>
+            <span className={`text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${texteFonce ? "text-ink/50" : accentClair ? "text-ivory/70" : "text-gold/70"}`}>
               Estalviar
             </span>
           </div>
@@ -170,7 +195,7 @@ export default function FicheCarte({ params }) {
                 className={`h-12 rounded-lg border-2 transition-all ${
                   designId === d.id ? "border-gold scale-105" : "border-transparent opacity-70 hover:opacity-100"
                 }`}
-                style={{ background: d.background(carte.couleur) }}
+                style={{ background: d.background }}
               />
             ))}
           </div>
@@ -185,14 +210,16 @@ export default function FicheCarte({ params }) {
           </ol>
         </div>
 
-        {autresCartes.length > 0 && (
-          <div className="mt-6">
-            <label className="block text-sm text-ivory/70 mb-3">Vous pourriez aussi aimer</label>
-            <div className="grid grid-cols-2 gap-3">
-              {autresCartes.map((c) => (
+        <div className="mt-6">
+          <label className="block text-sm text-ivory/70 mb-3">Vous pourriez aussi aimer</label>
+          <div className="grid grid-cols-2 gap-3">
+            {Object.entries(cartes)
+              .filter(([s]) => s !== slug)
+              .map(([s, c]) => (
                 <a
-                  key={c.slug}
-                  href={`/fr/boutique/${c.slug}`}
+            
+                  key={s}
+                  href={`/fr/boutique/${s}`}
                   className="border border-ivory/10 rounded-lg p-3 flex items-center gap-3 hover:border-gold/40 transition-colors"
                 >
                   <div className="bg-white rounded-md p-1.5 flex-shrink-0">
@@ -200,13 +227,12 @@ export default function FicheCarte({ params }) {
                   </div>
                   <div className="min-w-0">
                     <p className="text-ivory text-sm font-medium truncate">{c.nom}</p>
-                    <p className="text-ivory/40 text-xs">dès {c.montant_min} €</p>
+                    <p className="text-ivory/40 text-xs">dès {c.montantMin} €</p>
                   </div>
                 </a>
               ))}
-            </div>
           </div>
-        )}
+        </div>
       </div>
 
       <div>
@@ -233,12 +259,12 @@ export default function FicheCarte({ params }) {
           </div>
 
           <p className="mt-4 text-xs text-ivory/40">
-            Montant libre entre {carte.montant_min} € et {carte.montant_max} €
+            Montant libre entre {carte.montantMin} € et {carte.montantMax} €
           </p>
           <input
             type="number"
-            min={carte.montant_min}
-            max={carte.montant_max}
+            min={carte.montantMin}
+            max={carte.montantMax}
             value={montant}
             onChange={(e) => setMontant(Number(e.target.value))}
             className="mt-2 w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
@@ -350,7 +376,7 @@ export default function FicheCarte({ params }) {
               message,
               design: design.nom,
               image: carte.image,
-              background: backgroundActuel,
+              background: design.background,
               texteFonce,
               dateEnvoi: dateEnvoiComplete,
               heureEnvoi: heureEnvoiComplete,

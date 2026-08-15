@@ -2,11 +2,43 @@
 
 import { useState } from "react";
 import { usePanier } from "../context/PanierContext";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function Paiement() {
   const { articles, total } = usePanier();
   const [emailAcheteur, setEmailAcheteur] = useState("");
   const [emailsBeneficiaires, setEmailsBeneficiaires] = useState({});
+  const [chargement, setChargement] = useState(false);
+  const [erreur, setErreur] = useState("");
+
+  const handlePaiement = async () => {
+    setChargement(true);
+    setErreur("");
+    try {
+      localStorage.setItem("estalviar-emails-beneficiaires", JSON.stringify(emailsBeneficiaires));
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          articles,
+          emailAcheteur,
+          locale: "fr",
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setErreur(data.error || "Erreur inconnue.");
+      }
+    } catch (e) {
+      setErreur("Erreur réseau : " + e.message);
+    } finally {
+      setChargement(false);
+    }
+  };
 
   if (articles.length === 0) {
     return (
@@ -29,6 +61,28 @@ export default function Paiement() {
       <div>
         <h1 className="text-3xl font-semibold text-ivory mb-8">Finaliser la commande</h1>
 
+        <div className="mb-6">
+          <div className="flex gap-2 border border-ivory/10 rounded-lg p-1">
+            <button
+              disabled
+              className="flex-1 text-xs py-2 rounded-md text-ivory/30 cursor-not-allowed"
+              title="Bientôt disponible"
+            >
+              Créer un compte
+            </button>
+            <button
+              disabled
+              className="flex-1 text-xs py-2 rounded-md text-ivory/30 cursor-not-allowed"
+              title="Bientôt disponible"
+            >
+              Se connecter
+            </button>
+            <button className="flex-1 text-xs py-2 rounded-md bg-gold text-ink font-medium">
+              Continuer avec mon email
+            </button>
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm text-ivory/70 mb-2">Votre email</label>
           <input
@@ -43,11 +97,16 @@ export default function Paiement() {
         </div>
 
         <button
-          disabled={!emailAcheteur}
+          onClick={handlePaiement}
+          disabled={!emailAcheteur || chargement}
           className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Payer {total} €
+          {chargement ? "Redirection..." : `Payer ${total} €`}
         </button>
+
+        {erreur && (
+          <p className="mt-3 text-sm text-corail">{erreur}</p>
+        )}
       </div>
 
       <div>

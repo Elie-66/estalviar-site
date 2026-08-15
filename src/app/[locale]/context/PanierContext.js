@@ -30,10 +30,14 @@ export function PanierProvider({ children }) {
     setArticles((prev) => prev.filter((a) => a.id !== id));
   };
 
+  const videPanier = () => {
+    setArticles([]);
+  };
+
   const total = articles.reduce((somme, a) => somme + a.montant, 0);
 
   return (
-    <PanierContext.Provider value={{ articles, ajouterArticle, retirerArticle, total }}>
+    <PanierContext.Provider value={{ articles, ajouterArticle, retirerArticle, videPanier, total, charge }}>
       {children}
     </PanierContext.Provider>
   );

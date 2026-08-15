@@ -56,6 +56,11 @@ export default function Panier() {
               {article.message && (
                 <p className="text-sm text-ivory/40 italic truncate">"{article.message}"</p>
               )}
+              {article.dateEnvoi && (
+                <p className="text-sm text-gold/70 mt-1">
+                  Envoi le {new Date(article.dateEnvoi).toLocaleDateString("fr-FR")} à {article.heureEnvoi}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col items-end gap-2 flex-shrink-0">
@@ -76,9 +81,12 @@ export default function Panier() {
         <p className="text-2xl font-semibold text-ivory">{total} €</p>
       </div>
 
-      <button className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors">
+      <a
+        href="/fr/paiement"
+        className="mt-8 block text-center w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors"
+      >
         Passer au paiement
-      </button>
+      </a>
     </div>
   );
 }

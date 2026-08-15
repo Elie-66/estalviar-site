@@ -2,7 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { usePanier } from "../context/PanierContext";
+import { supabase } from "../../../lib/supabase";
 
 export default function Header() {
   const pathname = usePathname();
@@ -11,6 +13,46 @@ export default function Header() {
   const { articles } = usePanier();
   const segments = pathname.split("/");
   const pathWithoutLocale = "/" + segments.slice(2).join("/");
+
+  const [utilisateur, setUtilisateur] = useState(null);
+  const [prenom, setPrenom] = useState("");
+  const [points, setPoints] = useState(0);
+
+  const paliers = [
+    { nom: "Bronze", seuil: 0, couleur: "#B08D57" },
+    { nom: "Argent", seuil: 100, couleur: "#C0C0C0" },
+    { nom: "Or", seuil: 300, couleur: "#C9A227" },
+    { nom: "Platine", seuil: 700, couleur: "#E5E4E2" },
+  ];
+  const palierActuel = [...paliers].reverse().find((p) => points >= p.seuil) || paliers[0];
+
+  useEffect(() => {
+    const charger = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUtilisateur(user);
+
+      if (user) {
+        const { data: profil } = await supabase
+          .from("profils")
+          .select("prenom, points")
+          .eq("id", user.id)
+          .single();
+
+        if (profil) {
+          setPrenom(profil.prenom || "");
+          setPoints(profil.points || 0);
+        }
+      }
+    };
+
+    charger();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      charger();
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   const langues = [
     { code: "fr", label: "FR" },
@@ -29,6 +71,7 @@ export default function Header() {
 
         <nav className="hidden md:flex items-center gap-8 text-ivory/80">
           <a href={`/${segments[1]}/boutique`} className="hover:text-ivory transition-colors">{t("boutique")}</a>
+          <a href={`/${segments[1]}/cagnotte/creer`} className="hover:text-ivory transition-colors">{t("cagnotte")}</a>
           <a href={`/${segments[1]}/professionnels`} className="hover:text-ivory transition-colors">{t("professionnels")}</a>
           <a href={`/${segments[1]}/fidelite`} className="hover:text-ivory transition-colors">{t("fidelite")}</a>
           <a href={`/${segments[1]}/aide`} className="hover:text-ivory transition-colors">{t("aide")}</a>
@@ -56,7 +99,19 @@ export default function Header() {
               </span>
             )}
           </a>
-          <a href={`/${segments[1]}/connexion`} className="text-ivory/80 hover:text-ivory text-sm">{t("connexion")}</a>
+          {utilisateur ? (
+            <a href={`/${segments[1]}/profil`} className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <span className="text-ivory/90 text-sm">{prenom || utilisateur.email.split("@")[0]}</span>
+              <span
+                className="text-[10px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded-full"
+                style={{ backgroundColor: `${palierActuel.couleur}20`, color: palierActuel.couleur }}
+              >
+                {palierActuel.nom}
+              </span>
+            </a>
+          ) : (
+            <a href={`/${segments[1]}/connexion`} className="text-ivory/80 hover:text-ivory text-sm">{t("connexion")}</a>
+          )}
         </div>
 
       </div>
