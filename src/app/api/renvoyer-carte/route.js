@@ -17,7 +17,7 @@ const cartesConnues = {
 
 export async function POST(req) {
   try {
-    const { commandeId, origin } = await req.json();
+    const { commandeId, origin, destinataireOverride } = await req.json();
 
     const { data: commande } = await supabase
       .from('commandes')
@@ -39,7 +39,7 @@ export async function POST(req) {
 
     const background = `linear-gradient(150deg, ${infosCarte.couleur} 0%, #0d1022 100%)`;
     const logoUrl = `${origin}${infosCarte.image}`;
-    const destinataire = commande.email_destinataire || commande.email_acheteur;
+    const destinataire = destinataireOverride || commande.email_destinataire || commande.email_acheteur;
 
     let codeClair = '';
     if (commande.code) {

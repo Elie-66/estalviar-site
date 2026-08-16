@@ -31,8 +31,8 @@ export default function SelecteurCarte({ cartes, valeur, onChange }) {
         onClick={() => setOuvert(!ouvert)}
         className="w-full flex items-center gap-3 border border-ivory/20 rounded-lg px-4 py-3 bg-transparent hover:border-gold/50 transition-colors"
       >
-        <div className="bg-white rounded-md p-1 flex-shrink-0">
-          <img src={carteActuelle.image} alt={carteActuelle.nom} className="h-5 w-5 object-contain" />
+        <div className="bg-white rounded-md p-1 flex-shrink-0 w-7 h-7 flex items-center justify-center">
+          <img src={carteActuelle.image} alt={carteActuelle.nom} className="max-h-5 max-w-5 object-contain" />
         </div>
         <span className="text-ivory text-sm flex-1 text-left">{carteActuelle.nom}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ivory/50">
@@ -67,8 +67,8 @@ export default function SelecteurCarte({ cartes, valeur, onChange }) {
                     slug === valeur ? "bg-gold/10" : ""
                   }`}
                 >
-                  <div className="bg-white rounded-md p-1 flex-shrink-0">
-                    <img src={c.image} alt={c.nom} className="h-4 w-4 object-contain" />
+                  <div className="bg-white rounded-md p-1 flex-shrink-0 w-6 h-6 flex items-center justify-center">
+                    <img src={c.image} alt={c.nom} className="max-h-4 max-w-4 object-contain" />
                   </div>
                   <span className="text-ivory text-sm">{c.nom}</span>
                 </button>

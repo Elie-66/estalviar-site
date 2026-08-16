@@ -3,6 +3,7 @@
 import { use, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { usePanier } from "../../context/PanierContext";
 import { supabase } from "../../../../lib/supabase";
 import SelecteurCarte from "../../components/SelecteurCarte";
@@ -92,10 +93,24 @@ export default function FicheCarte({ params }) {
     charger();
   }, [slug]);
 
-  if (chargement) {
+ if (chargement) {
     return (
-      <div className="max-w-[800px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
-        {t("chargement")}
+      <div className="max-w-[1100px] mx-auto px-6 pt-32 pb-20 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+        <div>
+          <div className="aspect-[1.6/1] bg-ivory/5 rounded-2xl animate-pulse" />
+          <div className="h-3 w-40 bg-ivory/5 rounded mt-4 mx-auto animate-pulse" />
+        </div>
+        <div>
+          <div className="h-4 w-24 bg-ivory/5 rounded animate-pulse" />
+          <div className="h-10 w-48 bg-ivory/5 rounded mt-3 animate-pulse" />
+          <div className="h-4 w-full bg-ivory/5 rounded mt-6 animate-pulse" />
+          <div className="h-4 w-3/4 bg-ivory/5 rounded mt-2 animate-pulse" />
+          <div className="grid grid-cols-4 gap-3 mt-10">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-12 bg-ivory/5 rounded-lg animate-pulse" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -151,10 +166,13 @@ export default function FicheCarte({ params }) {
           />
 
           <div className="relative flex items-center justify-between">
-            <img
+            <Image
               src={carte.image}
               alt={carte.nom}
-              className="h-10 object-contain opacity-95 drop-shadow-md"
+              width={120}
+              height={40}
+              className="h-10 w-auto object-contain opacity-95 drop-shadow-md"
+              priority
             />
             <span className={`text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${texteFonce ? "text-ink/50" : "text-gold/70"}`}>
               Estalviar

@@ -153,5 +153,20 @@
     "accueilDescription": "Offrez une carte cadeau vraiment personnalisée : montant libre, message, date d'envoi. Amazon, Fnac, Steam et plus, livrées par email en quelques clics.",
     "boutiqueTitre": "Boutique — Toutes les cartes cadeaux | Estalviar",
     "boutiqueDescription": "Découvrez toutes nos cartes cadeaux personnalisables : shopping, jeux vidéo, mode, culture. Livraison immédiate par email."
+  },
+  "commentCaMarcheAccueil": {
+    "titre": "Comment ça marche",
+    "etape1Titre": "Choisissez",
+    "etape1Texte": "Une enseigne, un montant, et personnalisez le design de votre carte.",
+    "etape2Titre": "Personnalisez",
+    "etape2Texte": "Ajoutez un nom, un message, et choisissez la date d'envoi si vous le souhaitez.",
+    "etape3Titre": "Envoyez",
+    "etape3Texte": "Payez en toute sécurité, la carte est envoyée par email immédiatement ou à la date choisie."
+  },
+  "cagnotteAccueil": {
+    "accroche": "Cadeau collectif",
+    "titre": "À plusieurs, on voit plus grand.",
+    "description": "Créez une cagnotte, partagez le lien, et laissez chacun contribuer à sa manière. Le bénéficiaire choisit sa carte une fois l'objectif atteint.",
+    "bouton": "Créer une cagnotte"
   }
 }

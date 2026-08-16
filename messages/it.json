@@ -152,5 +152,20 @@
     "accueilDescription": "Regala una carta regalo davvero personalizzata: importo libero, messaggio, data di invio. Amazon, Fnac, Steam e altro, consegnate via email in pochi click.",
     "boutiqueTitre": "Negozio — Tutte le carte regalo | Estalviar",
     "boutiqueDescription": "Scopri tutte le nostre carte regalo personalizzabili: shopping, videogiochi, moda, cultura. Consegna immediata via email."
+  },
+  "commentCaMarcheAccueil": {
+    "titre": "Come funziona",
+    "etape1Titre": "Scegli",
+    "etape1Texte": "Un marchio, un importo, e personalizza il design della tua carta.",
+    "etape2Titre": "Personalizza",
+    "etape2Texte": "Aggiungi un nome, un messaggio, e scegli la data di invio se lo desideri.",
+    "etape3Titre": "Invia",
+    "etape3Texte": "Paga in modo sicuro, la carta viene inviata via email subito o nella data scelta."
+  },
+  "cagnotteAccueil": {
+    "accroche": "Regalo collettivo",
+    "titre": "Insieme si pensa più in grande.",
+    "description": "Crea una colletta, condividi il link, e lascia che ognuno contribuisca a modo suo. Il destinatario sceglie la sua carta una volta raggiunto l'obiettivo.",
+    "bouton": "Crea una colletta"
   }
 }

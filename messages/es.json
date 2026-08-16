@@ -153,5 +153,20 @@
     "accueilDescription": "Regala una tarjeta regalo verdaderamente personalizada: importe libre, mensaje, fecha de envío. Amazon, Fnac, Steam y más, entregadas por email en pocos clics.",
     "boutiqueTitre": "Tienda — Todas las tarjetas regalo | Estalviar",
     "boutiqueDescription": "Descubre todas nuestras tarjetas regalo personalizables: compras, videojuegos, moda, cultura. Entrega inmediata por email."
+  },
+  "commentCaMarcheAccueil": {
+    "titre": "Cómo funciona",
+    "etape1Titre": "Elige",
+    "etape1Texte": "Una marca, un importe, y personaliza el diseño de tu tarjeta.",
+    "etape2Titre": "Personaliza",
+    "etape2Texte": "Añade un nombre, un mensaje, y elige la fecha de envío si lo deseas.",
+    "etape3Titre": "Envía",
+    "etape3Texte": "Paga de forma segura, la tarjeta se envía por email de inmediato o en la fecha elegida."
+  },
+  "cagnotteAccueil": {
+    "accroche": "Regalo colectivo",
+    "titre": "Juntos, pensamos más grande.",
+    "description": "Crea un bote colectivo, comparte el enlace, y deja que cada uno contribuya a su manera. El destinatario elige su tarjeta una vez alcanzado el objetivo.",
+    "bouton": "Crear un bote colectivo"
   }
 }

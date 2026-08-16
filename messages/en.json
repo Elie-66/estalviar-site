@@ -153,5 +153,20 @@
     "accueilDescription": "Give a truly personalized gift card: free amount, message, delivery date. Amazon, Fnac, Steam and more, delivered by email in a few clicks.",
     "boutiqueTitre": "Shop — All gift cards | Estalviar",
     "boutiqueDescription": "Discover all our customizable gift cards: shopping, video games, fashion, culture. Instant email delivery."
+  },
+  "commentCaMarcheAccueil": {
+    "titre": "How it works",
+    "etape1Titre": "Choose",
+    "etape1Texte": "A brand, an amount, and customize your card's design.",
+    "etape2Titre": "Personalize",
+    "etape2Texte": "Add a name, a message, and choose a delivery date if you want.",
+    "etape3Titre": "Send",
+    "etape3Texte": "Pay securely, the card is sent by email immediately or on the chosen date."
+  },
+  "cagnotteAccueil": {
+    "accroche": "Group gift",
+    "titre": "Better together.",
+    "description": "Create a group gift, share the link, and let everyone contribute their way. The recipient chooses their card once the goal is reached.",
+    "bouton": "Create a group gift"
   }
 }

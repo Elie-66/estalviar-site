@@ -75,6 +75,7 @@ export async function POST(req) {
         design: cagnotte.design,
         code: chiffrerCode(code),
         statut: 'payee',
+        cagnotte_id: cagnotte.id,
       });
 
       let html = construireEmailCarte({

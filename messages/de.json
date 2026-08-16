@@ -153,5 +153,20 @@
     "accueilDescription": "Verschenken Sie eine wirklich personalisierte Geschenkkarte: freier Betrag, Nachricht, Versanddatum. Amazon, Fnac, Steam und mehr, per E-Mail in wenigen Klicks geliefert.",
     "boutiqueTitre": "Shop — Alle Geschenkkarten | Estalviar",
     "boutiqueDescription": "Entdecken Sie alle unsere personalisierbaren Geschenkkarten: Shopping, Videospiele, Mode, Kultur. Sofortige Lieferung per E-Mail."
+  },
+  "commentCaMarcheAccueil": {
+    "titre": "So funktioniert's",
+    "etape1Titre": "Wählen Sie",
+    "etape1Texte": "Eine Marke, einen Betrag, und personalisieren Sie das Design Ihrer Karte.",
+    "etape2Titre": "Personalisieren",
+    "etape2Texte": "Fügen Sie einen Namen, eine Nachricht hinzu und wählen Sie bei Bedarf ein Versanddatum.",
+    "etape3Titre": "Senden",
+    "etape3Texte": "Sicher bezahlen, die Karte wird sofort oder am gewählten Datum per E-Mail versendet."
+  },
+  "cagnotteAccueil": {
+    "accroche": "Sammelgeschenk",
+    "titre": "Gemeinsam denkt man größer.",
+    "description": "Erstellen Sie ein Sammelgeschenk, teilen Sie den Link, und lassen Sie jeden auf seine Weise beitragen. Der Empfänger wählt seine Karte, sobald das Ziel erreicht ist.",
+    "bouton": "Sammelgeschenk erstellen"
   }
 }

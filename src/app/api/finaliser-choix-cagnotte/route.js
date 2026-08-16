@@ -68,7 +68,7 @@ export async function POST(req) {
       const code = genererCode();
       nomsMarques.push(carte.marque);
 
-      await supabase.from('commandes').insert({
+     await supabase.from('commandes').insert({
         email_acheteur: cagnotte.email_createur,
         email_destinataire: destinataire,
         marque: `Cagnotte ${carte.marque}`,
@@ -78,6 +78,7 @@ export async function POST(req) {
         design: 'Marque',
         code: chiffrerCode(code),
         statut: 'payee',
+        cagnotte_id: cagnotte.id,
       });
 
       blocsHtml += blocCarte({

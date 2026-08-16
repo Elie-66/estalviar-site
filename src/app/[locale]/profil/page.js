@@ -458,34 +458,71 @@ export default function Profil() {
           {cagnottes.length === 0 ? (
             <p className="text-ivory/50 text-sm">Aucune cagnotte pour le moment.</p>
           ) : (
-            <div className="space-y-3">
-              {cagnottes.map((c) => (
-                <a
-                  key={c.id}
-                  href={`/fr/cagnotte/${c.slug}`}
-                  className="block border border-ivory/10 rounded-lg p-4 hover:border-gold/30 transition-colors"
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-ivory font-medium">Pour {c.beneficiaire}</p>
-                      <p className="text-xs text-ivory/40 mt-1">
+            <div className="space-y-4">
+              {cagnottes.map((c) => {
+                const pourcentage = c.montant_libre
+                  ? 100
+                  : Math.min(100, Math.round((c.montant_collecte / c.montant_objectif) * 100));
+                const statutLabelCagnotte =
+                  c.statut === "cloturee" ? "Clôturée" : c.statut === "attente_choix" ? "En attente de choix" : "Ouverte";
+
+                return (
+                  <a
+                    key={c.id}
+                    href={`/fr/cagnotte/${c.slug}`}
+                    className="block border border-ivory/10 rounded-xl overflow-hidden hover:border-gold/30 transition-colors"
+                  >
+                    <div
+                      className="relative p-5"
+                      style={{
+                        background: c.background || "linear-gradient(150deg, #5B3A5C 0%, #0d1022 100%)",
+                      }}
+                    >
+                      <div
+                        className="absolute inset-0 opacity-[0.07]"
+                        style={{ background: "linear-gradient(115deg, transparent 30%, white 48%, transparent 65%)" }}
+                      />
+                      <div className="relative flex items-center justify-between">
+                        <span className={`text-sm font-medium ${c.texte_fonce ? "text-ink" : "text-white"}`}>
+                          Pour {c.beneficiaire}
+                        </span>
+                        <span className="text-gold/70 text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)]">
+                          Estalviar
+                        </span>
+                      </div>
+                      <div className="relative mt-4">
+                        <div className="flex items-end justify-between mb-2">
+                          <p className={`text-3xl font-semibold font-[family-name:var(--font-fraunces)] ${c.texte_fonce ? "text-ink" : "text-white"}`}>
+                            {c.montant_collecte}<span className="text-lg text-gold ml-1">€</span>
+                            {!c.montant_libre && (
+                              <span className={`text-sm font-sans ml-2 ${c.texte_fonce ? "text-ink/40" : "text-white/40"}`}>
+                                / {c.montant_objectif} €
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                          <div className="h-full bg-gold rounded-full" style={{ width: `${pourcentage}%` }} />
+                        </div>
+                        <p className={`text-xs mt-2 ${c.texte_fonce ? "text-ink/40" : "text-white/40"}`}>
+                          {c.nombreContributeurs || 0} contributeur{(c.nombreContributeurs || 0) > 1 ? "s" : ""}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center px-5 py-3 bg-ink-secondary/50">
+                      <p className="text-xs text-ivory/40">
                         {c.email_createur === utilisateur.email ? "Créée par vous" : "Vous avez contribué"}
                       </p>
+                      <span className="text-xs text-gold/70">{statutLabelCagnotte}</span>
                     </div>
-                    <div className="text-right">
-                      <p className="text-ivory font-semibold">{c.montant_collecte} €</p>
-                      <span className="text-xs text-gold/70">
-                        {c.statut === "cloturee" ? "Clôturée" : c.statut === "attente_choix" ? "En attente de choix" : "Ouverte"}
-                      </span>
-                    </div>
-                  </div>
-                </a>
-              ))}
+                  </a>
+                );
+              })}
             </div>
           )}
         </div>
       )}
-
       {onglet === "securite" && (
         <div className="space-y-10">
           <form onSubmit={handleChangerEmail}>

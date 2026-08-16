@@ -43,10 +43,23 @@ export default function Boutique() {
     return correspondRecherche && correspondCategorie;
   });
 
-  if (chargement) {
+ if (chargement) {
     return (
-      <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
-        {t("chargement")}
+      <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-20">
+        <div className="h-9 w-64 bg-ivory/5 rounded-lg animate-pulse mb-8" />
+        <div className="flex gap-4 mb-8">
+          <div className="h-12 flex-1 bg-ivory/5 rounded-lg animate-pulse" />
+          <div className="h-12 w-32 bg-ivory/5 rounded-lg animate-pulse" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="border border-ivory/10 rounded-lg p-6">
+              <div className="h-24 bg-ivory/5 rounded-md animate-pulse" />
+              <div className="h-4 w-20 bg-ivory/5 rounded mt-4 mx-auto animate-pulse" />
+              <div className="h-3 w-16 bg-ivory/5 rounded mt-2 mx-auto animate-pulse" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
