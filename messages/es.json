@@ -83,5 +83,69 @@
     "ajouterPanier": "Añadir al carrito",
     "ajouteePanier": "¡Añadida al carrito!",
     "chargement": "Cargando..."
+  },
+  "legal": {
+    "mentions": {
+      "titre": "Aviso legal",
+      "editeurTitre": "Editor del sitio",
+      "editeurTexte": "El sitio Estalviar (estalviar.com) está editado por [NOMBRE DE LA EMPRESA], [forma jurídica], con un capital de [IMPORTE] €, inscrita en el Registro Mercantil de [CIUDAD] con el número SIRET [NÚMERO SIRET], con domicilio social en [DIRECCIÓN COMPLETA].",
+      "editeurContact": "Número de IVA intracomunitario: [NÚMERO IVA]. Director de publicación: [NOMBRE]. Email: info@estalviar.com",
+      "hebergementTitre": "Alojamiento",
+      "hebergementTexte": "El sitio está alojado por Netlify, Inc., 44 Montgomery Street, Suite 300, San Francisco, California 94104, USA.",
+      "proprieteTitre": "Propiedad intelectual",
+      "proprieteTexte": "Todos los elementos del sitio Estalviar (textos, imágenes, logotipos, identidad gráfica) están protegidos por el derecho de propiedad intelectual. Cualquier reproducción, incluso parcial, está prohibida sin autorización previa.",
+      "mediationTitre": "Mediación de consumo",
+      "mediationTexte": "De conformidad con el artículo L.616-1 del Código de Consumo francés, el cliente tiene derecho a recurrir gratuitamente a un mediador de consumo.",
+      "contactTitre": "Contacto",
+      "contactTexte": "Para cualquier pregunta sobre el sitio o su uso: info@estalviar.com"
+    },
+    "cgv": {
+      "titre": "Condiciones generales de venta",
+      "art1Titre": "Artículo 1 — Objeto",
+      "art1Texte": "Las presentes condiciones rigen la venta de tarjetas regalo digitales en el sitio Estalviar. Todo pedido implica la aceptación sin reservas de estas condiciones.",
+      "art2Titre": "Artículo 2 — Productos",
+      "art2Texte": "Estalviar vende tarjetas regalo digitales personalizables de marcas asociadas. Las tarjetas se entregan exclusivamente por vía electrónica.",
+      "art3Titre": "Artículo 3 — Precio y pago",
+      "art3Texte": "Los precios se indican en euros, impuestos incluidos. El pago se realiza en línea de forma segura.",
+      "art4Titre": "Artículo 4 — Entrega",
+      "art4Texte": "La tarjeta regalo se envía por email inmediatamente tras el pago, salvo fecha de envío diferida elegida por el cliente.",
+      "art5Titre": "Artículo 5 — Derecho de desistimiento",
+      "art5Texte": "De conformidad con el artículo L221-28 del Código de Consumo francés, el derecho de desistimiento no se aplica a las tarjetas regalo una vez que su código ha sido comunicado al cliente.",
+      "art6Titre": "Artículo 6 — Validez de las tarjetas",
+      "art6Texte": "Cada tarjeta regalo tiene un periodo de validez propio de la marca emisora, indicado en el momento de la compra.",
+      "art7Titre": "Artículo 7 — Responsabilidad",
+      "art7Texte": "Estalviar actúa como intermediario. Su responsabilidad no podrá ser exigida en caso de mal funcionamiento propio de la marca emisora.",
+      "art8Titre": "Artículo 8 — Litigios",
+      "art8Texte": "Las presentes condiciones se rigen por el derecho francés. Se buscará una solución amistosa antes de cualquier acción judicial."
+    },
+    "confidentialite": {
+      "titre": "Política de privacidad",
+      "intro": "Estalviar concede gran importancia a la protección de tus datos personales.",
+      "donneesTitre": "Datos recopilados",
+      "donneesTexte": "Recopilamos tu email, nombre/apellido si se indica, historial de pedidos e información de pago gestionada por nuestro proveedor de pagos.",
+      "finalitesTitre": "Finalidad del tratamiento",
+      "finalitesTexte": "Tus datos se utilizan para procesar tus pedidos, gestionar tu cuenta y fidelidad, y contactarte si es necesario.",
+      "conservationTitre": "Conservación de datos",
+      "conservationTexte": "Tus datos se conservan durante el tiempo necesario para la relación comercial y luego se archivan legalmente.",
+      "droitsTitre": "Tus derechos",
+      "droitsTexte": "De conformidad con el RGPD, tienes derecho de acceso, rectificación, supresión y portabilidad. Contacta con info@estalviar.com.",
+      "partageTitre": "Compartir datos",
+      "partageTexte": "Tus datos nunca se venden. Pueden compartirse con nuestros proveedores técnicos estrictamente necesarios.",
+      "contactTitre": "Contacto",
+      "contactTexte": "info@estalviar.com"
+    },
+    "cookies": {
+      "titre": "Política de cookies",
+      "intro": "El sitio Estalviar utiliza cookies para garantizar su correcto funcionamiento.",
+      "quoiTitre": "¿Qué es una cookie?",
+      "quoiTexte": "Una cookie es un pequeño archivo de texto almacenado en tu dispositivo durante la navegación.",
+      "utilisesTitre": "Cookies utilizadas",
+      "necessairesTexte": "Cookies estrictamente necesarias: sesión de inicio, contenido del carrito. No se pueden desactivar.",
+      "preferenceTexte": "Cookies de preferencia: recuerdan tu idioma y preferencias de visualización.",
+      "gestionTitre": "Gestión de cookies",
+      "gestionTexte": "Puedes configurar tu navegador para rechazar cookies, lo que puede afectar al funcionamiento del sitio.",
+      "contactTitre": "Contacto",
+      "contactTexte": "info@estalviar.com"
+    }
   }
 }

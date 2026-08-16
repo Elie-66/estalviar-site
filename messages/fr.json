@@ -83,5 +83,69 @@
     "ajouterPanier": "Ajouter au panier",
     "ajouteePanier": "Ajoutée au panier !",
     "chargement": "Chargement..."
+  },
+  "legal": {
+    "mentions": {
+      "titre": "Mentions légales",
+      "editeurTitre": "Éditeur du site",
+      "editeurTexte": "Le site Estalviar (estalviar.com) est édité par [NOM DE L'ENTREPRISE], [forme juridique], au capital de [MONTANT] €, immatriculée au Registre du Commerce et des Sociétés de [VILLE] sous le numéro SIRET [NUMÉRO SIRET], dont le siège social est situé au [ADRESSE COMPLÈTE].",
+      "editeurContact": "Numéro de TVA intracommunautaire : [NUMÉRO TVA]. Directeur de la publication : [NOM DU RESPONSABLE]. Email : info@estalviar.com",
+      "hebergementTitre": "Hébergement",
+      "hebergementTexte": "Le site est hébergé par Netlify, Inc., 44 Montgomery Street, Suite 300, San Francisco, California 94104, USA.",
+      "proprieteTitre": "Propriété intellectuelle",
+      "proprieteTexte": "L'ensemble des éléments du site Estalviar (textes, images, logos, charte graphique) est protégé par le droit de la propriété intellectuelle. Toute reproduction, même partielle, est interdite sans autorisation préalable. Les marques et logos des enseignes partenaires appartiennent à leurs propriétaires respectifs et sont utilisés à titre d'information uniquement.",
+      "mediationTitre": "Médiation de la consommation",
+      "mediationTexte": "Conformément à l'article L.616-1 du Code de la consommation, le client dispose du droit de recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige.",
+      "contactTitre": "Contact",
+      "contactTexte": "Pour toute question relative au site ou à son utilisation : info@estalviar.com"
+    },
+    "cgv": {
+      "titre": "Conditions générales de vente",
+      "art1Titre": "Article 1 — Objet",
+      "art1Texte": "Les présentes conditions générales de vente régissent les ventes de cartes cadeaux numériques réalisées sur le site Estalviar. Toute commande implique l'acceptation sans réserve des présentes CGV.",
+      "art2Titre": "Article 2 — Produits",
+      "art2Texte": "Estalviar propose à la vente des cartes cadeaux numériques d'enseignes partenaires, personnalisables. Les cartes sont livrées uniquement par voie électronique.",
+      "art3Titre": "Article 3 — Prix et paiement",
+      "art3Texte": "Les prix sont indiqués en euros, toutes taxes comprises. Le paiement s'effectue en ligne, de façon sécurisée.",
+      "art4Titre": "Article 4 — Livraison",
+      "art4Texte": "La carte cadeau est envoyée par email immédiatement après paiement, sauf date d'envoi différée choisie par le client.",
+      "art5Titre": "Article 5 — Droit de rétractation",
+      "art5Texte": "Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne s'applique pas aux cartes cadeaux dès lors que leur code a été communiqué au client.",
+      "art6Titre": "Article 6 — Validité des cartes",
+      "art6Texte": "Chaque carte cadeau dispose d'une durée de validité propre à l'enseigne émettrice, précisée au moment de l'achat.",
+      "art7Titre": "Article 7 — Responsabilité",
+      "art7Texte": "Estalviar agit en tant qu'intermédiaire. Sa responsabilité ne saurait être engagée en cas de dysfonctionnement propre à l'enseigne émettrice.",
+      "art8Titre": "Article 8 — Litiges",
+      "art8Texte": "Les présentes CGV sont soumises au droit français. Une solution amiable sera recherchée avant toute action judiciaire."
+    },
+    "confidentialite": {
+      "titre": "Politique de confidentialité",
+      "intro": "Estalviar attache une grande importance à la protection de vos données personnelles.",
+      "donneesTitre": "Données collectées",
+      "donneesTexte": "Nous collectons votre email, prénom/nom si renseigné, historique de commandes, et les informations de paiement gérées par notre prestataire.",
+      "finalitesTitre": "Finalités du traitement",
+      "finalitesTexte": "Vos données servent à traiter vos commandes, gérer votre compte et votre fidélité, et vous contacter si besoin.",
+      "conservationTitre": "Conservation des données",
+      "conservationTexte": "Vos données sont conservées pendant la durée nécessaire à la relation commerciale, puis archivées légalement.",
+      "droitsTitre": "Vos droits",
+      "droitsTexte": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité. Contactez info@estalviar.com.",
+      "partageTitre": "Partage des données",
+      "partageTexte": "Vos données ne sont jamais vendues. Elles peuvent être transmises à nos prestataires techniques strictement nécessaires.",
+      "contactTitre": "Contact",
+      "contactTexte": "info@estalviar.com"
+    },
+    "cookies": {
+      "titre": "Politique de cookies",
+      "intro": "Le site Estalviar utilise des cookies pour assurer son bon fonctionnement.",
+      "quoiTitre": "Qu'est-ce qu'un cookie ?",
+      "quoiTexte": "Un cookie est un petit fichier texte déposé sur votre appareil lors de votre navigation.",
+      "utilisesTitre": "Cookies utilisés",
+      "necessairesTexte": "Cookies strictement nécessaires : session de connexion, contenu du panier. Ils ne peuvent pas être désactivés.",
+      "preferenceTexte": "Cookies de préférence : mémorisent votre langue et vos préférences d'affichage.",
+      "gestionTitre": "Gestion des cookies",
+      "gestionTexte": "Vous pouvez configurer votre navigateur pour refuser les cookies, ce qui peut affecter le fonctionnement du site.",
+      "contactTitre": "Contact",
+      "contactTexte": "info@estalviar.com"
+    }
   }
 }

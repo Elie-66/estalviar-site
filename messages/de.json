@@ -83,5 +83,69 @@
     "ajouterPanier": "In den Warenkorb",
     "ajouteePanier": "Zum Warenkorb hinzugefügt!",
     "chargement": "Wird geladen..."
+  },
+  "legal": {
+    "mentions": {
+      "titre": "Impressum",
+      "editeurTitre": "Herausgeber der Website",
+      "editeurTexte": "Die Website Estalviar (estalviar.com) wird herausgegeben von [FIRMENNAME], [Rechtsform], mit einem Kapital von [BETRAG] €, eingetragen im Handelsregister von [STADT] unter der SIRET-Nummer [SIRET-NUMMER], mit Sitz in [VOLLSTÄNDIGE ADRESSE].",
+      "editeurContact": "USt-IdNr.: [USt-IdNr]. Verantwortlich für die Veröffentlichung: [NAME]. E-Mail: info@estalviar.com",
+      "hebergementTitre": "Hosting",
+      "hebergementTexte": "Die Website wird gehostet von Netlify, Inc., 44 Montgomery Street, Suite 300, San Francisco, California 94104, USA.",
+      "proprieteTitre": "Geistiges Eigentum",
+      "proprieteTexte": "Alle Elemente der Website Estalviar (Texte, Bilder, Logos, Grafikcharta) sind durch das geistige Eigentumsrecht geschützt. Jede Vervielfältigung, auch teilweise, ist ohne vorherige Genehmigung untersagt.",
+      "mediationTitre": "Verbraucherschlichtung",
+      "mediationTexte": "Gemäß Artikel L.616-1 des französischen Verbraucherschutzgesetzes hat der Kunde das Recht, kostenlos einen Verbraucherschlichter in Anspruch zu nehmen.",
+      "contactTitre": "Kontakt",
+      "contactTexte": "Für Fragen zur Website oder deren Nutzung: info@estalviar.com"
+    },
+    "cgv": {
+      "titre": "Allgemeine Geschäftsbedingungen",
+      "art1Titre": "Artikel 1 — Gegenstand",
+      "art1Texte": "Diese AGB regeln den Verkauf digitaler Geschenkkarten auf der Website Estalviar. Jede Bestellung setzt die uneingeschränkte Annahme dieser AGB voraus.",
+      "art2Titre": "Artikel 2 — Produkte",
+      "art2Texte": "Estalviar verkauft personalisierbare digitale Geschenkkarten von Partnermarken. Die Karten werden ausschließlich elektronisch geliefert.",
+      "art3Titre": "Artikel 3 — Preis und Zahlung",
+      "art3Texte": "Die Preise sind in Euro inklusive aller Steuern angegeben. Die Zahlung erfolgt sicher online.",
+      "art4Titre": "Artikel 4 — Lieferung",
+      "art4Texte": "Die Geschenkkarte wird sofort nach Zahlung per E-Mail versendet, sofern der Kunde kein späteres Versanddatum gewählt hat.",
+      "art5Titre": "Artikel 5 — Widerrufsrecht",
+      "art5Texte": "Gemäß Artikel L221-28 des französischen Verbraucherschutzgesetzes gilt das Widerrufsrecht nicht für Geschenkkarten, sobald der Code dem Kunden mitgeteilt wurde.",
+      "art6Titre": "Artikel 6 — Gültigkeit der Karten",
+      "art6Texte": "Jede Geschenkkarte hat eine von der ausstellenden Marke festgelegte Gültigkeitsdauer, die beim Kauf angegeben wird.",
+      "art7Titre": "Artikel 7 — Haftung",
+      "art7Texte": "Estalviar handelt als Vermittler. Seine Haftung kann bei einer Störung, die der ausstellenden Marke zuzurechnen ist, nicht in Anspruch genommen werden.",
+      "art8Titre": "Artikel 8 — Streitigkeiten",
+      "art8Texte": "Diese AGB unterliegen französischem Recht. Vor jeder gerichtlichen Klage wird eine gütliche Lösung angestrebt."
+    },
+    "confidentialite": {
+      "titre": "Datenschutzrichtlinie",
+      "intro": "Estalviar legt großen Wert auf den Schutz Ihrer personenbezogenen Daten.",
+      "donneesTitre": "Erhobene Daten",
+      "donneesTexte": "Wir erheben Ihre E-Mail, Vor-/Nachname falls angegeben, Bestellhistorie und Zahlungsinformationen, die von unserem Zahlungsdienstleister verwaltet werden.",
+      "finalitesTitre": "Zweck der Verarbeitung",
+      "finalitesTexte": "Ihre Daten dienen der Bearbeitung Ihrer Bestellungen, der Verwaltung Ihres Kontos und Treueprogramms sowie der Kontaktaufnahme bei Bedarf.",
+      "conservationTitre": "Datenspeicherung",
+      "conservationTexte": "Ihre Daten werden für die Dauer der Geschäftsbeziehung gespeichert und anschließend gesetzlich archiviert.",
+      "droitsTitre": "Ihre Rechte",
+      "droitsTexte": "Gemäß DSGVO haben Sie das Recht auf Auskunft, Berichtigung, Löschung und Übertragbarkeit. Kontakt: info@estalviar.com.",
+      "partageTitre": "Datenweitergabe",
+      "partageTexte": "Ihre Daten werden niemals verkauft. Sie können an unsere technischen Dienstleister weitergegeben werden, soweit unbedingt erforderlich.",
+      "contactTitre": "Kontakt",
+      "contactTexte": "info@estalviar.com"
+    },
+    "cookies": {
+      "titre": "Cookie-Richtlinie",
+      "intro": "Die Website Estalviar verwendet Cookies, um ihre ordnungsgemäße Funktion zu gewährleisten.",
+      "quoiTitre": "Was ist ein Cookie?",
+      "quoiTexte": "Ein Cookie ist eine kleine Textdatei, die beim Surfen auf Ihrem Gerät gespeichert wird.",
+      "utilisesTitre": "Verwendete Cookies",
+      "necessairesTexte": "Unbedingt erforderliche Cookies: Anmeldesitzung, Warenkorbinhalt. Sie können nicht deaktiviert werden.",
+      "preferenceTexte": "Präferenz-Cookies: speichern Ihre Sprache und Anzeigepräferenzen.",
+      "gestionTitre": "Cookie-Verwaltung",
+      "gestionTexte": "Sie können Ihren Browser so konfigurieren, dass er Cookies ablehnt, was die Funktion der Website beeinträchtigen kann.",
+      "contactTitre": "Kontakt",
+      "contactTexte": "info@estalviar.com"
+    }
   }
 }
