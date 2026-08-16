@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { enveloppeEmail, titreEmail, texteEmail } from '../../../lib/emailTemplate';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -29,26 +30,25 @@ export async function POST(req) {
 
     const listeDestinatairesHtml =
       destinataires && destinataires.length > 0
-        ? `<p><strong>Destinataires fournis (${destinataires.length}) :</strong></p>
-           <ul>${destinataires.map((d) => `<li>${d.nom || "—"} — ${d.email || "—"}</li>`).join('')}</ul>`
+        ? texteEmail(`<strong>Destinataires fournis (${destinataires.length}) :</strong><br/>${destinataires.map((d) => `${d.nom || "—"} — ${d.email || "—"}`).join('<br/>')}`)
         : '';
+
+    const contenu = `
+      ${titreEmail("Nouvelle demande de devis")}
+      ${texteEmail(`<strong>Entreprise :</strong> ${entreprise}`)}
+      ${texteEmail(`<strong>Contact :</strong> ${contact}`)}
+      ${texteEmail(`<strong>Email :</strong> ${email}`)}
+      ${texteEmail(`<strong>Téléphone :</strong> ${telephone || "—"}`)}
+      ${texteEmail(`<strong>Quantité estimée :</strong> ${quantite || "—"}`)}
+      ${texteEmail(`<strong>Message :</strong> ${message || "—"}`)}
+      ${listeDestinatairesHtml}
+    `;
 
     await resend.emails.send({
       from: 'Estalviar <onboarding@resend.dev>',
       to: 'info@estalviar.com',
       subject: `Nouvelle demande pro : ${entreprise}`,
-      html: `
-        <div style="font-family: sans-serif;">
-          <h2>Nouvelle demande de devis</h2>
-          <p><strong>Entreprise :</strong> ${entreprise}</p>
-          <p><strong>Contact :</strong> ${contact}</p>
-          <p><strong>Email :</strong> ${email}</p>
-          <p><strong>Téléphone :</strong> ${telephone || "—"}</p>
-          <p><strong>Quantité estimée :</strong> ${quantite || "—"}</p>
-          <p><strong>Message :</strong> ${message || "—"}</p>
-          ${listeDestinatairesHtml}
-        </div>
-      `,
+      html: enveloppeEmail({ titre: `Nouvelle demande pro : ${entreprise}`, contenuHtml: contenu }),
     });
 
     return NextResponse.json({ success: true });

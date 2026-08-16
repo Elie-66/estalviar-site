@@ -13,6 +13,7 @@ export default function Profil() {
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [telephone, setTelephone] = useState("");
+  const [accepteMarketing, setAccepteMarketing] = useState(false);
   const [enregistrementInfos, setEnregistrementInfos] = useState(false);
   const [succesInfos, setSuccesInfos] = useState(false);
 
@@ -71,6 +72,7 @@ export default function Profil() {
         setNom(profil.nom || "");
         setTelephone(profil.telephone || "");
         setPseudo(profil.pseudo || "");
+        setAccepteMarketing(profil.accepte_marketing || false);
       }
 
       setPoints(profil?.points || 0);
@@ -114,7 +116,18 @@ export default function Profil() {
         (c, i, arr) => arr.findIndex((x) => x.id === c.id) === i
       );
 
-      setCagnottes(toutesCagnottes);
+      const cagnottesAvecContributeurs = await Promise.all(
+        toutesCagnottes.map(async (c) => {
+          const { count } = await supabase
+            .from("contributions_cagnotte")
+            .select("*", { count: "exact", head: true })
+            .eq("cagnotte_id", c.id)
+            .eq("statut", "payee");
+          return { ...c, nombreContributeurs: count || 0 };
+        })
+      );
+
+      setCagnottes(cagnottesAvecContributeurs);
 
       setChargement(false);
     };
@@ -134,6 +147,7 @@ export default function Profil() {
       nom,
       telephone,
       pseudo,
+      accepte_marketing: accepteMarketing,
     });
 
     if (error) {
@@ -345,6 +359,16 @@ export default function Profil() {
             className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
           />
 
+          <label className="flex items-start gap-2 mt-6 text-sm text-ivory/70">
+            <input
+              type="checkbox"
+              checked={accepteMarketing}
+              onChange={(e) => setAccepteMarketing(e.target.checked)}
+              className="mt-0.5"
+            />
+            Recevoir des emails pour les fêtes, occasions et offres spéciales
+          </label>
+
           <button
             type="submit"
             disabled={enregistrementInfos}
@@ -468,6 +492,7 @@ export default function Profil() {
 
                 return (
                   <a
+                  
                     key={c.id}
                     href={`/fr/cagnotte/${c.slug}`}
                     className="block border border-ivory/10 rounded-xl overflow-hidden hover:border-gold/30 transition-colors"
@@ -523,6 +548,7 @@ export default function Profil() {
           )}
         </div>
       )}
+
       {onglet === "securite" && (
         <div className="space-y-10">
           <form onSubmit={handleChangerEmail}>

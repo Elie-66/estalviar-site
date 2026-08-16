@@ -7,6 +7,7 @@ export default function Inscription() {
   const [pseudo, setPseudo] = useState("");
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
+  const [accepteMarketing, setAccepteMarketing] = useState(false);
   const [chargement, setChargement] = useState(false);
   const [erreur, setErreur] = useState("");
   const [succes, setSucces] = useState(false);
@@ -30,6 +31,7 @@ export default function Inscription() {
           id: data.user.id,
           email,
           pseudo,
+          accepte_marketing: accepteMarketing,
         });
       }
       setSucces(true);
@@ -101,6 +103,16 @@ export default function Inscription() {
             )}
           </button>
         </div>
+
+        <label className="flex items-start gap-2 mt-6 text-sm text-ivory/60">
+          <input
+            type="checkbox"
+            checked={accepteMarketing}
+            onChange={(e) => setAccepteMarketing(e.target.checked)}
+            className="mt-0.5"
+          />
+          Je souhaite recevoir des emails pour les fêtes, occasions et offres spéciales
+        </label>
 
         <button
           type="submit"

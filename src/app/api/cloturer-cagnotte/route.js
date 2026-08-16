@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import { chiffrerCode } from '../../../lib/chiffrement';
+import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from '../../../lib/emailTemplate';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -110,17 +111,17 @@ export async function POST(req) {
 
       await supabase.from('cagnottes').update({ statut: 'cloturee', code }).eq('id', cagnotteId);
     } else {
+      const contenuChoix = `
+        ${titreEmail("Votre cagnotte est clôturée !")}
+        ${texteEmail(`${cagnotte.montant_collecte} € ont été collectés pour vous. Choisissez maintenant la carte cadeau de votre choix :`)}
+        ${boutonEmail({ texte: "Choisir ma carte", lien: `${origin}/fr/cagnotte/${cagnotte.slug}/choisir` })}
+      `;
+
       await resend.emails.send({
         from: 'Estalviar <onboarding@resend.dev>',
         to: destinataire,
         subject: `Cagnotte clôturée — choisissez votre carte`,
-        html: `
-          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-            <h2>Votre cagnotte est clôturée !</h2>
-            <p>${cagnotte.montant_collecte} € ont été collectés pour vous. Choisissez maintenant la carte cadeau de votre choix :</p>
-            <a href="${origin}/fr/cagnotte/${cagnotte.slug}/choisir" style="display:inline-block; margin-top:16px; background:#C9A227; color:#12172B; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold;">Choisir ma carte</a>
-          </div>
-        `,
+        html: enveloppeEmail({ titre: `Cagnotte clôturée — choisissez votre carte`, contenuHtml: contenuChoix }),
       });
 
       await supabase.from('cagnottes').update({ statut: 'attente_choix' }).eq('id', cagnotteId);
