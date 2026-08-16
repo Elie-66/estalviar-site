@@ -14,10 +14,15 @@
   },
   "footer": {
     "accroche": "Tarjetas regalo, de forma sencilla.",
+    "cartesNumeriques": "Tarjetas digitales, directo a tu bandeja de entrada",
+    "idees": "Ideas de regalo",
     "boutique": "Tienda",
     "toutesEnseignes": "Todas las marcas",
+    "cagnotteLien": "Bote colectivo",
     "offrePro": "Oferta para empresas",
+    "verifierSolde": "Consultar saldo",
     "monCompte": "Mi cuenta",
+    "connexion": "Iniciar sesión",
     "programmeFidelite": "Programa de fidelidad",
     "aide": "Ayuda",
     "centreAide": "Centro de ayuda",
@@ -168,5 +173,20 @@
     "titre": "Juntos, pensamos más grande.",
     "description": "Crea un bote colectivo, comparte el enlace, y deja que cada uno contribuya a su manera. El destinatario elige su tarjeta una vez alcanzado el objetivo.",
     "bouton": "Crear un bote colectivo"
+  },
+  "populairesAccueil": {
+    "titre": "Las más solicitadas",
+    "categoriesTitre": "Buscar por categoría"
+  },
+  "verifierSolde": {
+    "titre": "Consultar saldo",
+    "description": "Introduce el código de tu tarjeta regalo Estalviar para conocer su saldo.",
+    "placeholder": "Código de la tarjeta (ej: ABCD-1234-EFGH-5678)",
+    "bouton": "Consultar",
+    "resultatTitre": "Tu tarjeta",
+    "resultatMontant": "Valor inicial de la tarjeta",
+    "avertissement": "Este importe corresponde al valor de la tarjeta en el momento de su emisión. Si ya la has utilizado con la marca, el saldo real puede variar — consulta el sitio web de la marca para el saldo exacto.",
+    "codeIntrouvable": "Código no encontrado. Comprueba que lo has introducido correctamente.",
+    "chargement": "Consultando..."
   }
 }

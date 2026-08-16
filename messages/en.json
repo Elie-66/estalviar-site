@@ -14,10 +14,15 @@
   },
   "footer": {
     "accroche": "Gift cards, made simple.",
+    "cartesNumeriques": "Digital cards, straight to your inbox",
+    "idees": "Gift ideas",
     "boutique": "Shop",
     "toutesEnseignes": "All brands",
+    "cagnotteLien": "Group gift",
     "offrePro": "Business offer",
+    "verifierSolde": "Check your balance",
     "monCompte": "My account",
+    "connexion": "Sign in",
     "programmeFidelite": "Loyalty program",
     "aide": "Help",
     "centreAide": "Help center",
@@ -168,5 +173,20 @@
     "titre": "Better together.",
     "description": "Create a group gift, share the link, and let everyone contribute their way. The recipient chooses their card once the goal is reached.",
     "bouton": "Create a group gift"
+  },
+  "populairesAccueil": {
+    "titre": "Most popular",
+    "categoriesTitre": "Find by category"
+  },
+  "verifierSolde": {
+    "titre": "Check your balance",
+    "description": "Enter your Estalviar gift card code to see its balance.",
+    "placeholder": "Card code (e.g. ABCD-1234-EFGH-5678)",
+    "bouton": "Check",
+    "resultatTitre": "Your card",
+    "resultatMontant": "Initial card value",
+    "avertissement": "This amount corresponds to the card's value when it was issued. If you've already used it with the brand, the actual balance may differ — check the brand's website for the exact balance.",
+    "codeIntrouvable": "Code not found. Please check that you entered it correctly.",
+    "chargement": "Checking..."
   }
 }

@@ -14,10 +14,15 @@
   },
   "footer": {
     "accroche": "Geschenkkarten, ganz einfach.",
+    "cartesNumeriques": "Digitale Karten, direkt in Ihr Postfach",
+    "idees": "Geschenkideen",
     "boutique": "Shop",
     "toutesEnseignes": "Alle Marken",
+    "cagnotteLien": "Sammelgeschenk",
     "offrePro": "Firmenangebot",
+    "verifierSolde": "Guthaben prüfen",
     "monCompte": "Mein Konto",
+    "connexion": "Anmelden",
     "programmeFidelite": "Treueprogramm",
     "aide": "Hilfe",
     "centreAide": "Hilfecenter",
@@ -168,5 +173,20 @@
     "titre": "Gemeinsam denkt man größer.",
     "description": "Erstellen Sie ein Sammelgeschenk, teilen Sie den Link, und lassen Sie jeden auf seine Weise beitragen. Der Empfänger wählt seine Karte, sobald das Ziel erreicht ist.",
     "bouton": "Sammelgeschenk erstellen"
+  },
+  "populairesAccueil": {
+    "titre": "Am beliebtesten",
+    "categoriesTitre": "Nach Kategorie finden"
+  },
+  "verifierSolde": {
+    "titre": "Guthaben prüfen",
+    "description": "Geben Sie den Code Ihrer Estalviar-Geschenkkarte ein, um Ihr Guthaben zu erfahren.",
+    "placeholder": "Kartencode (z. B. ABCD-1234-EFGH-5678)",
+    "bouton": "Prüfen",
+    "resultatTitre": "Ihre Karte",
+    "resultatMontant": "Ursprünglicher Kartenwert",
+    "avertissement": "Dieser Betrag entspricht dem Wert der Karte bei Ausstellung. Wenn Sie sie bereits bei der Marke verwendet haben, kann das tatsächliche Guthaben abweichen — prüfen Sie das genaue Guthaben auf der Website der Marke.",
+    "codeIntrouvable": "Code nicht gefunden. Bitte überprüfen Sie Ihre Eingabe.",
+    "chargement": "Wird geprüft..."
   }
 }

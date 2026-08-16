@@ -14,10 +14,15 @@
   },
   "footer": {
     "accroche": "Carte regalo, in modo semplice.",
+    "cartesNumeriques": "Carte digitali, direttamente nella tua casella email",
+    "idees": "Idee regalo",
     "boutique": "Negozio",
     "toutesEnseignes": "Tutti i marchi",
+    "cagnotteLien": "Colletta",
     "offrePro": "Offerta aziende",
+    "verifierSolde": "Verifica saldo",
     "monCompte": "Il mio account",
+    "connexion": "Accedi",
     "programmeFidelite": "Programma fedeltà",
     "aide": "Assistenza",
     "centreAide": "Centro assistenza",
@@ -147,7 +152,8 @@
       "contactTitre": "Contatto",
       "contactTexte": "info@estalviar.com"
     }
-  },"seo": {
+  },
+  "seo": {
     "accueilTitre": "Estalviar — Carte regalo personalizzabili",
     "accueilDescription": "Regala una carta regalo davvero personalizzata: importo libero, messaggio, data di invio. Amazon, Fnac, Steam e altro, consegnate via email in pochi click.",
     "boutiqueTitre": "Negozio — Tutte le carte regalo | Estalviar",
@@ -167,5 +173,20 @@
     "titre": "Insieme si pensa più in grande.",
     "description": "Crea una colletta, condividi il link, e lascia che ognuno contribuisca a modo suo. Il destinatario sceglie la sua carta una volta raggiunto l'obiettivo.",
     "bouton": "Crea una colletta"
+  },
+  "populairesAccueil": {
+    "titre": "Le più richieste",
+    "categoriesTitre": "Trova per categoria"
+  },
+  "verifierSolde": {
+    "titre": "Verifica saldo",
+    "description": "Inserisci il codice della tua carta regalo Estalviar per conoscere il suo saldo.",
+    "placeholder": "Codice della carta (es: ABCD-1234-EFGH-5678)",
+    "bouton": "Verifica",
+    "resultatTitre": "La tua carta",
+    "resultatMontant": "Valore iniziale della carta",
+    "avertissement": "Questo importo corrisponde al valore della carta al momento dell'emissione. Se l'hai già utilizzata presso il marchio, il saldo reale potrebbe essere diverso — controlla il sito del marchio per il saldo esatto.",
+    "codeIntrouvable": "Codice non trovato. Verifica di averlo inserito correttamente.",
+    "chargement": "Verifica in corso..."
   }
 }

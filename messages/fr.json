@@ -14,10 +14,15 @@
   },
   "footer": {
     "accroche": "La carte cadeau, offerte simplement.",
+    "cartesNumeriques": "Cartes numériques, directement dans votre boîte de réception",
+    "idees": "Idées de cadeaux",
     "boutique": "Boutique",
     "toutesEnseignes": "Toutes les enseignes",
+    "cagnotteLien": "Cagnotte collective",
     "offrePro": "Offre professionnelle",
+    "verifierSolde": "Vérifier le solde",
     "monCompte": "Mon compte",
+    "connexion": "Connexion",
     "programmeFidelite": "Programme fidélité",
     "aide": "Aide",
     "centreAide": "Centre d'aide",
@@ -168,5 +173,20 @@
     "titre": "À plusieurs, on voit plus grand.",
     "description": "Créez une cagnotte, partagez le lien, et laissez chacun contribuer à sa manière. Le bénéficiaire choisit sa carte une fois l'objectif atteint.",
     "bouton": "Créer une cagnotte"
+  },
+  "populairesAccueil": {
+    "titre": "Les plus demandées",
+    "categoriesTitre": "Trouvez par catégorie"
+  },
+  "verifierSolde": {
+    "titre": "Vérifier le solde",
+    "description": "Entrez le code de votre carte cadeau Estalviar pour connaître son solde.",
+    "placeholder": "Code de la carte (ex: ABCD-1234-EFGH-5678)",
+    "bouton": "Vérifier",
+    "resultatTitre": "Votre carte",
+    "resultatMontant": "Montant initial de la carte",
+    "avertissement": "Ce montant correspond à la valeur de la carte au moment de son émission. Si vous l'avez déjà utilisée chez l'enseigne, le solde réel peut être différent — consultez le site de l'enseigne pour le solde exact.",
+    "codeIntrouvable": "Code introuvable. Vérifiez que vous l'avez bien saisi.",
+    "chargement": "Vérification..."
   }
 }

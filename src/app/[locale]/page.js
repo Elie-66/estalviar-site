@@ -1,6 +1,9 @@
 "use client";
-import DefilementLogos from "./components/DefilementLogos";
+
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase";
+import DefilementLogos from "./components/DefilementLogos";
 
 const apercus = [
   {
@@ -40,8 +43,49 @@ const apercus = [
 
 export default function Home() {
   const t = useTranslations("accueilVitrine");
-const tCcm = useTranslations("commentCaMarcheAccueil");
-const tCagnotte = useTranslations("cagnotteAccueil");
+  const tCcm = useTranslations("commentCaMarcheAccueil");
+  const tCagnotte = useTranslations("cagnotteAccueil");
+  const tPop = useTranslations("populairesAccueil");
+  const tCategories = useTranslations("categories");
+  const [populaires, setPopulaires] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const charger = async () => {
+      const { data: toutesCartes } = await supabase
+        .from("catalogue")
+        .select("*")
+        .eq("actif", true)
+        .order("ordre", { ascending: true });
+
+      const resTop = await fetch("/api/top-ventes");
+      const { classement } = await resTop.json();
+
+      let tri = [...(toutesCartes || [])];
+      if (classement && classement.length > 0) {
+        tri.sort((a, b) => {
+          const posA = classement.indexOf(a.nom);
+          const posB = classement.indexOf(b.nom);
+          const rangA = posA === -1 ? 999 : posA;
+          const rangB = posB === -1 ? 999 : posB;
+          return rangA - rangB;
+        });
+      }
+      setPopulaires(tri.slice(0, 6));
+
+      const cats = [...new Set((toutesCartes || []).map((c) => c.categorie))];
+      setCategories(cats.slice(0, 8));
+    };
+    charger();
+  }, []);
+
+  const traduireCategorie = (cat) => {
+    try {
+      return tCategories(cat);
+    } catch {
+      return cat;
+    }
+  };
 
   return (
     <div className="flex flex-col flex-1 bg-ink overflow-hidden">
@@ -193,8 +237,54 @@ const tCagnotte = useTranslations("cagnotteAccueil");
               <p className="text-white/40 text-xs mt-2">6 contributeurs</p>
             </div>
           </div>
-       </div>
+        </div>
       </section>
+
+      {populaires.length > 0 && (
+        <section className="border-t border-ivory/10">
+          <div className="max-w-[1240px] mx-auto px-6 py-24">
+            <h2 className="text-2xl md:text-3xl font-semibold text-ivory text-center mb-12">
+              {tPop("titre")}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {populaires.map((carte) => (
+                <a
+                  key={carte.slug}
+                  href={`/fr/boutique/${carte.slug}`}
+                  className="border border-ivory/10 rounded-lg p-6 text-center hover:border-gold/50 transition-colors"
+                >
+                  <div className="h-20 flex items-center justify-center bg-white rounded-md">
+                    <img src={carte.image} alt={carte.nom} className="max-h-10 max-w-[80%] object-contain" />
+                  </div>
+                  <p className="mt-4 text-ivory">{carte.nom}</p>
+                  <p className="text-sm text-ivory/50">dès {carte.montant_min} €</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {categories.length > 0 && (
+        <section className="border-t border-ivory/10 bg-ivory/[0.02]">
+          <div className="max-w-[1240px] mx-auto px-6 py-24">
+            <h2 className="text-2xl md:text-3xl font-semibold text-ivory text-center mb-12">
+              {tPop("categoriesTitre")}
+            </h2>
+            <div className="flex flex-wrap justify-center gap-3">
+              {categories.map((cat) => (
+                <a
+                  key={cat}
+                  href={`/fr/boutique?categorie=${encodeURIComponent(cat)}`}
+                  className="border border-ivory/15 rounded-full px-5 py-2.5 text-sm text-ivory/80 hover:border-gold hover:text-gold transition-colors"
+                >
+                  {traduireCategorie(cat)}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <DefilementLogos />
     </div>
