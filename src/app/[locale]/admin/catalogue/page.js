@@ -14,6 +14,10 @@ const vide = {
   montant_max: 200,
   suggestions: "15,25,50,100",
   description: "",
+  description_en: "",
+  description_de: "",
+  description_es: "",
+  description_it: "",
   actif: true,
   ordre: 0,
 };
@@ -26,6 +30,7 @@ export default function AdminCatalogue() {
   const [idEnEdition, setIdEnEdition] = useState(null);
   const [enregistrement, setEnregistrement] = useState(false);
   const [erreur, setErreur] = useState("");
+  const [langueActive, setLangueActive] = useState("fr");
 
   useEffect(() => {
     const verifier = async () => {
@@ -51,6 +56,7 @@ export default function AdminCatalogue() {
 
   const ouvrirEdition = (carte) => {
     setIdEnEdition(carte.id);
+    setLangueActive("fr");
     setFormulaire({
       ...carte,
       suggestions: carte.suggestions.join(","),
@@ -60,6 +66,7 @@ export default function AdminCatalogue() {
 
   const ouvrirCreation = () => {
     setIdEnEdition("nouveau");
+    setLangueActive("fr");
     setFormulaire(vide);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -90,6 +97,10 @@ export default function AdminCatalogue() {
       montant_max: parseInt(formulaire.montant_max),
       suggestions: suggestionsArray,
       description: formulaire.description.trim(),
+      description_en: formulaire.description_en?.trim() || null,
+      description_de: formulaire.description_de?.trim() || null,
+      description_es: formulaire.description_es?.trim() || null,
+      description_it: formulaire.description_it?.trim() || null,
       actif: formulaire.actif,
       ordre: parseInt(formulaire.ordre) || 0,
     };
@@ -239,11 +250,35 @@ export default function AdminCatalogue() {
           </div>
 
           <div className="mt-4">
-            <label className="block text-xs text-ivory/60 mb-1">Description</label>
+            <label className="block text-xs text-ivory/60 mb-2">Description</label>
+            <div className="flex gap-1 mb-2">
+              {[
+                { code: "fr", label: "FR" },
+                { code: "en", label: "EN" },
+                { code: "de", label: "DE" },
+                { code: "es", label: "ES" },
+                { code: "it", label: "IT" },
+              ].map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => setLangueActive(l.code)}
+                  className={`text-xs px-3 py-1 rounded-md transition-colors ${
+                    langueActive === l.code ? "bg-gold text-ink font-medium" : "bg-ivory/5 text-ivory/50"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
             <textarea
-              value={formulaire.description}
-              onChange={(e) => setFormulaire({ ...formulaire, description: e.target.value })}
+              value={langueActive === "fr" ? formulaire.description : formulaire[`description_${langueActive}`] || ""}
+              onChange={(e) => {
+                const champ = langueActive === "fr" ? "description" : `description_${langueActive}`;
+                setFormulaire({ ...formulaire, [champ]: e.target.value });
+              }}
               rows={2}
+              placeholder={langueActive !== "fr" ? "Laissez vide pour utiliser le français par défaut" : ""}
               className="w-full bg-transparent border border-ivory/20 rounded-lg px-3 py-2 text-ivory text-sm resize-none"
             />
           </div>
