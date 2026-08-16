@@ -147,5 +147,11 @@
       "contactTitre": "Contacto",
       "contactTexte": "info@estalviar.com"
     }
+  },
+  "seo": {
+    "accueilTitre": "Estalviar — Tarjetas regalo personalizables",
+    "accueilDescription": "Regala una tarjeta regalo verdaderamente personalizada: importe libre, mensaje, fecha de envío. Amazon, Fnac, Steam y más, entregadas por email en pocos clics.",
+    "boutiqueTitre": "Tienda — Todas las tarjetas regalo | Estalviar",
+    "boutiqueDescription": "Descubre todas nuestras tarjetas regalo personalizables: compras, videojuegos, moda, cultura. Entrega inmediata por email."
   }
 }

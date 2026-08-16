@@ -26,10 +26,22 @@ const spaceMono = Space_Mono({
   weight: ["400", "700"],
 });
 
-export const metadata = {
-  title: "ESTALVIAR",
-  description: "Cartes cadeaux personnalisables",
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  const messages = (await import(`../../../messages/${locale}.json`)).default;
+
+  return {
+    title: messages.seo?.accueilTitre || "Estalviar",
+    description: messages.seo?.accueilDescription || "Cartes cadeaux personnalisables",
+    openGraph: {
+      title: messages.seo?.accueilTitre || "Estalviar",
+      description: messages.seo?.accueilDescription || "Cartes cadeaux personnalisables",
+      siteName: "Estalviar",
+      locale: locale,
+      type: "website",
+    },
+  };
+}
 
 export default async function RootLayout({ children, params }) {
   const { locale } = await params;

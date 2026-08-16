@@ -147,5 +147,11 @@
       "contactTitre": "Contact",
       "contactTexte": "info@estalviar.com"
     }
+  },
+  "seo": {
+    "accueilTitre": "Estalviar — Personalized gift cards",
+    "accueilDescription": "Give a truly personalized gift card: free amount, message, delivery date. Amazon, Fnac, Steam and more, delivered by email in a few clicks.",
+    "boutiqueTitre": "Shop — All gift cards | Estalviar",
+    "boutiqueDescription": "Discover all our customizable gift cards: shopping, video games, fashion, culture. Instant email delivery."
   }
 }
