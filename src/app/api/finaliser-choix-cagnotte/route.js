@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import { chiffrerCode } from '../../../../lib/chiffrement';
+import { chiffrerCode } from '../../../lib/chiffrement';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,

@@ -50,6 +50,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm text-ivory/80">
             <li><a href={`/${locale}/aide`} className="hover:text-ivory">{t("centreAide")}</a></li>
             <li><a href={`/${locale}/contact`} className="hover:text-ivory">{t("contact")}</a></li>
+            <li><a href={`/${locale}/blog`} className="hover:text-ivory">Blog</a></li>
           </ul>
         </div>
 
@@ -69,10 +70,16 @@ export default function Footer() {
         <div className="max-w-[1240px] mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-ivory/50">
           <p>&copy; 2026 {t("copyright")}</p>
 
-          <div className="flex items-center gap-3 opacity-60">
-            <div className="border border-ivory/20 rounded px-2 py-1 text-[10px]">CB</div>
-            <div className="border border-ivory/20 rounded px-2 py-1 text-[10px]">PayPal</div>
-            <div className="border border-ivory/20 rounded px-2 py-1 text-[10px]">Apple Pay</div>
+          <div className="flex items-center gap-4 text-ivory/40">
+            {["Visa", "Mastercard", "PayPal", "Apple Pay"].map((methode) => (
+              <span key={methode} className="flex items-center gap-1.5 text-[10px]">
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+                  <rect x="0.5" y="0.5" width="15" height="11" rx="1.5" stroke="currentColor" strokeWidth="1" />
+                  <rect x="0.5" y="3" width="15" height="2" fill="currentColor" />
+                </svg>
+                {methode}
+              </span>
+            ))}
           </div>
 
           <p>{t("paiementSecurise")}</p>
