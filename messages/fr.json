@@ -188,5 +188,10 @@
     "avertissement": "Ce montant correspond à la valeur de la carte au moment de son émission. Si vous l'avez déjà utilisée chez l'enseigne, le solde réel peut être différent — consultez le site de l'enseigne pour le solde exact.",
     "codeIntrouvable": "Code introuvable. Vérifiez que vous l'avez bien saisi.",
     "chargement": "Vérification..."
+  },
+  "erreursAuth": {
+    "identifiantsInvalides": "Email ou mot de passe incorrect.",
+    "emailNonConfirme": "Veuillez confirmer votre email avant de vous connecter.",
+    "tropTentatives": "Trop de tentatives échouées. Réessayez dans 15 minutes."
   }
 }

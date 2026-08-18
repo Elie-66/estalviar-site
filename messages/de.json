@@ -188,5 +188,10 @@
     "avertissement": "Dieser Betrag entspricht dem Wert der Karte bei Ausstellung. Wenn Sie sie bereits bei der Marke verwendet haben, kann das tatsächliche Guthaben abweichen — prüfen Sie das genaue Guthaben auf der Website der Marke.",
     "codeIntrouvable": "Code nicht gefunden. Bitte überprüfen Sie Ihre Eingabe.",
     "chargement": "Wird geprüft..."
+  },
+  "erreursAuth": {
+    "identifiantsInvalides": "E-Mail oder Passwort falsch.",
+    "emailNonConfirme": "Bitte bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden.",
+    "tropTentatives": "Zu viele fehlgeschlagene Versuche. Bitte versuchen Sie es in 15 Minuten erneut."
   }
 }

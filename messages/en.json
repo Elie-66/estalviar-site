@@ -188,5 +188,10 @@
     "avertissement": "This amount corresponds to the card's value when it was issued. If you've already used it with the brand, the actual balance may differ — check the brand's website for the exact balance.",
     "codeIntrouvable": "Code not found. Please check that you entered it correctly.",
     "chargement": "Checking..."
+  },
+  "erreursAuth": {
+    "identifiantsInvalides": "Incorrect email or password.",
+    "emailNonConfirme": "Please confirm your email before signing in.",
+    "tropTentatives": "Too many failed attempts. Please try again in 15 minutes."
   }
 }

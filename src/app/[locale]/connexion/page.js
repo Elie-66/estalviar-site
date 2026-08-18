@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { supabase } from "../../../lib/supabase";
 
 export default function Connexion() {
+  const t = useTranslations("erreursAuth");
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [afficherMotDePasse, setAfficherMotDePasse] = useState(false);
@@ -15,31 +17,28 @@ export default function Connexion() {
     setChargement(true);
     setErreur("");
 
-    const ilYAQuinzeMinutes = new Date(Date.now() - 15 * 60 * 1000).toISOString();
-    const { count } = await supabase
-      .from("tentatives_connexion")
-      .select("*", { count: "exact", head: true })
-      .eq("email", email.toLowerCase())
-      .gte("created_at", ilYAQuinzeMinutes);
+    const res = await fetch("/api/connexion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, motDePasse }),
+    });
 
-    if (count >= 5) {
-      setErreur("Trop de tentatives échouées. Réessayez dans 15 minutes.");
+    const data = await res.json();
+
+    if (!res.ok) {
+      setErreur(t(data.error) || data.error);
       setChargement(false);
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: motDePasse,
-    });
-
-    if (error) {
-      await supabase.from("tentatives_connexion").insert({ email: email.toLowerCase() });
-      setErreur(error.message);
-      setChargement(false);
-    } else {
-      window.location.href = "/fr/profil";
+    if (data.session) {
+      await supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+      });
     }
+
+    window.location.href = "/fr/profil";
   };
 
   return (

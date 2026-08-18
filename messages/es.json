@@ -188,5 +188,10 @@
     "avertissement": "Este importe corresponde al valor de la tarjeta en el momento de su emisión. Si ya la has utilizado con la marca, el saldo real puede variar — consulta el sitio web de la marca para el saldo exacto.",
     "codeIntrouvable": "Código no encontrado. Comprueba que lo has introducido correctamente.",
     "chargement": "Consultando..."
+  },
+  "erreursAuth": {
+    "identifiantsInvalides": "Email o contraseña incorrectos.",
+    "emailNonConfirme": "Confirma tu email antes de iniciar sesión.",
+    "tropTentatives": "Demasiados intentos fallidos. Inténtalo de nuevo en 15 minutos."
   }
 }

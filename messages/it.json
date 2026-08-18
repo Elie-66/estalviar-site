@@ -188,5 +188,10 @@
     "avertissement": "Questo importo corrisponde al valore della carta al momento dell'emissione. Se l'hai già utilizzata presso il marchio, il saldo reale potrebbe essere diverso — controlla il sito del marchio per il saldo esatto.",
     "codeIntrouvable": "Codice non trovato. Verifica di averlo inserito correttamente.",
     "chargement": "Verifica in corso..."
+  },
+  "erreursAuth": {
+    "identifiantsInvalides": "Email o password errati.",
+    "emailNonConfirme": "Conferma la tua email prima di accedere.",
+    "tropTentatives": "Troppi tentativi falliti. Riprova tra 15 minuti."
   }
 }
