@@ -33,7 +33,6 @@ export default function Footer() {
             <li><a href={`/${locale}/boutique`} className="hover:text-ivory">{t("toutesEnseignes")}</a></li>
             <li><a href={`/${locale}/cagnotte/creer`} className="hover:text-ivory">{t("cagnotteLien")}</a></li>
             <li><a href={`/${locale}/professionnels`} className="hover:text-ivory">{t("offrePro")}</a></li>
-            <li><a href={`/${locale}/verifier-solde`} className="hover:text-ivory">{t("verifierSolde")}</a></li>
           </ul>
         </div>
 
@@ -42,6 +41,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm text-ivory/80">
             <li><a href={`/${locale}/connexion`} className="hover:text-ivory">{t("connexion")}</a></li>
             <li><a href={`/${locale}/fidelite`} className="hover:text-ivory">{t("programmeFidelite")}</a></li>
+            <li><a href={`/${locale}/verifier-solde`} className="hover:text-ivory">{t("verifierSolde")}</a></li>
           </ul>
         </div>
 

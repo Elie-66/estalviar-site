@@ -13,8 +13,18 @@ export default function Inscription() {
   const [succes, setSucces] = useState(false);
   const [afficherMotDePasse, setAfficherMotDePasse] = useState(false);
 
+  const motDePasseValide = (mdp) => {
+    return mdp.length >= 8 && /[a-zA-Z]/.test(mdp) && /[0-9]/.test(mdp);
+  };
+
   const handleInscription = async (e) => {
     e.preventDefault();
+
+    if (!motDePasseValide(motDePasse)) {
+      setErreur("Le mot de passe doit contenir au moins 8 caractères, dont une lettre et un chiffre.");
+      return;
+    }
+
     setChargement(true);
     setErreur("");
 
@@ -81,7 +91,7 @@ export default function Inscription() {
             value={motDePasse}
             onChange={(e) => setMotDePasse(e.target.value)}
             required
-            minLength={6}
+            minLength={8}
             className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 pr-12 text-ivory outline-none focus:border-gold/50 transition-colors"
           />
           <button
@@ -103,6 +113,9 @@ export default function Inscription() {
             )}
           </button>
         </div>
+        <p className="mt-1 text-xs text-ivory/40">
+          Au moins 8 caractères, avec une lettre et un chiffre.
+        </p>
 
         <label className="flex items-start gap-2 mt-6 text-sm text-ivory/60">
           <input

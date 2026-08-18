@@ -22,11 +22,12 @@ export default function Contact() {
       body: JSON.stringify({ nom, email, sujet, message }),
     });
 
+    const data = await res.json();
     setEnvoi(false);
     if (res.ok) {
       setSucces(true);
     } else {
-      setErreur("Une erreur est survenue, réessayez.");
+      setErreur(data.error || "Une erreur est survenue, réessayez.");
     }
   };
 

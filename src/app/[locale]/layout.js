@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { PanierProvider } from "./context/PanierContext";
 import BanniereCookies from "./components/BanniereCookies";
+import GestionSession from "./components/GestionSession";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -44,6 +45,7 @@ export default async function RootLayout({ children, params }) {
             {children}
             <Footer />
             <BanniereCookies />
+            <GestionSession />
           </PanierProvider>
         </NextIntlClientProvider>
       </body>
