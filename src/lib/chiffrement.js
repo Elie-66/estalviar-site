@@ -1,9 +1,17 @@
 import crypto from 'crypto';
 
 const ALGORITHME = 'aes-256-gcm';
-const CLE = Buffer.from(process.env.CLE_CHIFFREMENT, 'hex');
+
+function getCle() {
+  const cle = process.env.CLE_CHIFFREMENT;
+  if (!cle) {
+    throw new Error('CLE_CHIFFREMENT is not defined');
+  }
+  return Buffer.from(cle, 'hex');
+}
 
 export function chiffrerCode(texte) {
+  const CLE = getCle();
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv(ALGORITHME, CLE, iv);
   const chiffre = Buffer.concat([cipher.update(texte, 'utf8'), cipher.final()]);
@@ -12,6 +20,7 @@ export function chiffrerCode(texte) {
 }
 
 export function dechiffrerCode(texteChiffre) {
+  const CLE = getCle();
   const donnees = Buffer.from(texteChiffre, 'base64');
   const iv = donnees.subarray(0, 12);
   const tag = donnees.subarray(12, 28);

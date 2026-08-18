@@ -15,12 +15,26 @@ export default function Connexion() {
     setChargement(true);
     setErreur("");
 
+    const ilYAQuinzeMinutes = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+    const { count } = await supabase
+      .from("tentatives_connexion")
+      .select("*", { count: "exact", head: true })
+      .eq("email", email.toLowerCase())
+      .gte("created_at", ilYAQuinzeMinutes);
+
+    if (count >= 5) {
+      setErreur("Trop de tentatives échouées. Réessayez dans 15 minutes.");
+      setChargement(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password: motDePasse,
     });
 
     if (error) {
+      await supabase.from("tentatives_connexion").insert({ email: email.toLowerCase() });
       setErreur(error.message);
       setChargement(false);
     } else {
