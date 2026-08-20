@@ -71,38 +71,42 @@ export default function Admin() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-4">
-        <a href="/fr/admin/commandes" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
-          <p className="text-ivory font-medium">Commandes</p>
-          <p className="text-sm text-ivory/50 mt-1">Voir et gérer toutes les commandes</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <a href="/fr/admin/commandes" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Commandes</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Voir et gérer toutes les commandes</p>
         </a>
-        <a href="/fr/admin/clients" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
-          <p className="text-ivory font-medium">Clients</p>
-          <p className="text-sm text-ivory/50 mt-1">Comptes, fidélité et historique</p>
+        <a href="/fr/admin/clients" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Clients</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Comptes, fidélité et historique</p>
         </a>
-        <a href="/fr/admin/demandes-pro" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
-          <p className="text-ivory font-medium">Demandes pro</p>
-          <p className="text-sm text-ivory/50 mt-1">Suivre les demandes de devis</p>
+        <a href="/fr/admin/demandes-pro" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Demandes pro</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Suivre les demandes de devis</p>
         </a>
-        <a href="/fr/admin/cagnottes" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
-          <p className="text-ivory font-medium">Cagnottes</p>
-          <p className="text-sm text-ivory/50 mt-1">Suivre les cagnottes en cours</p>
+        <a href="/fr/admin/cagnottes" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Cagnottes</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Suivre les cagnottes en cours</p>
         </a>
-        <a href="/fr/admin/catalogue" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
-          <p className="text-ivory font-medium">Catalogue</p>
-          <p className="text-sm text-ivory/50 mt-1">Ajouter, modifier, désactiver des enseignes</p>
+        <a href="/fr/admin/catalogue" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Catalogue</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Ajouter, modifier, désactiver des enseignes</p>
         </a>
-        <a href="/fr/admin/statistiques" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
-          <p className="text-ivory font-medium">Statistiques</p>
-          <p className="text-sm text-ivory/50 mt-1">Ventes, top enseignes, top bénéficiaires</p>
+        <a href="/fr/admin/statistiques" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Statistiques</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Ventes, top enseignes, top bénéficiaires</p>
         </a>
-        <a href="/fr/admin/occasions" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
-          <p className="text-ivory font-medium">Occasions</p>
-          <p className="text-sm text-ivory/50 mt-1">Emails automatiques pour les fêtes</p>
+        <a href="/fr/admin/occasions" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Occasions</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Emails automatiques pour les fêtes</p>
         </a>
-        <a href="/fr/admin/blog" className="border border-ivory/10 rounded-xl p-6 hover:border-gold/40 transition-colors">
-          <p className="text-ivory font-medium">Blog</p>
-          <p className="text-sm text-ivory/50 mt-1">Rédiger et publier des articles</p>
+        <a href="/fr/admin/blog" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Blog</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Rédiger et publier des articles</p>
+        </a>
+        <a href="/fr/admin/cartes-physiques" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Cartes physiques</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Générer et suivre les cartes rechargeables</p>
         </a>
       </div>
     </div>
