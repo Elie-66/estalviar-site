@@ -19,6 +19,10 @@ export default function Profil() {
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [telephone, setTelephone] = useState("");
+  const [dateNaissance, setDateNaissance] = useState("");
+  const [genre, setGenre] = useState("");
+  const [enseigneFavorite, setEnseigneFavorite] = useState("");
+  const [catalogue, setCatalogue] = useState([]);
   const [accepteMarketing, setAccepteMarketing] = useState(false);
   const [couleurAvatar, setCouleurAvatar] = useState("#C9A227");
   const [avatarIllustration, setAvatarIllustration] = useState(null);
@@ -40,10 +44,8 @@ export default function Profil() {
   const [cagnottes, setCagnottes] = useState([]);
 
   // Sécurité
-  const [nouvelEmail, setNouvelEmail] = useState("");
   const [nouveauMotDePasse, setNouveauMotDePasse] = useState("");
-  const [enregistrementEmail, setEnregistrementEmail] = useState(false);
-  const [succesEmail, setSuccesEmail] = useState(false);
+  const [motDePasseActuelMdp, setMotDePasseActuelMdp] = useState("");
   const [enregistrementMdp, setEnregistrementMdp] = useState(false);
   const [succesMdp, setSuccesMdp] = useState(false);
   const [erreurSecurite, setErreurSecurite] = useState("");
@@ -60,7 +62,6 @@ export default function Profil() {
       }
 
       setUtilisateur(user);
-      setNouvelEmail(user.email);
 
       let { data: profil } = await supabase
         .from("profils")
@@ -83,6 +84,9 @@ export default function Profil() {
         setAccepteMarketing(profil.accepte_marketing || false);
         setCouleurAvatar(profil.couleur_avatar || "#C9A227");
         setAvatarIllustration(profil.avatar_illustration || null);
+        setDateNaissance(profil.date_naissance || "");
+        setGenre(profil.genre || "");
+        setEnseigneFavorite(profil.enseigne_favorite || "");
       }
 
       setPoints(profil?.points || 0);
@@ -139,6 +143,13 @@ export default function Profil() {
 
       setCagnottes(cagnottesAvecContributeurs);
 
+      const { data: catalogueData } = await supabase
+        .from("catalogue")
+        .select("nom, slug")
+        .eq("actif", true)
+        .order("nom", { ascending: true });
+      setCatalogue(catalogueData || []);
+
       setChargement(false);
     };
 
@@ -160,6 +171,9 @@ export default function Profil() {
       accepte_marketing: accepteMarketing,
       couleur_avatar: couleurAvatar,
       avatar_illustration: avatarIllustration,
+      date_naissance: dateNaissance || null,
+      genre: genre || null,
+      enseigne_favorite: enseigneFavorite || null,
     });
 
     if (error) {
@@ -171,36 +185,34 @@ export default function Profil() {
     setEnregistrementInfos(false);
   };
 
-  const handleChangerEmail = async (e) => {
-    e.preventDefault();
-    setEnregistrementEmail(true);
-    setErreurSecurite("");
-    setSuccesEmail(false);
-
-    const { error } = await supabase.auth.updateUser({ email: nouvelEmail });
-
-    if (error) {
-      setErreurSecurite(error.message);
-    } else {
-      setSuccesEmail(true);
-    }
-    setEnregistrementEmail(false);
-  };
-
   const handleChangerMotDePasse = async (e) => {
     e.preventDefault();
     setEnregistrementMdp(true);
     setErreurSecurite("");
     setSuccesMdp(false);
 
-    const { error } = await supabase.auth.updateUser({ password: nouveauMotDePasse });
+    const res = await fetch("/api/changer-mot-de-passe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: utilisateur.id,
+        email: utilisateur.email,
+        motDePasseActuel: motDePasseActuelMdp,
+        nouveauMotDePasse,
+      }),
+    });
 
-    if (error) {
-      setErreurSecurite(error.message);
-    } else {
-      setSuccesMdp(true);
-      setNouveauMotDePasse("");
+    const data = await res.json();
+
+    if (!res.ok) {
+      setErreurSecurite(data.error || "Une erreur est survenue.");
+      setEnregistrementMdp(false);
+      return;
     }
+
+    setSuccesMdp(true);
+    setNouveauMotDePasse("");
+    setMotDePasseActuelMdp("");
     setEnregistrementMdp(false);
   };
 
@@ -436,6 +448,41 @@ export default function Profil() {
             className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
           />
 
+          <label className="block text-sm text-ivory/70 mb-2 mt-6">Date de naissance</label>
+          <input
+            type="date"
+            value={dateNaissance}
+            onChange={(e) => setDateNaissance(e.target.value)}
+            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory [color-scheme:dark]"
+          />
+          <p className="mt-1 text-xs text-ivory/40">
+            Pour vous souhaiter votre anniversaire (facultatif).
+          </p>
+
+          <label className="block text-sm text-ivory/70 mb-2 mt-6">Genre</label>
+          <select
+            value={genre}
+            onChange={(e) => setGenre(e.target.value)}
+            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
+          >
+            <option value="" className="bg-ink">Préférer ne pas préciser</option>
+            <option value="femme" className="bg-ink">Femme</option>
+            <option value="homme" className="bg-ink">Homme</option>
+            <option value="autre" className="bg-ink">Autre</option>
+          </select>
+
+          <label className="block text-sm text-ivory/70 mb-2 mt-6">Enseigne favorite</label>
+          <select
+            value={enseigneFavorite}
+            onChange={(e) => setEnseigneFavorite(e.target.value)}
+            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
+          >
+            <option value="" className="bg-ink">Aucune préférence</option>
+            {catalogue.map((c) => (
+              <option key={c.slug} value={c.nom} className="bg-ink">{c.nom}</option>
+            ))}
+          </select>
+
           <label className="flex items-start gap-2 mt-6 text-sm text-ivory/70">
             <input
               type="checkbox"
@@ -627,29 +674,27 @@ export default function Profil() {
 
       {onglet === "securite" && (
         <div className="space-y-10">
-          <form onSubmit={handleChangerEmail}>
+          <div>
             <label className="block text-sm text-ivory/70 mb-2">Adresse email</label>
-            <input
-              type="email"
-              value={nouvelEmail}
-              onChange={(e) => setNouvelEmail(e.target.value)}
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-            />
-            <button
-              type="submit"
-              disabled={enregistrementEmail}
-              className="mt-4 bg-transparent border border-gold text-gold font-medium rounded-lg px-6 py-2.5 hover:bg-gold/10 transition-colors disabled:opacity-40"
-            >
-              {enregistrementEmail ? "Envoi..." : "Changer l'email"}
-            </button>
-            {succesEmail && (
-              <p className="mt-3 text-sm text-vert">
-                Vérifiez votre nouvelle adresse pour confirmer le changement.
-              </p>
-            )}
-          </form>
+            <p className="w-full bg-ivory/5 border border-ivory/10 rounded-lg px-4 py-3 text-ivory/60">
+              {utilisateur.email}
+            </p>
+            <p className="mt-2 text-xs text-ivory/40">
+              L'adresse email associée à votre compte ne peut pas être modifiée. Contactez-nous si besoin.
+            </p>
+          </div>
 
           <form onSubmit={handleChangerMotDePasse}>
+            <label className="block text-sm text-ivory/70 mb-2">Mot de passe actuel</label>
+            <input
+              type="password"
+              value={motDePasseActuelMdp}
+              onChange={(e) => setMotDePasseActuelMdp(e.target.value)}
+              required
+              placeholder="Confirmez votre mot de passe pour continuer"
+              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory mb-4"
+            />
+
             <label className="block text-sm text-ivory/70 mb-2">Nouveau mot de passe</label>
             <input
               type="password"
