@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
+const couleursAvatar = [
+  "#C9A227", "#E5604D", "#5B3A5C", "#2E7D6B", "#3A5A8C", "#B5563F", "#8C6A3A", "#4A4A6A",
+];
+
+const avatarsIllustration = Array.from({ length: 7 }, (_, i) => `/avatars/avatar-${i + 1}.svg`);
+
 export default function Profil() {
   const [utilisateur, setUtilisateur] = useState(null);
   const [onglet, setOnglet] = useState("infos");
@@ -14,6 +20,8 @@ export default function Profil() {
   const [nom, setNom] = useState("");
   const [telephone, setTelephone] = useState("");
   const [accepteMarketing, setAccepteMarketing] = useState(false);
+  const [couleurAvatar, setCouleurAvatar] = useState("#C9A227");
+  const [avatarIllustration, setAvatarIllustration] = useState(null);
   const [enregistrementInfos, setEnregistrementInfos] = useState(false);
   const [succesInfos, setSuccesInfos] = useState(false);
 
@@ -73,6 +81,8 @@ export default function Profil() {
         setTelephone(profil.telephone || "");
         setPseudo(profil.pseudo || "");
         setAccepteMarketing(profil.accepte_marketing || false);
+        setCouleurAvatar(profil.couleur_avatar || "#C9A227");
+        setAvatarIllustration(profil.avatar_illustration || null);
       }
 
       setPoints(profil?.points || 0);
@@ -148,6 +158,8 @@ export default function Profil() {
       telephone,
       pseudo,
       accepte_marketing: accepteMarketing,
+      couleur_avatar: couleurAvatar,
+      avatar_illustration: avatarIllustration,
     });
 
     if (error) {
@@ -246,6 +258,8 @@ export default function Profil() {
   const palierActuel = [...paliers].reverse().find((p) => points >= p.seuil) || paliers[0];
   const prochainPalier = paliers.find((p) => p.seuil > points);
 
+  const initiale = (pseudo || prenom || utilisateur?.email || "?").charAt(0).toUpperCase();
+
   if (chargement) {
     return (
       <div className="max-w-[440px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
@@ -261,8 +275,27 @@ export default function Profil() {
 
   return (
     <div className="max-w-[700px] mx-auto px-6 pt-32 pb-20">
-      <h1 className="text-3xl font-semibold text-ivory mb-1">Mon compte</h1>
-      <p className="text-sm text-ivory/50 mb-6">{utilisateur.email}</p>
+      <div className="flex items-center gap-4 mb-1">
+        {avatarIllustration ? (
+          <div
+            className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0"
+            style={{ backgroundColor: couleurAvatar }}
+          >
+            <img src={avatarIllustration} alt="Avatar" className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-semibold text-ink flex-shrink-0 font-[family-name:var(--font-fraunces)]"
+            style={{ backgroundColor: couleurAvatar }}
+          >
+            {initiale}
+          </div>
+        )}
+        <div>
+          <h1 className="text-3xl font-semibold text-ivory">Mon compte</h1>
+        </div>
+      </div>
+      <p className="text-sm text-ivory/50 mb-6 ml-[72px]">{utilisateur.email}</p>
 
       <div className="border border-ivory/10 rounded-xl p-5 mb-8 flex items-center justify-between">
         <div>
@@ -326,7 +359,51 @@ export default function Profil() {
 
       {onglet === "infos" && (
         <form onSubmit={handleEnregistrerInfos}>
-          <label className="block text-sm text-ivory/70 mb-2">Pseudo</label>
+          <label className="block text-sm text-ivory/70 mb-3">Avatar</label>
+
+          <div className="grid grid-cols-4 gap-3 mb-6">
+            <button
+              type="button"
+              onClick={() => setAvatarIllustration(null)}
+              className={`w-14 h-14 rounded-full flex items-center justify-center text-lg font-semibold text-ink font-[family-name:var(--font-fraunces)] transition-all ${
+                !avatarIllustration ? "ring-2 ring-offset-2 ring-offset-ink ring-gold scale-105" : "opacity-70 hover:opacity-100"
+              }`}
+              style={{ backgroundColor: couleurAvatar }}
+            >
+              {initiale}
+            </button>
+            {avatarsIllustration.map((src) => (
+              <button
+                key={src}
+                type="button"
+                onClick={() => setAvatarIllustration(src)}
+                className={`w-14 h-14 rounded-full overflow-hidden transition-all ${
+                  avatarIllustration === src ? "ring-2 ring-offset-2 ring-offset-ink ring-gold scale-105" : "opacity-70 hover:opacity-100"
+                }`}
+                style={{ backgroundColor: couleurAvatar }}
+              >
+                <img src={src} alt="Avatar" className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+
+          <label className="block text-sm text-ivory/70 mb-3">Couleur de fond</label>
+          <div className="flex flex-wrap gap-3 mb-2">
+            {couleursAvatar.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCouleurAvatar(c)}
+                className={`w-9 h-9 rounded-full transition-all ${
+                  couleurAvatar === c ? "ring-2 ring-offset-2 ring-offset-ink ring-gold scale-110" : "opacity-70 hover:opacity-100"
+                }`}
+                style={{ backgroundColor: c }}
+                aria-label={`Choisir la couleur ${c}`}
+              />
+            ))}
+          </div>
+
+          <label className="block text-sm text-ivory/70 mb-2 mt-6">Pseudo</label>
           <input
             type="text"
             value={pseudo}
@@ -492,7 +569,6 @@ export default function Profil() {
 
                 return (
                   <a
-                  
                     key={c.id}
                     href={`/fr/cagnotte/${c.slug}`}
                     className="block border border-ivory/10 rounded-xl overflow-hidden hover:border-gold/30 transition-colors"

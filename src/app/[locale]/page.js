@@ -91,15 +91,15 @@ export default function Home() {
     <div className="flex flex-col flex-1 bg-ink overflow-hidden">
       <main className="flex-1 max-w-[1240px] w-full mx-auto px-6 pt-40 pb-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-gold mb-4 flex items-center gap-2">
+        <div className="text-center md:text-left">
+          <p className="text-xs uppercase tracking-[0.2em] text-gold mb-4 flex items-center justify-center md:justify-start gap-2">
             <span className="w-6 h-px bg-gold" /> {t("accroche")}
           </p>
           <h1 className="text-4xl md:text-5xl font-semibold text-ivory leading-tight">
             {t("titre1")}<br />
             <span className="italic text-gold">{t("titre2")}</span>
           </h1>
-          <p className="mt-6 text-ivory/60 leading-relaxed max-w-md">
+          <p className="mt-6 text-ivory/60 leading-relaxed max-w-md mx-auto md:mx-0">
             {t("description")}
           </p>
           <a
@@ -110,15 +110,15 @@ export default function Home() {
           </a>
         </div>
 
-        <div className="relative h-[360px] flex items-center justify-center">
+        <div className="hidden md:flex md:relative md:h-[360px] md:flex-row items-center justify-center">
           {apercus.map((c, i) => (
             <a
               key={c.nom}
               href={`/fr/boutique/${c.slug}`}
-              className="absolute w-[260px] aspect-[1.6/1] rounded-2xl p-5 flex flex-col justify-between border border-gold/20 transition-transform duration-300 hover:!rotate-0 hover:!-translate-y-3 hover:z-50"
+              className="w-full max-w-[280px] md:absolute md:w-[260px] aspect-[1.6/1] rounded-2xl p-5 flex flex-col justify-between border border-gold/20 transition-transform duration-300 md:hover:!rotate-0 md:hover:!-translate-y-3 hover:z-50 md:[transform:var(--card-transform)]"
               style={{
                 background: c.background,
-                transform: `translateX(${c.translate}) rotate(${c.rotate}deg)`,
+                "--card-transform": `translateX(${c.translate}) rotate(${c.rotate}deg)`,
                 zIndex: i,
                 boxShadow: "0 25px 50px -15px #00000080",
               }}
@@ -189,14 +189,14 @@ export default function Home() {
 
       <section className="border-t border-ivory/10">
         <div className="max-w-[1240px] mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-gold mb-4 flex items-center gap-2">
+         <div className="text-center md:text-left">
+            <p className="text-xs uppercase tracking-[0.2em] text-gold mb-4 flex items-center justify-center md:justify-start gap-2">
               <span className="w-6 h-px bg-gold" /> {tCagnotte("accroche")}
             </p>
             <h2 className="text-3xl md:text-4xl font-semibold text-ivory leading-tight">
               {tCagnotte("titre")}
             </h2>
-            <p className="mt-6 text-ivory/60 leading-relaxed max-w-md">
+            <p className="mt-6 text-ivory/60 leading-relaxed max-w-md mx-auto md:mx-0">
               {tCagnotte("description")}
             </p>
             <a

@@ -43,7 +43,7 @@ export default function Aide() {
       </div>
 
       <div className="mt-12 border border-gold/20 bg-gold/5 rounded-lg p-6 text-center">
-        <p className="text-ivory/80 text-sm">Vous ne trouvez pas de réponse à votre question ?</p>
+        <p className="text-ivory/80 text-sm">Vous ne trouvez pas de réponse à votre question&nbsp;?</p>
         <a
           href="/fr/contact"
           className="inline-block mt-4 bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-2.5 hover:bg-gold/90 transition-colors"

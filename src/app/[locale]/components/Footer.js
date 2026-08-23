@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -7,6 +8,51 @@ export default function Footer() {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
   const t = useTranslations("footer");
+  const [ouvert, setOuvert] = useState(null);
+
+  const sections = [
+    {
+      id: "idees",
+      titre: t("idees"),
+      liens: [
+        { href: `/${locale}/boutique`, label: t("toutesEnseignes") },
+        { href: `/${locale}/cagnotte/creer`, label: t("cagnotteLien") },
+        { href: `/${locale}/professionnels`, label: t("offrePro") },
+      ],
+    },
+    {
+      id: "compte",
+      titre: t("monCompte"),
+      liens: [
+        { href: `/${locale}/connexion`, label: t("connexion") },
+        { href: `/${locale}/fidelite`, label: t("programmeFidelite") },
+        { href: `/${locale}/verifier-solde`, label: t("verifierSolde") },
+      ],
+    },
+    {
+      id: "aide",
+      titre: t("aide"),
+      liens: [
+        { href: `/${locale}/aide`, label: t("centreAide") },
+        { href: `/${locale}/contact`, label: t("contact") },
+        { href: `/${locale}/blog`, label: "Blog" },
+      ],
+    },
+    {
+      id: "legal",
+      titre: "Légal",
+      liens: [
+        { href: `/${locale}/mentions-legales`, label: t("mentionsLegales") },
+        { href: `/${locale}/cgv`, label: t("cgv") },
+        { href: `/${locale}/confidentialite`, label: t("confidentialite") },
+        { href: `/${locale}/cookies`, label: t("cookies") },
+      ],
+    },
+  ];
+
+  const toggle = (id) => {
+    setOuvert(ouvert === id ? null : id);
+  };
 
   return (
     <footer className="bg-ink-secondary border-t border-ivory/10 mt-auto">
@@ -16,9 +62,9 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-[1240px] mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-5 gap-10">
+      <div className="max-w-[1240px] mx-auto px-6 py-16">
 
-        <div className="md:col-span-1">
+        <div className="mb-8 md:mb-0">
           <p className="text-lg uppercase tracking-wide text-ivory font-[family-name:var(--font-fraunces)]">
             Estalviar<span className="text-gold">.</span>
           </p>
@@ -27,41 +73,49 @@ export default function Footer() {
           </p>
         </div>
 
-        <div>
-          <p className="text-sm uppercase tracking-wide text-ivory/50 mb-3">{t("idees")}</p>
-          <ul className="space-y-2 text-sm text-ivory/80">
-            <li><a href={`/${locale}/boutique`} className="hover:text-ivory">{t("toutesEnseignes")}</a></li>
-            <li><a href={`/${locale}/cagnotte/creer`} className="hover:text-ivory">{t("cagnotteLien")}</a></li>
-            <li><a href={`/${locale}/professionnels`} className="hover:text-ivory">{t("offrePro")}</a></li>
-          </ul>
+        {/* Version mobile : accordéon */}
+        <div className="md:hidden mt-6">
+          {sections.map((section) => (
+            <div key={section.id} className="border-t border-ivory/10">
+              <button
+                onClick={() => toggle(section.id)}
+                className="w-full flex items-center justify-between py-4 text-left"
+              >
+                <span className="text-sm uppercase tracking-wide text-ivory/70">{section.titre}</span>
+                <span className={`text-ivory/50 transition-transform ${ouvert === section.id ? "rotate-45" : ""}`}>
+                  +
+                </span>
+              </button>
+              {ouvert === section.id && (
+                <ul className="pb-4 space-y-2">
+                  {section.liens.map((lien) => (
+                    <li key={lien.href}>
+                      <a href={lien.href} className="text-sm text-ivory/80 hover:text-ivory">
+                        {lien.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
         </div>
 
-        <div>
-          <p className="text-sm uppercase tracking-wide text-ivory/50 mb-3">{t("monCompte")}</p>
-          <ul className="space-y-2 text-sm text-ivory/80">
-            <li><a href={`/${locale}/connexion`} className="hover:text-ivory">{t("connexion")}</a></li>
-            <li><a href={`/${locale}/fidelite`} className="hover:text-ivory">{t("programmeFidelite")}</a></li>
-            <li><a href={`/${locale}/verifier-solde`} className="hover:text-ivory">{t("verifierSolde")}</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-sm uppercase tracking-wide text-ivory/50 mb-3">{t("aide")}</p>
-          <ul className="space-y-2 text-sm text-ivory/80">
-            <li><a href={`/${locale}/aide`} className="hover:text-ivory">{t("centreAide")}</a></li>
-            <li><a href={`/${locale}/contact`} className="hover:text-ivory">{t("contact")}</a></li>
-            <li><a href={`/${locale}/blog`} className="hover:text-ivory">Blog</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-sm uppercase tracking-wide text-ivory/50 mb-3">Légal</p>
-          <ul className="space-y-2 text-sm text-ivory/80">
-            <li><a href={`/${locale}/mentions-legales`} className="hover:text-ivory">{t("mentionsLegales")}</a></li>
-            <li><a href={`/${locale}/cgv`} className="hover:text-ivory">{t("cgv")}</a></li>
-            <li><a href={`/${locale}/confidentialite`} className="hover:text-ivory">{t("confidentialite")}</a></li>
-            <li><a href={`/${locale}/cookies`} className="hover:text-ivory">{t("cookies")}</a></li>
-          </ul>
+        {/* Version desktop : grille classique */}
+        <div className="hidden md:grid md:grid-cols-5 gap-10 mt-0">
+          <div />
+          {sections.map((section) => (
+            <div key={section.id}>
+              <p className="text-sm uppercase tracking-wide text-ivory/50 mb-3">{section.titre}</p>
+              <ul className="space-y-2 text-sm text-ivory/80">
+                {section.liens.map((lien) => (
+                  <li key={lien.href}>
+                    <a href={lien.href} className="hover:text-ivory">{lien.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
       </div>
