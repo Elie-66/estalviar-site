@@ -2,10 +2,11 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import { dechiffrerCode } from '../../../lib/chiffrement';
+import { verifierAdmin } from '../../../lib/verifierAdmin';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,7 +18,9 @@ const cartesConnues = {
 
 export async function POST(req) {
   try {
-    const { commandeId, origin, destinataireOverride } = await req.json();
+    const { commandeId, destinataireOverride } = await req.json();
+    // On ne fait plus confiance à l'adresse du site envoyée par le navigateur
+    const origin = req.headers.get('origin') || 'https://estalviar.com';
 
     const { data: commande } = await supabase
       .from('commandes')
@@ -39,6 +42,25 @@ export async function POST(req) {
 
     const background = `linear-gradient(150deg, ${infosCarte.couleur} 0%, #0d1022 100%)`;
     const logoUrl = `${origin}${infosCarte.image}`;
+    // SÉCURITÉ : la carte ne peut être renvoyée qu'à une adresse déjà liée à cette commande
+    // (acheteur, destinataire, ou créateur / bénéficiaire de la cagnotte).
+    // Seul l'admin peut choisir librement le destinataire.
+    const estAdmin = !!(await verifierAdmin(req));
+    const adressesAutorisees = [commande.email_acheteur, commande.email_destinataire];
+    if (commande.cagnotte_id) {
+      const { data: cagnotte } = await supabase
+        .from('cagnottes')
+        .select('email_createur, email_beneficiaire')
+        .eq('id', commande.cagnotte_id)
+        .single();
+      if (cagnotte) adressesAutorisees.push(cagnotte.email_createur, cagnotte.email_beneficiaire);
+    }
+    const autorisees = adressesAutorisees.filter(Boolean).map((a) => a.toLowerCase());
+
+    if (destinataireOverride && !estAdmin && !autorisees.includes(String(destinataireOverride).toLowerCase())) {
+      return NextResponse.json({ error: 'Destinataire non autorisé' }, { status: 403 });
+    }
+
     const destinataire = destinataireOverride || commande.email_destinataire || commande.email_acheteur;
 
     let codeClair = '';

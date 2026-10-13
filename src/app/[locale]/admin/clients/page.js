@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
+     import { fetchAdmin } from "../../../../lib/fetchAdmin";
 
 export default function AdminClients() {
   const [chargement, setChargement] = useState(true);
@@ -62,7 +63,7 @@ export default function AdminClients() {
 
   const handleRenvoyerCarte = async (commande) => {
     setMessageAction((prev) => ({ ...prev, [commande.id]: "Envoi..." }));
-    const res = await fetch("/api/renvoyer-carte", {
+       const res = await fetchAdmin("/api/renvoyer-carte", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ commandeId: commande.id, origin: window.location.origin }),

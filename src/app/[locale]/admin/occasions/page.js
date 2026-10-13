@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
+import { adminLire, adminAjouter, adminModifier, adminSupprimer } from "../../../../lib/adminDb";
 
 const vide = {
   nom: "",
@@ -38,12 +39,11 @@ export default function AdminOccasions() {
   }, []);
 
   const charger = async () => {
-    const { data } = await supabase
-      .from("occasions")
-      .select("*")
-      .order("date_mois", { ascending: true })
-      .order("date_jour", { ascending: true });
-    setOccasions(data || []);
+    const { data } = await adminLire("occasions");
+    const triees = (data || []).sort(
+      (a, b) => (a.date_mois - b.date_mois) || (a.date_jour - b.date_jour)
+    );
+    setOccasions(triees);
   };
 
   const ouvrirEdition = (occ) => {
@@ -81,9 +81,9 @@ export default function AdminOccasions() {
 
     let resultat;
     if (idEnEdition === "nouveau") {
-      resultat = await supabase.from("occasions").insert(donnees);
+      resultat = await adminAjouter("occasions", donnees);
     } else {
-      resultat = await supabase.from("occasions").update(donnees).eq("id", idEnEdition);
+      resultat = await adminModifier("occasions", idEnEdition, donnees);
     }
 
     if (resultat.error) {
@@ -96,12 +96,12 @@ export default function AdminOccasions() {
   };
 
   const supprimer = async (id) => {
-    await supabase.from("occasions").delete().eq("id", id);
+    await adminSupprimer("occasions", id);
     await charger();
   };
 
   const basculerActif = async (occ) => {
-    await supabase.from("occasions").update({ actif: !occ.actif }).eq("id", occ.id);
+    await adminModifier("occasions", occ.id, { actif: !occ.actif });
     await charger();
   };
 

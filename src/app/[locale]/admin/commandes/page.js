@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
+     import { fetchAdmin } from "../../../../lib/fetchAdmin";
 
 export default function AdminCommandes() {
   const [chargement, setChargement] = useState(true);
@@ -35,7 +36,7 @@ export default function AdminCommandes() {
         .map((c) => ({ id: c.id, code: c.code }));
 
       if (items.length > 0) {
-        const res = await fetch("/api/dechiffrer-commandes", {
+           const res = await fetchAdmin("/api/dechiffrer-commandes", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ items }),

@@ -25,6 +25,20 @@ export default function Boutique() {
 
   useEffect(() => {
     const charger = async () => {
+      // Ordre calculé par le serveur (marge, notoriété, ventes, quotas, rotation du jour)
+      try {
+        const res = await fetch("/api/catalogue-classe");
+        if (res.ok) {
+          const json = await res.json();
+          setCartes(json.cartes || []);
+          setChargement(false);
+          return;
+        }
+      } catch {
+        // on passe au plan B ci-dessous
+      }
+
+      // Plan B si le classement est indisponible : ordre manuel du back-office
       const { data } = await supabase
         .from("catalogue")
         .select("*")

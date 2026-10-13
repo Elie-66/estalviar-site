@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
+import { adminLire, adminAjouter, adminModifier, adminSupprimer } from "../../../../lib/adminDb";
 
 const vide = {
   slug: "",
@@ -38,10 +39,7 @@ export default function AdminBlog() {
   }, []);
 
   const charger = async () => {
-    const { data } = await supabase
-      .from("articles_blog")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data } = await adminLire("articles_blog", "created_at", false);
     setArticles(data || []);
   };
 
@@ -90,9 +88,9 @@ export default function AdminBlog() {
 
     let resultat;
     if (idEnEdition === "nouveau") {
-      resultat = await supabase.from("articles_blog").insert(donnees);
+      resultat = await adminAjouter("articles_blog", donnees);
     } else {
-      resultat = await supabase.from("articles_blog").update(donnees).eq("id", idEnEdition);
+      resultat = await adminModifier("articles_blog", idEnEdition, donnees);
     }
 
     if (resultat.error) {
@@ -105,12 +103,12 @@ export default function AdminBlog() {
   };
 
   const supprimer = async (id) => {
-    await supabase.from("articles_blog").delete().eq("id", id);
+    await adminSupprimer("articles_blog", id);
     await charger();
   };
 
   const basculerPublie = async (art) => {
-    await supabase.from("articles_blog").update({ publie: !art.publie }).eq("id", art.id);
+    await adminModifier("articles_blog", art.id, { publie: !art.publie });
     await charger();
   };
 
