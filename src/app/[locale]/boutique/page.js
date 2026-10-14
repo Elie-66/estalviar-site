@@ -14,14 +14,21 @@ export default function Boutique() {
   const [chargement, setChargement] = useState(true);
   const [recherche, setRecherche] = useState("");
   const [categorie, setCategorie] = useState(searchParams.get("categorie") || "Toutes");
+  // Onglet « Fabriqué en France » : lien direct possible avec /fr/boutique?onglet=francaises
+  const [onglet, setOnglet] = useState(searchParams.get("onglet") === "francaises" ? "francaises" : "toutes");
 
-  const traduireCategorie = (cat) => {
-    try {
-      return tCategories(cat);
-    } catch {
-      return cat;
-    }
+  const changerOnglet = (nouvelOnglet) => {
+    setOnglet(nouvelOnglet);
+    setCategorie("Toutes");
+    const url = new URL(window.location.href);
+    if (nouvelOnglet === "francaises") url.searchParams.set("onglet", "francaises");
+    else url.searchParams.delete("onglet");
+    url.searchParams.delete("categorie");
+    window.history.replaceState(null, "", url);
   };
+
+  // Catégorie sans traduction (ex. nouvelle catégorie du catalogue) : on affiche son nom tel quel
+  const traduireCategorie = (cat) => (cat && tCategories.has(cat) ? tCategories(cat) : cat);
 
   useEffect(() => {
     const charger = async () => {
@@ -51,13 +58,16 @@ export default function Boutique() {
     charger();
   }, []);
 
-  const categories = ["Toutes", ...Array.from(new Set(cartes.map((c) => c.categorie)))];
+  const cartesOnglet = onglet === "francaises" ? cartes.filter((c) => c.made_in_france) : cartes;
 
-  const cartesFiltrees = cartes.filter((c) => {
+  const categories = ["Toutes", ...Array.from(new Set(cartesOnglet.map((c) => c.categorie)))];
+
+  const cartesFiltrees = cartesOnglet.filter((c) => {
     const correspondRecherche = c.nom.toLowerCase().includes(recherche.toLowerCase());
     const correspondCategorie = categorie === "Toutes" || c.categorie === categorie;
     return correspondRecherche && correspondCategorie;
   });
+  const nbFrancaises = cartes.filter((c) => c.made_in_france).length;
 
   if (chargement) {
     return (
@@ -69,7 +79,35 @@ export default function Boutique() {
 
   return (
     <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-20">
-      <h1 className="text-3xl font-semibold text-ivory mb-8">{t("titre")}</h1>
+      <div className="flex gap-2 border border-ivory/10 rounded-lg p-1 w-fit mb-8">
+        <button
+          onClick={() => changerOnglet("toutes")}
+          className={`text-sm px-4 py-2 rounded-md transition-colors ${
+            onglet === "toutes" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
+          }`}
+        >
+          {t("ongletToutes")}
+        </button>
+        {nbFrancaises > 0 && (
+          <button
+            onClick={() => changerOnglet("francaises")}
+            className={`text-sm px-4 py-2 rounded-md transition-colors ${
+              onglet === "francaises" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
+            }`}
+          >
+            🇫🇷 {t("ongletFrancaises")}
+          </button>
+        )}
+      </div>
+
+      <h1 className="text-3xl font-semibold text-ivory mb-3">
+        {onglet === "francaises" ? t("titreFrancaises") : t("titre")}
+      </h1>
+      {onglet === "francaises" ? (
+        <p className="text-ivory/60 text-sm max-w-[640px] mb-8">{t("introFrancaises")}</p>
+      ) : (
+        <div className="mb-5" />
+      )}
 
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="relative flex-1">
@@ -104,7 +142,7 @@ export default function Boutique() {
       </div>
 
       {cartesFiltrees.length === 0 ? (
-        <p className="text-ivory/50 text-sm">{t("aucunResultat")}</p>
+        <p className="text-ivory/50 text-sm">{onglet === "francaises" ? t("aucuneFrancaise") : t("aucunResultat")}</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {cartesFiltrees.map((carte) => (
@@ -123,6 +161,11 @@ export default function Boutique() {
               <p className="mt-4 text-ivory">{carte.nom}</p>
               <p className="text-xs text-gold/60 mt-0.5">{traduireCategorie(carte.categorie)}</p>
               <p className="text-sm text-ivory/50">{t("apartirDe")} {carte.montant_min} €</p>
+              {carte.made_in_france && onglet !== "francaises" && (
+                <p className="mt-2 inline-block text-[10px] rounded-full px-2 py-0.5 bg-ivory/10 text-ivory/70">
+                  🇫🇷 {t("badgeFabrique")}
+                </p>
+              )}
             </a>
           ))}
         </div>

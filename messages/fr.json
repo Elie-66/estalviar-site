@@ -51,14 +51,31 @@
     "toutes": "Toutes",
     "aucunResultat": "Aucune enseigne ne correspond à votre recherche.",
     "apartirDe": "à partir de",
-    "chargement": "Chargement..."
+    "chargement": "Chargement...",
+    "ongletToutes": "Toutes les enseignes",
+    "ongletFrancaises": "Fabriqué en France",
+    "titreFrancaises": "Fabriqué en France",
+    "introFrancaises": "Des marques qui fabriquent en France, souvent introuvables ailleurs en carte cadeau. Offrez un cadeau qui fait vivre les ateliers français.",
+    "badgeFabrique": "Fabriqué en France",
+    "aucuneFrancaise": "Aucune marque fabriquée en France ne correspond à votre recherche."
   },
   "categories": {
     "Shopping": "Shopping",
     "Culture & High-tech": "Culture & High-tech",
     "Jeux vidéo": "Jeux vidéo",
     "Sport": "Sport",
-    "Mode": "Mode"
+    "Mode": "Mode",
+    "Mode & chaussures": "Mode & chaussures",
+    "Streaming & abonnements": "Streaming & abonnements",
+    "Voyages & expériences": "Voyages & expériences",
+    "Généraliste": "Généraliste",
+    "Maison & jardin": "Maison & jardin",
+    "High-tech & multimédia": "High-tech & multimédia",
+    "Engagés & solidaires": "Engagés & solidaires",
+    "Gastronomie & restaurants": "Gastronomie & restaurants",
+    "Livres, loisirs & enfants": "Livres, loisirs & enfants",
+    "Beauté & bien-être": "Beauté & bien-être",
+    "Autres": "Autres"
   },
   "ficheProduit": {
     "carteCadeau": "Carte cadeau",
@@ -87,7 +104,8 @@
     "envoiImmediat": "Laissez vide pour un envoi immédiat après paiement.",
     "ajouterPanier": "Ajouter au panier",
     "ajouteePanier": "Ajoutée au panier !",
-    "chargement": "Chargement..."
+    "chargement": "Chargement...",
+    "fabriqueEnFrance": "Fabriqué en France"
   },
   "legal": {
     "mentions": {

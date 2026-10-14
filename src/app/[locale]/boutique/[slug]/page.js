@@ -260,6 +260,11 @@ export default function FicheCarte({ params }) {
         <div>
           <p className="text-sm uppercase tracking-wide text-gold mb-2">{t("carteCadeau")}</p>
           <h1 className="text-4xl font-semibold text-ivory">{carte.nom}</h1>
+          {carte.made_in_france && (
+            <p className="mt-3 inline-block text-xs rounded-full px-3 py-1 bg-ivory/10 text-ivory/80">
+              🇫🇷 {t("fabriqueEnFrance")}
+            </p>
+          )}
           <p className="mt-4 text-ivory/70 leading-relaxed">
             {locale !== "fr" && carte[`description_${locale}`] ? carte[`description_${locale}`] : carte.description}
           </p>

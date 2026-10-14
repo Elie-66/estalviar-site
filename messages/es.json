@@ -51,14 +51,31 @@
     "toutes": "Todas",
     "aucunResultat": "Ninguna marca coincide con tu búsqueda.",
     "apartirDe": "desde",
-    "chargement": "Cargando..."
+    "chargement": "Cargando...",
+    "ongletToutes": "Todas las marcas",
+    "ongletFrancaises": "Fabricado en Francia",
+    "titreFrancaises": "Fabricado en Francia",
+    "introFrancaises": "Marcas que fabrican en Francia, a menudo imposibles de encontrar en tarjeta regalo en otro sitio. Regala algo que apoya a los talleres franceses.",
+    "badgeFabrique": "Fabricado en Francia",
+    "aucuneFrancaise": "Ninguna marca fabricada en Francia coincide con tu búsqueda."
   },
   "categories": {
     "Shopping": "Compras",
     "Culture & High-tech": "Cultura y tecnología",
     "Jeux vidéo": "Videojuegos",
     "Sport": "Deporte",
-    "Mode": "Moda"
+    "Mode": "Moda",
+    "Mode & chaussures": "Moda y calzado",
+    "Streaming & abonnements": "Streaming y suscripciones",
+    "Voyages & expériences": "Viajes y experiencias",
+    "Généraliste": "Generalista",
+    "Maison & jardin": "Casa y jardín",
+    "High-tech & multimédia": "Tecnología y multimedia",
+    "Engagés & solidaires": "Solidario y sostenible",
+    "Gastronomie & restaurants": "Gastronomía y restaurantes",
+    "Livres, loisirs & enfants": "Libros, ocio y niños",
+    "Beauté & bien-être": "Belleza y bienestar",
+    "Autres": "Otros"
   },
   "ficheProduit": {
     "carteCadeau": "Tarjeta regalo",
@@ -87,7 +104,8 @@
     "envoiImmediat": "Déjalo vacío para un envío inmediato tras el pago.",
     "ajouterPanier": "Añadir al carrito",
     "ajouteePanier": "¡Añadida al carrito!",
-    "chargement": "Cargando..."
+    "chargement": "Cargando...",
+    "fabriqueEnFrance": "Fabricado en Francia"
   },
   "legal": {
     "mentions": {

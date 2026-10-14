@@ -51,14 +51,31 @@
     "toutes": "Alle",
     "aucunResultat": "Keine Marke entspricht Ihrer Suche.",
     "apartirDe": "ab",
-    "chargement": "Wird geladen..."
+    "chargement": "Wird geladen...",
+    "ongletToutes": "Alle Marken",
+    "ongletFrancaises": "Hergestellt in Frankreich",
+    "titreFrancaises": "Hergestellt in Frankreich",
+    "introFrancaises": "Marken, die in Frankreich produzieren – als Geschenkkarte oft nirgendwo sonst erhältlich. Verschenken Sie etwas, das französische Werkstätten unterstützt.",
+    "badgeFabrique": "Hergestellt in Frankreich",
+    "aucuneFrancaise": "Keine in Frankreich hergestellte Marke entspricht Ihrer Suche."
   },
   "categories": {
     "Shopping": "Shopping",
     "Culture & High-tech": "Kultur & Technik",
     "Jeux vidéo": "Videospiele",
     "Sport": "Sport",
-    "Mode": "Mode"
+    "Mode": "Mode",
+    "Mode & chaussures": "Mode & Schuhe",
+    "Streaming & abonnements": "Streaming & Abos",
+    "Voyages & expériences": "Reisen & Erlebnisse",
+    "Généraliste": "Allgemein",
+    "Maison & jardin": "Haus & Garten",
+    "High-tech & multimédia": "Technik & Multimedia",
+    "Engagés & solidaires": "Nachhaltig & solidarisch",
+    "Gastronomie & restaurants": "Genuss & Restaurants",
+    "Livres, loisirs & enfants": "Bücher, Freizeit & Kinder",
+    "Beauté & bien-être": "Beauty & Wellness",
+    "Autres": "Sonstiges"
   },
   "ficheProduit": {
     "carteCadeau": "Geschenkkarte",
@@ -87,7 +104,8 @@
     "envoiImmediat": "Leer lassen für sofortigen Versand nach der Zahlung.",
     "ajouterPanier": "In den Warenkorb",
     "ajouteePanier": "Zum Warenkorb hinzugefügt!",
-    "chargement": "Wird geladen..."
+    "chargement": "Wird geladen...",
+    "fabriqueEnFrance": "Hergestellt in Frankreich"
   },
   "legal": {
     "mentions": {

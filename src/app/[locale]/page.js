@@ -79,13 +79,8 @@ export default function Home() {
     charger();
   }, []);
 
-  const traduireCategorie = (cat) => {
-    try {
-      return tCategories(cat);
-    } catch {
-      return cat;
-    }
-  };
+  // Catégorie sans traduction (ex. nouvelle catégorie du catalogue) : on affiche son nom tel quel
+  const traduireCategorie = (cat) => (cat && tCategories.has(cat) ? tCategories(cat) : cat);
 
   return (
     <div className="flex flex-col flex-1 bg-ink overflow-hidden">

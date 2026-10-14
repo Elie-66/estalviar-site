@@ -51,14 +51,31 @@
     "toutes": "All",
     "aucunResultat": "No brand matches your search.",
     "apartirDe": "from",
-    "chargement": "Loading..."
+    "chargement": "Loading...",
+    "ongletToutes": "All brands",
+    "ongletFrancaises": "Made in France",
+    "titreFrancaises": "Made in France",
+    "introFrancaises": "Brands that make their products in France, often not available as gift cards anywhere else. Give a gift that supports French workshops.",
+    "badgeFabrique": "Made in France",
+    "aucuneFrancaise": "No Made in France brand matches your search."
   },
   "categories": {
     "Shopping": "Shopping",
     "Culture & High-tech": "Culture & Tech",
     "Jeux vidéo": "Video games",
     "Sport": "Sport",
-    "Mode": "Fashion"
+    "Mode": "Fashion",
+    "Mode & chaussures": "Fashion & shoes",
+    "Streaming & abonnements": "Streaming & subscriptions",
+    "Voyages & expériences": "Travel & experiences",
+    "Généraliste": "General",
+    "Maison & jardin": "Home & garden",
+    "High-tech & multimédia": "Tech & multimedia",
+    "Engagés & solidaires": "Ethical & charity",
+    "Gastronomie & restaurants": "Food & restaurants",
+    "Livres, loisirs & enfants": "Books, leisure & kids",
+    "Beauté & bien-être": "Beauty & wellness",
+    "Autres": "Other"
   },
   "ficheProduit": {
     "carteCadeau": "Gift card",
@@ -87,7 +104,8 @@
     "envoiImmediat": "Leave blank for immediate delivery after payment.",
     "ajouterPanier": "Add to cart",
     "ajouteePanier": "Added to cart!",
-    "chargement": "Loading..."
+    "chargement": "Loading...",
+    "fabriqueEnFrance": "Made in France"
   },
   "legal": {
     "mentions": {
