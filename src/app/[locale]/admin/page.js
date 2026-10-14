@@ -101,6 +101,10 @@ export default function Admin() {
           <p className="text-ivory font-medium text-lg">Statistiques</p>
           <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Ventes, top enseignes, top bénéficiaires</p>
         </a>
+        <a href="/fr/admin/evenements" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Événements</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Fête des mères, Noël, 14 juillet… : bandeau et sélection</p>
+        </a>
         <a href="/fr/admin/occasions" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
           <p className="text-ivory font-medium text-lg">Occasions</p>
           <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Emails automatiques pour les fêtes</p>

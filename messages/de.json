@@ -211,5 +211,11 @@
     "identifiantsInvalides": "E-Mail oder Passwort falsch.",
     "emailNonConfirme": "Bitte bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden.",
     "tropTentatives": "Zu viele fehlgeschlagene Versuche. Bitte versuchen Sie es in 15 Minuten erneut."
+  },
+  "evenement": {
+    "voirSelection": "Zur Auswahl",
+    "dansJours": "in {jours} Tagen",
+    "demain": "morgen",
+    "aujourdhui": "heute"
   }
 }

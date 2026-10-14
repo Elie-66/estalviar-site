@@ -211,5 +211,11 @@
     "identifiantsInvalides": "Incorrect email or password.",
     "emailNonConfirme": "Please confirm your email before signing in.",
     "tropTentatives": "Too many failed attempts. Please try again in 15 minutes."
+  },
+  "evenement": {
+    "voirSelection": "See the selection",
+    "dansJours": "in {jours} days",
+    "demain": "tomorrow",
+    "aujourdhui": "it's today"
   }
 }

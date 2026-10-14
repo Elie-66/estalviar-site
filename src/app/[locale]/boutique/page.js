@@ -2,30 +2,56 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
 export default function Boutique() {
   const t = useTranslations("boutiqueVitrine");
+  const tEvenement = useTranslations("evenement");
+  const locale = useLocale();
   const tCategories = useTranslations("categories");
   const searchParams = useSearchParams();
   const [cartes, setCartes] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [recherche, setRecherche] = useState("");
   const [categorie, setCategorie] = useState(searchParams.get("categorie") || "Toutes");
-  // Onglet « Fabriqué en France » : lien direct possible avec /fr/boutique?onglet=francaises
-  const [onglet, setOnglet] = useState(searchParams.get("onglet") === "francaises" ? "francaises" : "toutes");
+  // Onglets : « toutes », « francaises » (Fabriqué en France), « evenement » (Fête des mères, Noël…)
+  // Liens directs : /fr/boutique?onglet=francaises  ou  /fr/boutique?evenement=fete-des-meres
+  const slugEvenement = searchParams.get("evenement");
+  const [onglet, setOnglet] = useState(
+    slugEvenement ? "evenement" : searchParams.get("onglet") === "francaises" ? "francaises" : "toutes"
+  );
+  const [evenement, setEvenement] = useState(null);
+  const [cartesEvenement, setCartesEvenement] = useState([]);
 
   const changerOnglet = (nouvelOnglet) => {
     setOnglet(nouvelOnglet);
     setCategorie("Toutes");
     const url = new URL(window.location.href);
-    if (nouvelOnglet === "francaises") url.searchParams.set("onglet", "francaises");
-    else url.searchParams.delete("onglet");
+    url.searchParams.delete("onglet");
+    url.searchParams.delete("evenement");
     url.searchParams.delete("categorie");
+    if (nouvelOnglet === "francaises") url.searchParams.set("onglet", "francaises");
+    if (nouvelOnglet === "evenement" && evenement) url.searchParams.set("evenement", evenement.slug);
     window.history.replaceState(null, "", url);
   };
+
+  // Événement du moment (ou celui du lien) et sa sélection de marques
+  useEffect(() => {
+    const url = slugEvenement ? `/api/evenement?slug=${encodeURIComponent(slugEvenement)}` : "/api/evenement";
+    fetch(url)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.evenement && data.cartes?.length) {
+          setEvenement(data.evenement);
+          setCartesEvenement(data.cartes);
+        } else {
+          setOnglet((o) => (o === "evenement" ? "toutes" : o));
+        }
+      })
+      .catch(() => setOnglet((o) => (o === "evenement" ? "toutes" : o)));
+  }, [slugEvenement]);
 
   // Catégorie sans traduction (ex. nouvelle catégorie du catalogue) : on affiche son nom tel quel
   const traduireCategorie = (cat) => (cat && tCategories.has(cat) ? tCategories(cat) : cat);
@@ -58,7 +84,10 @@ export default function Boutique() {
     charger();
   }, []);
 
-  const cartesOnglet = onglet === "francaises" ? cartes.filter((c) => c.made_in_france) : cartes;
+  const cartesOnglet =
+    onglet === "francaises" ? cartes.filter((c) => c.made_in_france)
+    : onglet === "evenement" && evenement ? cartesEvenement
+    : cartes;
 
   const categories = ["Toutes", ...Array.from(new Set(cartesOnglet.map((c) => c.categorie)))];
 
@@ -79,7 +108,7 @@ export default function Boutique() {
 
   return (
     <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-20">
-      <div className="flex gap-2 border border-ivory/10 rounded-lg p-1 w-fit mb-8">
+      <div className="flex flex-wrap gap-1 sm:gap-2 border border-ivory/10 rounded-lg p-1 w-fit max-w-full mb-8">
         <button
           onClick={() => changerOnglet("toutes")}
           className={`text-sm px-4 py-2 rounded-md transition-colors ${
@@ -88,6 +117,16 @@ export default function Boutique() {
         >
           {t("ongletToutes")}
         </button>
+        {evenement && (
+          <button
+            onClick={() => changerOnglet("evenement")}
+            className={`text-sm px-4 py-2 rounded-md transition-colors ${
+              onglet === "evenement" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
+            }`}
+          >
+            🎁 {evenement.nom}
+          </button>
+        )}
         {nbFrancaises > 0 && (
           <button
             onClick={() => changerOnglet("francaises")}
@@ -101,10 +140,25 @@ export default function Boutique() {
       </div>
 
       <h1 className="text-3xl font-semibold text-ivory mb-3">
-        {onglet === "francaises" ? t("titreFrancaises") : t("titre")}
+        {onglet === "francaises" ? t("titreFrancaises")
+          : onglet === "evenement" && evenement ? evenement.nom
+          : t("titre")}
       </h1>
       {onglet === "francaises" ? (
         <p className="text-ivory/60 text-sm max-w-[640px] mb-8">{t("introFrancaises")}</p>
+      ) : onglet === "evenement" && evenement ? (
+        <div className="mb-8 max-w-[640px]">
+          <p className="text-gold text-sm">
+            {new Date(`${evenement.date}T12:00:00Z`).toLocaleDateString(locale, {
+              weekday: "long", day: "numeric", month: "long", timeZone: "UTC",
+            })}
+            {" · "}
+            {evenement.joursRestants === 0 ? tEvenement("aujourdhui")
+              : evenement.joursRestants === 1 ? tEvenement("demain")
+              : tEvenement("dansJours", { jours: evenement.joursRestants })}
+          </p>
+          {evenement.description && <p className="text-ivory/60 text-sm mt-2">{evenement.description}</p>}
+        </div>
       ) : (
         <div className="mb-5" />
       )}

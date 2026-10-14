@@ -211,5 +211,11 @@
     "identifiantsInvalides": "Email o password errati.",
     "emailNonConfirme": "Conferma la tua email prima di accedere.",
     "tropTentatives": "Troppi tentativi falliti. Riprova tra 15 minuti."
+  },
+  "evenement": {
+    "voirSelection": "Vedi la selezione",
+    "dansJours": "tra {jours} giorni",
+    "demain": "domani",
+    "aujourdhui": "è oggi"
   }
 }

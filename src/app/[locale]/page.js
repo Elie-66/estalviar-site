@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import DefilementLogos from "./components/DefilementLogos";
+import BandeauEvenement from "./components/BandeauEvenement";
 
 const apercus = [
   {
@@ -141,6 +142,8 @@ export default function Home() {
         </div>
 
       </main>
+
+      <BandeauEvenement />
 
       <section className="border-t border-ivory/10">
         <div className="max-w-[1240px] mx-auto px-6 py-24">

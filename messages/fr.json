@@ -211,5 +211,11 @@
     "identifiantsInvalides": "Email ou mot de passe incorrect.",
     "emailNonConfirme": "Veuillez confirmer votre email avant de vous connecter.",
     "tropTentatives": "Trop de tentatives échouées. Réessayez dans 15 minutes."
+  },
+  "evenement": {
+    "voirSelection": "Voir la sélection",
+    "dansJours": "dans {jours} jours",
+    "demain": "demain",
+    "aujourdhui": "c'est aujourd'hui"
   }
 }
