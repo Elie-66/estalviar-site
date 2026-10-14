@@ -11,6 +11,7 @@ const LIBELLES = {
   gain: { texte: "Gagné", signe: "+", couleur: "text-vert" },
   utilisation: { texte: "Utilisé", signe: "−", couleur: "text-ivory/70" },
   expiration: { texte: "Expiré", signe: "−", couleur: "text-corail" },
+  annulation: { texte: "Annulé", signe: "−", couleur: "text-corail" },
 };
 
 export default function SoldeCashback() {
@@ -42,7 +43,7 @@ export default function SoldeCashback() {
       </div>
 
       <p className="mt-4 text-xs text-ivory/50 leading-relaxed">
-        Le cashback devient utilisable {infos.regles.joursAttente} jours après votre achat. Il s&apos;utilise dès{" "}
+        Le cashback devient utilisable {infos.regles.joursAttente} jours après la livraison de la carte (pour une carte programmée, après sa date d&apos;envoi). Il est annulé si la carte est remboursée. Il s&apos;utilise dès{" "}
         {infos.regles.commandeMinimum} € de commande, dans la limite de {infos.regles.plafondPourcent} % du montant,
         et reste valable 12 mois. Une commande réglée avec du cashback ne rapporte pas de nouveau cashback.
       </p>

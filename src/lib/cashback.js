@@ -1,7 +1,7 @@
 // Règles du cashback Estalviar — côté serveur uniquement (manipule les marges).
 
 export const REGLES_CASHBACK = {
-  joursAttente: 14,          // le cashback gagné devient utilisable après 14 jours
+  joursAttente: 14,          // le cashback gagné devient utilisable 14 jours après la LIVRAISON de la carte
   commandeMinimum: 20,       // utilisable à partir de 20 € de commande
   plafondCommande: 0.5,      // au maximum 50 % de la commande
   margeMinimum: 5,           // pas de cashback sur les marques à moins de 5 % de marge

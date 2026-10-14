@@ -6,11 +6,13 @@ import { estAdmin } from "../../../../lib/admin";
 import { adminLire, adminAjouter, adminModifier } from "../../../../lib/adminDb";
 import { fetchAdmin } from "../../../../lib/fetchAdmin";
 
-const JOURS_ATTENTE = 14; // commission payable 14 jours après la commande (comme le cashback)
+const JOURS_ATTENTE = 14; // commission payable 14 jours après la livraison de la carte (comme le cashback)
 const euros = (n) =>
   `${Number(n || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 const somme = (liste, champ) => liste.reduce((s, x) => s + Number(x[champ] || 0), 0);
-const payableLe = (u) => new Date(new Date(u.created_at).getTime() + JOURS_ATTENTE * 86400000);
+// Date fixée au paiement (livraison + 14 jours) ; anciennes ventes : date de commande + 14 jours
+const payableLe = (u) =>
+  u.payable_le ? new Date(u.payable_le) : new Date(new Date(u.created_at).getTime() + JOURS_ATTENTE * 86400000);
 
 const FORMULAIRE_VIDE = {
   code: "", influenceuse: "", email: "", reseau: "", notes: "",
@@ -92,7 +94,12 @@ export default function AdminInfluenceuses() {
     (reponseMarges.marges || []).forEach((x) => { m[x.slug] = Number(x.marge); });
     setMarges(m);
     setCodes(c || []);
-    setUtilisations(u || []);
+    // Commission réellement due = commission − part annulée (cartes remboursées)
+    setUtilisations((u || []).map((x) => ({
+      ...x,
+      commission_brute: Number(x.commission) || 0,
+      commission: Math.max(0, (Number(x.commission) || 0) - (Number(x.commission_annulee) || 0)),
+    })));
     const parId = {};
     (p || []).forEach((x) => { parId[x.id] = x.email; });
     setEmails(parId);
@@ -285,7 +292,7 @@ export default function AdminInfluenceuses() {
         <div className="border border-ivory/10 rounded-xl p-5">
           <p className="text-xs text-ivory/50 uppercase tracking-wide">Dont payables</p>
           <p className="text-2xl font-semibold text-gold mt-1">{euros(totalPayable)}</p>
-          <p className="text-[11px] text-ivory/40 mt-1">commandes de plus de {JOURS_ATTENTE} jours</p>
+          <p className="text-[11px] text-ivory/40 mt-1">cartes livrées depuis plus de {JOURS_ATTENTE} jours</p>
         </div>
       </div>
 
@@ -578,7 +585,14 @@ export default function AdminInfluenceuses() {
                           <td className="py-2 pr-3">{emails[u.profil_id] || "—"}</td>
                           <td className="py-2 pr-3 text-right">{euros(u.montant_commande)}</td>
                           <td className="py-2 pr-3 text-right">{euros(u.cashback_abonne)}</td>
-                          <td className="py-2 pr-3 text-right text-gold">{euros(u.commission)}</td>
+                          <td className="py-2 pr-3 text-right text-gold">
+                            {euros(u.commission)}
+                            {u.commission_brute > u.commission && (
+                              <span className="block text-[10px] text-corail">
+                                −{euros(u.commission_brute - u.commission)} (remboursement)
+                              </span>
+                            )}
+                          </td>
                           <td className="py-2">
                             {u.statut === "payee" ? (
                               <span className="text-ivory/50">

@@ -2,12 +2,14 @@
 // Utilisé par la page de confirmation ET par le webhook Stripe.
 // Chaque paiement n'est traité qu'une seule fois, même si on l'appelle plusieurs fois.
 
-import crypto from "node:crypto";
 import Stripe from "stripe";
 import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { chiffrerCode } from "./chiffrement";
 import { echapperHtml } from "./designs";
+import {
+  SITE, EXPEDITEUR, JOURS_MAX_PROGRAMMATION, genererCode, construireEmailCarte, dateHeureParis,
+} from "./emailCarte";
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from "./emailTemplate";
 import { calculerCashbackGagne, REGLES_CASHBACK } from "./cashback";
 import { calculerCode, filtreCartes } from "./codeInfluence";
@@ -18,44 +20,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://estalviar.com";
-const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-// Code provisoire (en attendant les vrais codes Tillo), généré de façon imprévisible
-function genererCode() {
-  const bloc = () =>
-    Array.from({ length: 4 }, () => ALPHABET[crypto.randomInt(ALPHABET.length)]).join("");
-  return `${bloc()}-${bloc()}-${bloc()}-${bloc()}`;
-}
-
-function construireEmailCarte({ article, code }) {
-  const logoUrl = `${SITE}${article.image || "/logos/estalviar-icone.svg"}`;
-  const couleurTexte = article.texteFonce ? "#12172B" : "#F6F2E9";
-  const couleurTexteAtt = article.texteFonce ? "rgba(18,23,43,0.6)" : "rgba(246,242,233,0.6)";
-  const beneficiaire = echapperHtml(article.beneficiaire);
-  const message = echapperHtml(article.message);
-
-  return `
-    <div style="font-family: Georgia, serif; max-width: 480px; margin: 0 auto; padding: 24px; background:#0d1022;">
-      <div style="border-radius: 16px; padding: 28px; background: ${article.background}; border: 1px solid rgba(201,162,39,0.3);">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <img src="${logoUrl}" alt="${echapperHtml(article.marque)}" height="28" style="display:block;" />
-          <span style="color:#C9A227; font-size:10px; letter-spacing:2px; text-transform:uppercase;">Estalviar</span>
-        </div>
-        ${beneficiaire ? `<p style="color:${couleurTexte}; font-size:14px; margin:20px 0 0;">Pour ${beneficiaire}</p>` : '<div style="margin-top:20px;"></div>'}
-        ${message ? `<p style="color:${couleurTexteAtt}; font-size:13px; font-style:italic; margin:4px 0 16px;">"${message}"</p>` : ""}
-        <div style="height:1px; background:rgba(201,162,39,0.3); margin:16px 0;"></div>
-        <p style="color:${couleurTexte}; font-size:36px; font-weight:bold; margin:0;">
-          ${article.montant} <span style="color:#C9A227; font-size:18px;">€</span>
-        </p>
-        <p style="color:${couleurTexteAtt}; font-size:11px; letter-spacing:2px; margin-top:16px;">
-          ${code}
-        </p>
-      </div>
-    </div>
-  `;
-}
 
 // Pour comparer des emails sans tenir compte des majuscules : « _ » et « % » sont des jokers
 // dans ilike, on les neutralise (sinon « jea_@x.fr » pourrait désigner « jean@x.fr »).
@@ -169,16 +133,16 @@ export async function traiterPaiementPanier(sessionOuId) {
     const code = genererCode();
     const emailDestinataire = article.emailBeneficiaire || emailAcheteur;
 
-    let dateHeureEnvoi = null;
-    if (article.dateEnvoi && article.heureEnvoi) {
-      dateHeureEnvoi = new Date(`${article.dateEnvoi}T${article.heureEnvoi}:00`);
-    }
+    // Date et heure choisies par le client = heure de Paris
+    const dateHeureEnvoi = dateHeureParis(article.dateEnvoi, article.heureEnvoi);
     const joursAvant = dateHeureEnvoi
       ? (dateHeureEnvoi.getTime() - maintenant.getTime()) / (1000 * 60 * 60 * 24)
       : 0;
-    const statut = dateHeureEnvoi && joursAvant > 30 ? "a_programmer" : "payee";
+    // Trop loin pour Resend : la tâche quotidienne « envoyer-cartes-programmees » l'enverra plus tard
+    const statut = dateHeureEnvoi && joursAvant > JOURS_MAX_PROGRAMMATION ? "a_programmer" : "payee";
 
     await supabase.from("commandes").insert({
+      panier_id: panier.id, // lien vers le panier : sert à annuler le cashback si la carte est remboursée
       email_acheteur: emailAcheteur,
       email_beneficiaire: article.emailBeneficiaire || null,
       email_destinataire: emailDestinataire,
@@ -193,11 +157,12 @@ export async function traiterPaiementPanier(sessionOuId) {
       statut,
     });
 
-    if (statut === "payee") await ajouterPoints(emailAcheteur, article.montant);
+    // La carte est payée : les points comptent tout de suite, même si l'envoi est programmé plus tard
+    await ajouterPoints(emailAcheteur, article.montant);
     if (statut === "a_programmer") continue;
 
     const optionsEnvoi = {
-      from: "Estalviar <onboarding@resend.dev>",
+      from: EXPEDITEUR,
       to: emailDestinataire,
       subject: `Votre carte cadeau ${article.marque}`,
       html: construireEmailCarte({ article, code }),
@@ -206,9 +171,11 @@ export async function traiterPaiementPanier(sessionOuId) {
       optionsEnvoi.scheduledAt = dateHeureEnvoi.toISOString();
     }
     try {
-      await resend.emails.send(optionsEnvoi);
+      // Resend ne lève pas d'erreur : il la renvoie dans { error }
+      const { error: erreurEnvoi } = await resend.emails.send(optionsEnvoi);
+      if (erreurEnvoi) throw new Error(erreurEnvoi.message || JSON.stringify(erreurEnvoi));
     } catch (e) {
-      console.error("Email non envoyé (la carte reste renvoyable depuis l'admin)", e);
+      console.error("Email de carte NON envoyé (la carte reste renvoyable depuis l'admin)", panier.id, emailDestinataire, e);
     }
   }
 
@@ -235,7 +202,15 @@ export async function traiterPaiementPanier(sessionOuId) {
         infos[f.slug] = { ...(infos[f.slug] || {}), notoriete: f.notoriete };
         categoriesParSlug[f.slug] = f.categorie;
       });
-      const dateCommande = new Date().toLocaleDateString("fr-FR");
+      const dateCommande = new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" });
+
+      // Le cashback (et la commission) se débloque 14 jours après la LIVRAISON de la dernière carte
+      // de la commande : une carte programmée dans 2 mois → 2 mois + 14 jours.
+      const livraison = panier.articles.reduce((plusTard, a) => {
+        const quand = dateHeureParis(a.dateEnvoi, a.heureEnvoi);
+        return quand && quand > plusTard ? quand : plusTard;
+      }, new Date());
+      const disponibleLe = new Date(livraison.getTime() + REGLES_CASHBACK.joursAttente * 86400000).toISOString();
 
       let codeApplique = false;
       if (panier.code_influence_id) {
@@ -261,11 +236,15 @@ export async function traiterPaiementPanier(sessionOuId) {
           if (erreurCode || resultatCode !== "ok") {
             console.error("Code partenaire non appliqué", panier.id, erreurCode?.message || resultatCode);
           } else {
-            await supabase.rpc("cashback_crediter", {
+            await supabase
+              .from("utilisations_code")
+              .update({ payable_le: disponibleLe })
+              .eq("panier_id", panier.id);
+            await supabase.rpc("cashback_crediter_le", {
               p_profil: profil.id,
               p_montant: calcul.cashbackAbonne,
               p_panier: panier.id,
-              p_jours_attente: REGLES_CASHBACK.joursAttente,
+              p_disponible_le: disponibleLe,
               p_description: `Commande du ${dateCommande} (code ${fiche.code})`,
             });
             codeApplique = true;
@@ -276,11 +255,11 @@ export async function traiterPaiementPanier(sessionOuId) {
       if (!codeApplique) {
         const gain = calculerCashbackGagne(panier.articles, infos, pointsAvant);
         if (gain.montant > 0) {
-          await supabase.rpc("cashback_crediter", {
+          await supabase.rpc("cashback_crediter_le", {
             p_profil: profil.id,
             p_montant: gain.montant,
             p_panier: panier.id,
-            p_jours_attente: REGLES_CASHBACK.joursAttente,
+            p_disponible_le: disponibleLe,
             p_description: `Commande du ${dateCommande} (palier ${gain.palier})`,
           });
         }
@@ -384,7 +363,7 @@ export async function traiterPaiementContribution(sessionOuId, contributionIdAtt
 
     try {
       await resend.emails.send({
-        from: "Estalviar <onboarding@resend.dev>",
+        from: EXPEDITEUR,
         to: contribution.email_contributeur,
         subject: `Merci pour votre participation à la cagnotte pour ${cagnotte.beneficiaire}`,
         html: construireEmailMerciContribution({ contribution, cagnotte, compteExiste }),

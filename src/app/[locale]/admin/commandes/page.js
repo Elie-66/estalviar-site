@@ -50,7 +50,20 @@ export default function AdminCommandes() {
     verifier();
   }, []);
 
+  // Même règle que la base de données (fonction commande_compte_pour_points)
+  const comptePourPoints = (statut) => ["payee", "a_programmer", "envoi_en_cours", "litige"].includes(statut);
+
   const changerStatut = async (commandeId, nouveauStatut) => {
+    const commande = commandes.find((c) => c.id === commandeId);
+    const points = Math.floor(Number(commande?.montant) || 0);
+    if (commande && !commande.cagnotte_id && points > 0) {
+      const avant = comptePourPoints(commande.statut);
+      const apres = comptePourPoints(nouveauStatut);
+      if (avant && !apres &&
+          !window.confirm(`${points} point(s) de fidélité seront retirés à ${commande.email_acheteur}. Continuer ?`)) return;
+      if (!avant && apres &&
+          !window.confirm(`${points} point(s) de fidélité seront rendus à ${commande.email_acheteur}. Continuer ?`)) return;
+    }
     setModificationEnCours(commandeId);
     const { error } = await adminModifier("commandes", commandeId, { statut: nouveauStatut });
 
@@ -65,6 +78,7 @@ export default function AdminCommandes() {
   const statutLabel = {
     payee: "Payée",
     a_programmer: "Programmée",
+    envoi_en_cours: "Envoi en cours",
     annulee: "Annulée",
     remboursee: "Remboursée",
     litige: "En litige",
@@ -73,6 +87,7 @@ export default function AdminCommandes() {
   const statutCouleur = {
     payee: "text-vert",
     a_programmer: "text-gold",
+    envoi_en_cours: "text-gold",
     annulee: "text-ivory/40",
     remboursee: "text-corail",
     litige: "text-corail",

@@ -10,7 +10,7 @@ const euros = (n) =>
   `${Number(n || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 const dateFr = (d) => new Date(d).toLocaleDateString("fr-FR");
 
-const LIBELLES_MOUVEMENT = { gain: "Gagné", utilisation: "Utilisé", expiration: "Expiré" };
+const LIBELLES_MOUVEMENT = { gain: "Gagné", utilisation: "Utilisé", expiration: "Expiré", annulation: "Annulé (remboursement)" };
 
 export default function AdminClients() {
   const [chargement, setChargement] = useState(true);
@@ -138,7 +138,7 @@ export default function AdminClients() {
           <div className="border border-ivory/10 rounded-xl p-5">
             <p className="text-xs text-ivory/50 uppercase tracking-wide">En attente</p>
             <p className="text-2xl font-semibold text-ivory mt-1">{euros(totaux.enAttente)}</p>
-            <p className="text-[11px] text-ivory/40 mt-1">débloqué dans les 14 jours</p>
+            <p className="text-[11px] text-ivory/40 mt-1">débloqué 14 jours après la livraison</p>
           </div>
           <div className="border border-ivory/10 rounded-xl p-5">
             <p className="text-xs text-ivory/50 uppercase tracking-wide">Expire sous 30 jours</p>
@@ -150,6 +150,7 @@ export default function AdminClients() {
             <p className="text-sm text-ivory/80 mt-2">Gagné {euros(totaux.gagne)}</p>
             <p className="text-sm text-ivory/80">Utilisé {euros(totaux.utilise)}</p>
             <p className="text-sm text-ivory/50">Expiré {euros(totaux.expire)}</p>
+            {totaux.annule > 0 && <p className="text-sm text-ivory/50">Annulé {euros(totaux.annule)}</p>}
           </div>
         </div>
       )}

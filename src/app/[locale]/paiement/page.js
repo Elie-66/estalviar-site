@@ -322,7 +322,7 @@ export default function Paiement() {
               </div>
               <p className="text-xs text-ivory/50 mt-2">
                 Ce cashback remplace le cashback fidélité sur cette commande. La commande compte bien pour votre palier.
-                Il sera utilisable {cashbackAffiche?.regles?.joursAttente || 14} jours après l&apos;achat.
+                Il sera utilisable {cashbackAffiche?.regles?.joursAttente || 14} jours après la livraison de la carte.
               </p>
             </div>
           ) : (

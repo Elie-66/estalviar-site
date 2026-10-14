@@ -284,6 +284,7 @@ export default function Profil() {
   const statutLabel = {
     payee: "Payée",
     a_programmer: "Programmée",
+    envoi_en_cours: "Programmée",
   };
 
   return (
@@ -538,7 +539,10 @@ export default function Profil() {
                       </p>
                       {c.date_envoi ? (
                         <p className="text-xs text-gold/70 mt-1">
-                          {c.statut === "a_programmer" ? "Envoi prévu" : "Envoyée"} le{" "}
+                          {c.statut === "a_programmer" ||
+                          new Date(`${c.date_envoi}T${c.heure_envoi || "00:00"}`) > new Date()
+                            ? "Envoi prévu"
+                            : "Envoyée"} le{" "}
                           {new Date(c.date_envoi).toLocaleDateString("fr-FR")}
                           {c.heure_envoi && ` à ${c.heure_envoi}`}
                         </p>

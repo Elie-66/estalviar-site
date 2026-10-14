@@ -41,11 +41,11 @@ export async function GET(req) {
   const maintenant = new Date();
   const dans30Jours = new Date(maintenant.getTime() + 30 * 86400000);
   const parClient = {};
-  const totaux = { disponible: 0, enAttente: 0, expire30Jours: 0, gagne: 0, utilise: 0, expire: 0 };
+  const totaux = { disponible: 0, enAttente: 0, expire30Jours: 0, gagne: 0, utilise: 0, expire: 0, annule: 0 };
 
   for (const m of data) {
     const c = (parClient[m.profil_id] ||= {
-      disponible: 0, enAttente: 0, gagne: 0, utilise: 0, expire: 0, prochaineExpiration: null,
+      disponible: 0, enAttente: 0, gagne: 0, utilise: 0, expire: 0, annule: 0, prochaineExpiration: null,
     });
     const montant = Number(m.montant) || 0;
     const restant = Number(m.restant) || 0;
@@ -66,11 +66,13 @@ export async function GET(req) {
       c.utilise += montant;
     } else if (m.type === "expiration") {
       c.expire += montant;
+    } else if (m.type === "annulation" && m.statut === "actif") {
+      c.annule += montant; // carte remboursée
     }
   }
 
   for (const c of Object.values(parClient)) {
-    for (const cle of ["disponible", "enAttente", "gagne", "utilise", "expire"]) {
+    for (const cle of ["disponible", "enAttente", "gagne", "utilise", "expire", "annule"]) {
       c[cle] = arrondi(c[cle]);
       totaux[cle] += c[cle];
     }
