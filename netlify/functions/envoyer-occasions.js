@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { EXPEDITEUR, SITE } from '../../src/lib/emailCarte.js';
+import { piedDesinscription } from '../../src/lib/newsletter.js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -51,13 +53,30 @@ export default async function handler() {
     return new Response(JSON.stringify({ message: 'Aucune occasion aujourd\'hui' }), { status: 200 });
   }
 
-  const { data: abonnes } = await supabase
+  // Destinataires : les comptes inscrits aux emails + les inscrits newsletter sans compte (confirmés)
+  const { data: profilsAbonnes } = await supabase
     .from('profils')
     .select('email, prenom')
     .eq('accepte_marketing', true)
     .not('email', 'is', null);
+  const { data: inscritsNewsletter } = await supabase
+    .from('newsletter_inscrits')
+    .select('email, jeton')
+    .not('confirme_le', 'is', null)
+    .is('desinscrit_le', null);
 
-  if (!abonnes || abonnes.length === 0) {
+  const parEmail = new Map();
+  for (const p of profilsAbonnes || []) {
+    parEmail.set(p.email.toLowerCase(), { email: p.email, lienDesinscription: `${SITE}/fr/profil` });
+  }
+  for (const n of inscritsNewsletter || []) {
+    const cle = n.email.toLowerCase();
+    // Le lien de désinscription en un clic marche aussi pour un compte (il coupe ses emails)
+    parEmail.set(cle, { email: parEmail.get(cle)?.email || n.email, lienDesinscription: `${SITE}/api/newsletter/desinscrire?jeton=${n.jeton}` });
+  }
+  const abonnes = [...parEmail.values()];
+
+  if (abonnes.length === 0) {
     return new Response(JSON.stringify({ message: 'Aucun abonné' }), { status: 200 });
   }
 
@@ -68,7 +87,7 @@ export default async function handler() {
       <h1 style="margin: 0 0 20px 0; font-family: Georgia, serif; font-size: 24px; color: #12172B; text-align: center;">${occasion.titre}</h1>
       <p style="margin: 0 0 16px 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333;">${occasion.message}</p>
       <div style="text-align: center; margin: 28px 0;">
-        <a href="https://estalviar.com/fr/boutique" style="display: inline-block; background-color: #C9A227; color: #12172B; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 8px;">
+        <a href="${SITE}/fr/boutique" style="display: inline-block; background-color: #C9A227; color: #12172B; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 8px;">
           Découvrir la boutique
         </a>
       </div>
@@ -76,10 +95,10 @@ export default async function handler() {
 
     for (const abonne of abonnes) {
       await resend.emails.send({
-        from: 'Estalviar <onboarding@resend.dev>',
+        from: EXPEDITEUR,
         to: abonne.email,
         subject: occasion.sujet,
-        html: enveloppeEmail({ titre: occasion.titre, contenuHtml: contenu }),
+        html: enveloppeEmail({ titre: occasion.titre, contenuHtml: contenu + piedDesinscription(abonne.lienDesinscription) }),
       });
     }
 

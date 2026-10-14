@@ -3,6 +3,28 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import SoldeCashback from "../components/SoldeCashback";
+import { anniversaireValide, formaterJourMois, JOURS_AVANT_RAPPEL } from "../../../lib/rappelsAnniversaire";
+import { POINTS_NEWSLETTER } from "../../../lib/newsletter";
+
+const ONGLETS = ["infos", "commandes", "cashback", "beneficiaires", "cagnottes", "securite"];
+const NOMS_MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+/** Deux listes (jour, mois) pour l'anniversaire d'un bénéficiaire */
+function ChampAnniversaire({ jour, mois, onChange, id }) {
+  const classe = "bg-transparent border border-ivory/20 rounded-lg px-3 py-2.5 text-ivory text-sm [color-scheme:dark]";
+  return (
+    <div className="flex gap-2">
+      <select id={id} aria-label="Jour" value={jour} onChange={(e) => onChange(e.target.value, mois)} className={classe}>
+        <option value="" className="bg-ink">Jour</option>
+        {Array.from({ length: 31 }, (_, i) => i + 1).map((j) => <option key={j} value={j} className="bg-ink">{j}</option>)}
+      </select>
+      <select aria-label="Mois" value={mois} onChange={(e) => onChange(jour, e.target.value)} className={`${classe} flex-1`}>
+        <option value="" className="bg-ink">Mois</option>
+        {NOMS_MOIS.map((m, i) => <option key={m} value={i + 1} className="bg-ink">{m}</option>)}
+      </select>
+    </div>
+  );
+}
 
 const couleursAvatar = [
   "#C9A227", "#E5604D", "#5B3A5C", "#2E7D6B", "#3A5A8C", "#B5563F", "#8C6A3A", "#4A4A6A",
@@ -40,6 +62,9 @@ export default function Profil() {
   const [nouveauNom, setNouveauNom] = useState("");
   const [nouvelEmailBenef, setNouvelEmailBenef] = useState("");
   const [ajoutBenef, setAjoutBenef] = useState(false);
+  const [nouvelAnniv, setNouvelAnniv] = useState({ jour: "", mois: "" });
+  const [erreurBenef, setErreurBenef] = useState("");
+  const [annivEnEdition, setAnnivEnEdition] = useState(null); // { id, jour, mois }
 
   // Cagnottes
   const [cagnottes, setCagnottes] = useState([]);
@@ -63,6 +88,9 @@ export default function Profil() {
       }
 
       setUtilisateur(user);
+      // Lien direct vers un onglet (ex. depuis l'email de rappel : ?onglet=beneficiaires)
+      const ongletDemande = new URLSearchParams(window.location.search).get("onglet");
+      if (ONGLETS.includes(ongletDemande)) setOnglet(ongletDemande);
 
       let { data: profil } = await supabase
         .from("profils")
@@ -163,7 +191,7 @@ export default function Profil() {
     setSuccesInfos(false);
     setErreurSecurite("");
 
-    const { error } = await supabase.from("profils").upsert({
+    const { data: profilEnregistre, error } = await supabase.from("profils").upsert({
       id: utilisateur.id,
       prenom,
       nom,
@@ -175,13 +203,15 @@ export default function Profil() {
       date_naissance: dateNaissance || null,
       genre: genre || null,
       enseigne_favorite: enseigneFavorite || null,
-    });
+    }).select("points").single();
 
     if (error) {
       console.error(error);
       setErreurSecurite(error.message);
     } else {
       setSuccesInfos(true);
+      // Les points peuvent changer (bonus newsletter)
+      if (profilEnregistre) setPoints(profilEnregistre.points || 0);
     }
     setEnregistrementInfos(false);
   };
@@ -238,13 +268,26 @@ export default function Profil() {
     }
   };
 
+  // Jour/mois saisis → valeurs à enregistrer (null si vide), ou false si la date n'existe pas
+  const lireAnniversaire = ({ jour, mois }) => {
+    if (!jour && !mois) return { anniversaire_jour: null, anniversaire_mois: null };
+    const j = Number(jour), m = Number(mois);
+    return anniversaireValide(j, m) ? { anniversaire_jour: j, anniversaire_mois: m } : false;
+  };
+
   const handleAjouterBeneficiaire = async (e) => {
     e.preventDefault();
+    setErreurBenef("");
+    const anniversaire = lireAnniversaire(nouvelAnniv);
+    if (!anniversaire) {
+      setErreurBenef("Cette date d'anniversaire n'existe pas.");
+      return;
+    }
     setAjoutBenef(true);
 
     const { data } = await supabase
       .from("beneficiaires")
-      .insert({ profil_id: utilisateur.id, nom: nouveauNom, email: nouvelEmailBenef || null })
+      .insert({ profil_id: utilisateur.id, nom: nouveauNom, email: nouvelEmailBenef || null, ...anniversaire })
       .select()
       .single();
 
@@ -252,8 +295,32 @@ export default function Profil() {
       setBeneficiaires((prev) => [data, ...prev]);
       setNouveauNom("");
       setNouvelEmailBenef("");
+      setNouvelAnniv({ jour: "", mois: "" });
+    } else {
+      setErreurBenef("Le bénéficiaire n'a pas pu être ajouté, réessayez.");
     }
     setAjoutBenef(false);
+  };
+
+  const handleEnregistrerAnniversaire = async () => {
+    setErreurBenef("");
+    const anniversaire = lireAnniversaire(annivEnEdition);
+    if (!anniversaire) {
+      setErreurBenef("Cette date d'anniversaire n'existe pas.");
+      return;
+    }
+    const { data } = await supabase
+      .from("beneficiaires")
+      .update({ ...anniversaire, dernier_rappel: null })
+      .eq("id", annivEnEdition.id)
+      .select()
+      .single();
+    if (data) {
+      setBeneficiaires((prev) => prev.map((b) => (b.id === data.id ? data : b)));
+      setAnnivEnEdition(null);
+    } else {
+      setErreurBenef("La date n'a pas pu être enregistrée, réessayez.");
+    }
   };
 
   const handleSupprimerBeneficiaire = async (id) => {
@@ -500,7 +567,10 @@ export default function Profil() {
               onChange={(e) => setAccepteMarketing(e.target.checked)}
               className="mt-0.5"
             />
-            Recevoir des emails pour les fêtes, occasions et offres spéciales
+            <span>
+              Recevoir des emails pour les fêtes, occasions et offres spéciales
+              <span className="block text-xs text-gold/80 mt-0.5">{POINTS_NEWSLETTER} points de fidélité offerts à la première inscription</span>
+            </span>
           </label>
 
           <button
@@ -584,6 +654,10 @@ export default function Profil() {
               placeholder="camille@exemple.com"
               className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
             />
+            <label htmlFor="anniv-nouveau" className="block text-sm text-ivory/70 mb-2 mt-4">Anniversaire (facultatif)</label>
+            <ChampAnniversaire id="anniv-nouveau" jour={nouvelAnniv.jour} mois={nouvelAnniv.mois}
+              onChange={(jour, mois) => setNouvelAnniv({ jour, mois })} />
+            <p className="mt-1.5 text-xs text-ivory/40">On vous envoie un rappel par email {JOURS_AVANT_RAPPEL} jours avant.</p>
             <button
               type="submit"
               disabled={ajoutBenef}
@@ -593,22 +667,61 @@ export default function Profil() {
             </button>
           </form>
 
+          {erreurBenef && <p className="-mt-4 mb-6 text-sm text-corail">{erreurBenef}</p>}
+
           {beneficiaires.length === 0 ? (
             <p className="text-ivory/50 text-sm">Aucun bénéficiaire enregistré pour le moment.</p>
           ) : (
             <div className="space-y-3">
               {beneficiaires.map((b) => (
-                <div key={b.id} className="flex items-center justify-between border border-ivory/10 rounded-lg p-4">
-                  <div>
-                    <p className="text-ivory font-medium">{b.nom}</p>
-                    {b.email && <p className="text-sm text-ivory/50">{b.email}</p>}
+                <div key={b.id} className="border border-ivory/10 rounded-lg p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-ivory font-medium">{b.nom}</p>
+                      {b.email && <p className="text-sm text-ivory/50">{b.email}</p>}
+                      {annivEnEdition?.id !== b.id && (
+                        b.anniversaire_mois ? (
+                          <button type="button" onClick={() => setAnnivEnEdition({ id: b.id, jour: String(b.anniversaire_jour), mois: String(b.anniversaire_mois) })}
+                            className="mt-1 text-xs text-gold/80 hover:text-gold">
+                            🎂 Anniversaire le {formaterJourMois(b.anniversaire_jour, b.anniversaire_mois)} · modifier
+                          </button>
+                        ) : (
+                          <button type="button" onClick={() => setAnnivEnEdition({ id: b.id, jour: "", mois: "" })}
+                            className="mt-1 text-xs text-ivory/45 hover:text-gold underline underline-offset-2">
+                            Ajouter son anniversaire
+                          </button>
+                        )
+                      )}
+                    </div>
+                    <div className="flex items-center gap-4 shrink-0">
+                      <a href={`/fr/boutique?pour=${encodeURIComponent(b.nom)}`} className="text-sm text-gold/80 hover:text-gold">
+                        Offrir
+                      </a>
+                      <button
+                        onClick={() => handleSupprimerBeneficiaire(b.id)}
+                        className="text-ivory/40 hover:text-corail transition-colors text-sm"
+                      >
+                        Retirer
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleSupprimerBeneficiaire(b.id)}
-                    className="text-ivory/40 hover:text-corail transition-colors text-sm"
-                  >
-                    Retirer
-                  </button>
+                  {annivEnEdition?.id === b.id && (
+                    <div className="mt-3 flex flex-col sm:flex-row gap-2 sm:items-center">
+                      <div className="sm:w-72">
+                        <ChampAnniversaire jour={annivEnEdition.jour} mois={annivEnEdition.mois}
+                          onChange={(jour, mois) => setAnnivEnEdition({ ...annivEnEdition, jour, mois })} />
+                      </div>
+                      <div className="flex gap-3 items-center">
+                        <button type="button" onClick={handleEnregistrerAnniversaire}
+                          className="bg-gold text-ink text-sm font-medium rounded-lg px-4 py-2 hover:bg-gold/90">
+                          Enregistrer
+                        </button>
+                        <button type="button" onClick={() => setAnnivEnEdition(null)} className="text-sm text-ivory/50 hover:text-ivory">
+                          Annuler
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

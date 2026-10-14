@@ -7,6 +7,7 @@ import CarteVivante from "./components/CarteVivante";
 import CarteVitrine from "./components/CarteVitrine";
 import { couleurCategorie, fondCarte } from "../../lib/couleursCartes";
 import BandeauEvenement from "./components/BandeauEvenement";
+import { Reassurance, IdeesBudget, RappelAnniversaire, Newsletter } from "./components/SectionsAccueil";
 
 // Enseignes proposées sur la carte de l'accueil si le catalogue n'est pas encore chargé
 const apercus = [
@@ -38,6 +39,7 @@ export default function Home() {
   const [categories, setCategories] = useState([]); // [{ nom, nombre }]
   const [marquesHero, setMarquesHero] = useState(apercus);
   const [fabriquees, setFabriquees] = useState([]); // enseignes fabriquées en France
+  const [catalogue, setCatalogue] = useState([]); // toutes les enseignes actives (idées par budget)
   const [avecEvenement, setAvecEvenement] = useState(false); // bandeau d'événement affiché en haut
 
   useEffect(() => {
@@ -70,6 +72,7 @@ export default function Home() {
       if (avecLogo.length >= 3) setMarquesHero(avecLogo);
 
       setFabriquees(tri.filter((c) => c.made_in_france).slice(0, 4));
+      setCatalogue(toutesCartes || []);
 
       const compte = {};
       (toutesCartes || []).forEach((c) => { if (c.categorie) compte[c.categorie] = (compte[c.categorie] || 0) + 1; });
@@ -124,10 +127,13 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Paiement sécurisé, envoi rapide, points, équipe en France */}
+      <Reassurance />
+
       {/* Fabriqué en France : l'argument qui nous distingue */}
       {fabriquees.length > 0 && (
         <section>
-          <div className="max-w-[1240px] mx-auto px-6 pb-20 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-10 items-center">
+          <div className="max-w-[1240px] mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-10 items-center">
             <div>
               <div aria-hidden className="flex w-16 h-1.5 rounded-full overflow-hidden mb-6">
                 <span className="flex-1 bg-[#2f5bd3]" /><span className="flex-1 bg-ivory" /><span className="flex-1 bg-[#e1293b]" />
@@ -166,6 +172,9 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Un budget en tête ? 20 / 50 / 100 € */}
+      <IdeesBudget cartes={catalogue} />
 
       {/* Envie de… : les catégories, chacune dans sa couleur */}
       {categories.length > 0 && (
@@ -288,6 +297,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Rappels d'anniversaire */}
+      <RappelAnniversaire />
+
       {/* Entreprises */}
       <section className="max-w-[1240px] w-full mx-auto px-6 pb-20">
         <div className="rounded-2xl border border-gold/25 bg-gold/[0.06] px-6 py-7 sm:px-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
@@ -322,6 +334,9 @@ export default function Home() {
           </a>
         </div>
       </section>
+
+      {/* Newsletter : 25 points offerts */}
+      <Newsletter />
     </div>
   );
 }

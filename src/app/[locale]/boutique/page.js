@@ -23,6 +23,22 @@ export default function Boutique() {
   const [categorie, setCategorie] = useState(searchParams.get("categorie") || "Toutes");
   // Venue d'une tuile « Une idée pour… » de l'accueil (?occasion=naissance)
   const [occasion, setOccasion] = useState(() => trouverOccasion(searchParams.get("occasion")));
+  // Venue d'un bloc « Idées par budget » de l'accueil (?budget=50) : enseignes qui acceptent ce montant
+  const [budget, setBudget] = useState(() => {
+    const b = Number(searchParams.get("budget"));
+    return Number.isInteger(b) && b > 0 && b <= 5000 ? b : null;
+  });
+  // Venue d'un rappel d'anniversaire ou d'un bénéficiaire (?pour=Camille) : prénom prérempli sur la fiche
+  const pour = (searchParams.get("pour") || "").slice(0, 30);
+  const retirerParametre = (nom) => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(nom);
+    window.history.replaceState(null, "", url);
+  };
+  const retirerBudget = () => {
+    setBudget(null);
+    retirerParametre("budget");
+  };
   const retirerOccasion = () => {
     setOccasion(null);
     const url = new URL(window.location.href);
@@ -101,7 +117,18 @@ export default function Boutique() {
     onglet === "francaises" ? cartes.filter((c) => c.made_in_france)
     : onglet === "evenement" && evenement ? cartesEvenement
     : cartes
-  ).filter((c) => pourOccasion(occasion, c));
+  )
+    .filter((c) => pourOccasion(occasion, c))
+    .filter((c) => !budget || (c.montant_min <= budget && budget <= c.montant_max));
+
+  // Lien vers la fiche : on garde le prénom et le budget choisis
+  const lienFiche = (slug) => {
+    const params = new URLSearchParams();
+    if (pour) params.set("pour", pour);
+    if (budget) params.set("montant", String(budget));
+    const suite = params.toString();
+    return `/${locale}/boutique/${slug}${suite ? `?${suite}` : ""}`;
+  };
 
   const categories = ["Toutes", ...Array.from(new Set(cartesOnglet.map((c) => c.categorie)))];
 
@@ -206,6 +233,25 @@ export default function Boutique() {
         />
       </div>
 
+      {(budget || pour) && (
+        <div className="mb-5 flex flex-wrap gap-2">
+          {pour && (
+            <span className="inline-flex items-center rounded-full border border-gold/40 text-gold px-4 py-1.5 text-sm">
+              🎁 {t("pourQui", { prenom: pour })}
+            </span>
+          )}
+          {budget && (
+            <span className="inline-flex items-center gap-3 rounded-full bg-ivory text-ink pl-4 pr-1.5 py-1.5 text-sm">
+              <span className="font-medium">{t("filtreBudget", { montant: budget })}</span>
+              <button type="button" onClick={retirerBudget}
+                className="rounded-full bg-ink/10 hover:bg-ink/20 px-3 py-1 text-xs transition-colors">
+                {tOcc("retirer")} ✕
+              </button>
+            </span>
+          )}
+        </div>
+      )}
+
       {occasion && (
         <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-ivory text-ink pl-4 pr-1.5 py-1.5 text-sm">
           <span className="font-medium">{tOcc("filtre", { occasion: tOcc(occasion.slug).toLowerCase() })}</span>
@@ -249,8 +295,8 @@ export default function Boutique() {
             <CarteVitrine
               key={carte.slug}
               carte={carte}
-              href={`/${locale}/boutique/${carte.slug}`}
-              prixLabel={`${t("apartirDe")} ${carte.montant_min} €`}
+              href={lienFiche(carte.slug)}
+              prixLabel={budget ? t("montantChoisi", { montant: budget }) : `${t("apartirDe")} ${carte.montant_min} €`}
               badge={
                 carte.made_in_france && onglet !== "francaises" ? (
                   <span title={t("badgeFabrique")} className="text-[10px] text-ink/70 bg-ink/[0.06] rounded-full px-2 py-0.5 whitespace-nowrap">
