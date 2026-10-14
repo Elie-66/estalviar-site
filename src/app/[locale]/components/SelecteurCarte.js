@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 export default function SelecteurCarte({ cartes, valeur, onChange }) {
+  const t = useTranslations("selecteurCarte");
   const [ouvert, setOuvert] = useState(false);
   const [recherche, setRecherche] = useState("");
   const ref = useRef(null);
@@ -29,10 +31,11 @@ export default function SelecteurCarte({ cartes, valeur, onChange }) {
       <button
         type="button"
         onClick={() => setOuvert(!ouvert)}
+        aria-expanded={ouvert}
         className="w-full flex items-center gap-3 border border-ivory/20 rounded-lg px-4 py-3 bg-transparent hover:border-gold/50 transition-colors"
       >
         <div className="bg-white rounded-md p-1 flex-shrink-0 w-7 h-7 flex items-center justify-center">
-          <img src={carteActuelle.image} alt={carteActuelle.nom} className="max-h-5 max-w-5 object-contain" />
+          {carteActuelle.image ? <img src={carteActuelle.image} alt="" className="max-h-5 max-w-5 object-contain" /> : null}
         </div>
         <span className="text-ivory text-sm flex-1 text-left">{carteActuelle.nom}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ivory/50">
@@ -47,12 +50,13 @@ export default function SelecteurCarte({ cartes, valeur, onChange }) {
             autoFocus
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
-            placeholder="Rechercher une enseigne..."
+            placeholder={t("rechercher")}
+            aria-label={t("rechercher")}
             className="w-full bg-transparent border-b border-ivory/10 px-4 py-3 text-ivory text-sm outline-none"
           />
           <div className="max-h-64 overflow-y-auto">
             {entrees.length === 0 ? (
-              <p className="px-4 py-3 text-sm text-ivory/40">Aucune enseigne trouvée.</p>
+              <p className="px-4 py-3 text-sm text-ivory/40">{t("aucune")}</p>
             ) : (
               entrees.map(([slug, c]) => (
                 <button
@@ -68,7 +72,7 @@ export default function SelecteurCarte({ cartes, valeur, onChange }) {
                   }`}
                 >
                   <div className="bg-white rounded-md p-1 flex-shrink-0 w-6 h-6 flex items-center justify-center">
-                    <img src={c.image} alt={c.nom} className="max-h-4 max-w-4 object-contain" />
+                    {c.image ? <img src={c.image} alt="" className="max-h-4 max-w-4 object-contain" /> : null}
                   </div>
                   <span className="text-ivory text-sm">{c.nom}</span>
                 </button>

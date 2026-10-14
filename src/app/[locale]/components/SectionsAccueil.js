@@ -215,7 +215,7 @@ export function Newsletter() {
           style={{ background: "radial-gradient(circle at 32% 28%, #fff6d6 0%, #E3C25A 38%, #C9A227 70%, #9c7c17 100%)" }}>
           <span className="absolute inset-2 rounded-full border border-ink/15" aria-hidden />
           <span className="text-5xl font-semibold leading-none font-[family-name:var(--font-fraunces)]">{POINTS_NEWSLETTER}</span>
-          <span className="text-[11px] font-semibold tracking-wide mt-1">points</span>
+          <span className="text-[11px] font-semibold tracking-wide mt-1">{t("jetonPoints")}</span>
         </div>
 
         <div className="relative text-center lg:text-left">

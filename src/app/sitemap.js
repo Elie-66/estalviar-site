@@ -15,8 +15,8 @@ export default async function sitemap() {
     .eq("actif", true);
 
   const pagesFixes = [
-    "", "boutique", "cagnotte/creer", "professionnels", "fidelite",
-    "mentions-legales", "cgv", "confidentialite", "cookies",
+    "", "boutique", "cagnotte/creer", "professionnels", "fidelite", "aide", "contact", "blog",
+    "verifier-solde", "retractation", "mentions-legales", "cgv", "confidentialite", "cookies",
   ];
 
   const urls = [];

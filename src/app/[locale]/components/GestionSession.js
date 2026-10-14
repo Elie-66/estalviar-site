@@ -15,7 +15,9 @@ export default function GestionSession() {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           await supabase.auth.signOut();
-          window.location.href = "/fr/connexion";
+          // On reste dans la langue du visiteur
+          const langue = window.location.pathname.split("/")[1] || "fr";
+          window.location.href = `/${langue}/connexion`;
         }
       }, DUREE_INACTIVITE_MS);
     };

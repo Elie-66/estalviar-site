@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { paques } from "../../../lib/evenements";
 
 // Logo « ESTALVIAR. » qui change selon la période de l'année (façon Google Doodle) :
@@ -11,15 +12,15 @@ const ROSE = "#ff6fa5";
 
 // Périodes (mois-jour, bornes incluses). La première qui correspond l'emporte.
 const PERIODES = [
-  { cle: "nouvel-an", du: "12-31", au: "01-02", titre: "Bonne année !" },
-  { cle: "halloween", du: "10-29", au: "10-31", titre: "Joyeux Halloween !" },
-  { cle: "saint-valentin", du: "02-07", au: "02-14", titre: "Bonne Saint-Valentin !" },
-  { cle: "paques", paques: true, titre: "Joyeuses Pâques !" },
-  { cle: "fete-de-la-musique", du: "06-21", au: "06-21", titre: "Bonne Fête de la musique !" },
-  { cle: "fete-nationale", du: "07-10", au: "07-14", titre: "Bonne fête nationale !" },
-  { cle: "octobre-rose", du: "10-01", au: "10-31", titre: "Octobre rose : mois de sensibilisation au dépistage du cancer du sein." },
-  { cle: "movember", du: "11-01", au: "11-30", titre: "Movember : mois de sensibilisation à la santé masculine." },
-  { cle: "noel", du: "12-01", au: "12-26", titre: "Joyeux Noël !" },
+  { cle: "nouvel-an", du: "12-31", au: "01-02" },
+  { cle: "halloween", du: "10-29", au: "10-31" },
+  { cle: "saint-valentin", du: "02-07", au: "02-14" },
+  { cle: "paques", paques: true },
+  { cle: "fete-de-la-musique", du: "06-21", au: "06-21" },
+  { cle: "fete-nationale", du: "07-10", au: "07-14" },
+  { cle: "octobre-rose", du: "10-01", au: "10-31" },
+  { cle: "movember", du: "11-01", au: "11-30" },
+  { cle: "noel", du: "12-01", au: "12-26" },
 ];
 
 function decorationDuJour() {
@@ -120,8 +121,8 @@ function Decoration({ cle }) {
  * @param {string} className  classes du texte (taille, police…)
  */
 export default function LogoEstalviar({ href, className = "" }) {
+  const t = useTranslations("logoSaisonnier");
   const cle = useDecoration();
-  const periode = PERIODES.find((p) => p.cle === cle);
 
   // Certaines décorations remplacent le point doré
   const point =
@@ -131,7 +132,7 @@ export default function LogoEstalviar({ href, className = "" }) {
     : <span className={cle === "halloween" ? "text-[#ff9a3c]" : "text-gold"}>.</span>;
 
   return (
-    <a href={href} className={`relative inline-block ${className}`} title={periode?.titre} aria-label="Estalviar — accueil">
+    <a href={href} className={`relative inline-block ${className}`} title={cle ? t(cle) : undefined} aria-label={t("accueil")}>
       Estalviar{point}
       {cle && <Decoration cle={cle} />}
     </a>

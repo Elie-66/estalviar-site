@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { supabase } from "../../../../lib/supabase";
+import { logoEnBlanc } from "../../../../lib/couleursCartes";
 import SelecteurCarte from "../../components/SelecteurCarte";
 
 const designs = [
@@ -16,6 +18,10 @@ const designs = [
 ];
 
 export default function CreerCagnotte() {
+  const t = useTranslations("cagnotteCreer");
+  const tDesign = useTranslations("designs");
+  const locale = useLocale();
+  const [copie, setCopie] = useState(false);
   const [cartes, setCartes] = useState({});
   const [chargementCatalogue, setChargementCatalogue] = useState(true);
   const [slugCarte, setSlugCarte] = useState("");
@@ -51,7 +57,7 @@ export default function CreerCagnotte() {
 
       const cartesParSlug = {};
       (data || []).forEach((c) => {
-        cartesParSlug[c.slug] = { nom: c.nom, image: c.image, couleur: c.couleur };
+        cartesParSlug[c.slug] = { slug: c.slug, nom: c.nom, image: c.image, couleur: c.couleur };
       });
       setCartes(cartesParSlug);
       if (data && data.length > 0) setSlugCarte(data[0].slug);
@@ -100,109 +106,81 @@ export default function CreerCagnotte() {
     if (res.ok) {
       setLienCree(data.slug);
     } else {
-      setErreur(data.error || "Une erreur est survenue.");
+      setErreur(data.error || t("erreur"));
     }
   };
 
   if (chargementCatalogue || !carte) {
     return (
       <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
-        Chargement...
+        {t("chargement")}
       </div>
     );
   }
 
   if (lienCree) {
-    const lien = typeof window !== "undefined" ? `${window.location.origin}/fr/cagnotte/${lienCree}` : "";
+    const lien = typeof window !== "undefined" ? `${window.location.origin}/${locale}/cagnotte/${lienCree}` : "";
+    const partager = async () => {
+      if (navigator.share) {
+        try { await navigator.share({ title: t("partageTitre", { prenom: beneficiaire }), url: lien }); } catch { /* partage annulé */ }
+      } else {
+        await navigator.clipboard.writeText(lien);
+        setCopie(true);
+      }
+    };
     return (
       <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center">
-        <div className="text-5xl mb-4">✓</div>
-        <h1 className="text-3xl font-semibold text-ivory">Votre cagnotte est prête !</h1>
-        <p className="mt-4 text-ivory/60">Partagez ce lien pour recueillir les contributions :</p>
-        <div className="mt-6 border border-ivory/20 rounded-lg p-4 flex items-center justify-between gap-4">
+        <div className="w-14 h-14 rounded-full border border-gold/50 text-gold text-2xl flex items-center justify-center mx-auto" aria-hidden>✓</div>
+        <h1 className="mt-6 text-3xl font-semibold text-ivory">{t("preteTitre")}</h1>
+        <p className="mt-4 text-ivory/65">{t("preteTexte")}</p>
+        <div className="mt-6 border border-ivory/20 rounded-lg p-3 pl-4 flex items-center justify-between gap-4">
           <span className="text-sm text-gold truncate">{lien}</span>
-          <button
-            onClick={() => navigator.clipboard.writeText(lien)}
-            className="text-xs text-ivory/60 hover:text-ivory flex-shrink-0"
-          >
-            Copier
+          <button onClick={async () => { await navigator.clipboard.writeText(lien); setCopie(true); }}
+            className="text-xs text-ivory/70 hover:text-ivory border border-ivory/20 rounded-md px-3 py-1.5 shrink-0">
+            {copie ? t("copie") : t("copier")}
           </button>
         </div>
-        <a
-          href={`/fr/cagnotte/${lienCree}`}
-          className="inline-block mt-8 bg-gold text-ink font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors"
-        >
-          Voir ma cagnotte
-        </a>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <button onClick={partager} className="bg-gold text-ink font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors">{t("partager")}</button>
+          <a href={`/${locale}/cagnotte/${lienCree}`} className="border border-ivory/25 text-ivory rounded-lg px-6 py-3 hover:border-ivory/50 transition-colors">{t("voir")}</a>
+        </div>
       </div>
     );
   }
 
+  const fonce = !!designActuel.texteFonce;
   const carteVisuel = (
     <div
-      className="relative overflow-hidden rounded-2xl p-8 aspect-[1.6/1] flex flex-col justify-between border border-gold/30"
+      className="relative overflow-hidden rounded-2xl p-6 sm:p-8 aspect-[1.586/1] flex flex-col justify-between border border-white/10"
       style={{
-        background: carteChoisie
-          ? designActuel.background(carte.couleur)
-          : designActuel.background(),
-        boxShadow: `0 25px 60px -15px #00000066, 0 0 0 1px rgba(255,255,255,0.03)`,
+        background: carteChoisie ? designActuel.background(carte.couleur) : designActuel.background(),
+        boxShadow: "0 30px 60px -20px rgba(0,0,0,0.8)",
       }}
     >
-      <div
-        className="absolute inset-0 opacity-[0.07]"
-        style={{
-          background: "linear-gradient(115deg, transparent 30%, white 48%, transparent 65%)",
-        }}
-      />
-
-      <div className="relative flex items-center justify-between">
-        {carteChoisie ? (
-          <img
-            src={carte.image}
-            alt={carte.nom}
-            className="h-8 object-contain opacity-95 drop-shadow-md"
-          />
-        ) : (
-          <img
-            src="/logos/estalviar-icone.svg"
-            alt="Estalviar"
-            className="h-6 object-contain opacity-95 drop-shadow-md"
-          />
-        )}
-        {carteChoisie && (
-          <span className={`text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${designActuel.texteFonce ? "text-ink/50" : "text-gold/70"}`}>
-            Estalviar
-          </span>
-        )}
+      <div aria-hidden className="absolute inset-0 opacity-[0.14]"
+        style={{ background: "linear-gradient(115deg, transparent 35%, #fff 50%, transparent 65%)" }} />
+      <div className="relative flex items-start justify-between">
+        <div className="h-10 w-36 flex items-center">
+          {carteChoisie && carte.image ? (
+            <img src={carte.image} alt={carte.nom}
+              className={`max-h-full max-w-full object-contain object-left ${!fonce && logoEnBlanc(carte) ? "brightness-0 invert" : "rounded-md"}`} />
+          ) : (
+            <span className={`text-sm font-medium ${fonce ? "text-ink/70" : "text-white/80"}`}>{t("aChoisir")}</span>
+          )}
+        </div>
+        <span className={`text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${fonce ? "text-ink/50" : "text-white/70"}`}>ESTALVIAR</span>
       </div>
-
       <div className="relative">
         {(beneficiaire || message) && (
-          <div className="mb-4">
-            {beneficiaire && (
-              <p className={`text-sm font-medium ${designActuel.texteFonce ? "text-ink" : "text-white"}`}>
-                Pour {beneficiaire}
-              </p>
-            )}
-            {message && (
-              <p className={`text-sm italic line-clamp-2 max-w-[85%] mt-0.5 ${designActuel.texteFonce ? "text-ink/60" : "text-white/60"}`}>
-                "{message}"
-              </p>
-            )}
+          <div className="mb-3">
+            {beneficiaire && <p className={`text-lg font-medium truncate ${fonce ? "text-ink" : "text-white"}`}>{t("pour", { prenom: beneficiaire })}</p>}
+            {message && <p className={`text-sm italic line-clamp-2 max-w-[85%] mt-0.5 ${fonce ? "text-ink/60" : "text-white/60"}`}>« {message} »</p>}
           </div>
         )}
-
-        <div className={`h-px mb-4 ${designActuel.texteFonce ? "bg-ink/20" : "bg-gradient-to-r from-gold/40 via-gold/10 to-transparent"}`} />
-
-        <div className="flex items-end justify-between">
-          <p className={`text-5xl font-semibold tracking-tight font-[family-name:var(--font-fraunces)] ${designActuel.texteFonce ? "text-ink" : "text-white"}`}>
-            {montantLibre ? "?" : (montantObjectif || 0)}
-            <span className="text-2xl text-gold ml-1">€</span>
-          </p>
-          <span className={`text-[10px] font-[family-name:var(--font-space-mono)] tracking-wider ${designActuel.texteFonce ? "text-ink/40" : "text-white/40"}`}>
-            •••• •••• ••••
-          </span>
-        </div>
+        <div className={`h-px mb-3 ${fonce ? "bg-ink/20" : "bg-white/25"}`} />
+        <p className={`text-4xl sm:text-5xl font-semibold leading-none font-[family-name:var(--font-fraunces)] ${fonce ? "text-ink" : "text-white"}`}>
+          {montantLibre ? "?" : (montantObjectif || 0)}<span className="text-2xl text-gold ml-1">€</span>
+        </p>
       </div>
     </div>
   );
@@ -211,19 +189,21 @@ export default function CreerCagnotte() {
     <>
       {carteChoisie && (
         <>
-          <label className="block text-sm text-ivory/70 mb-2 mt-6">Enseigne</label>
+          <label className="block text-sm text-ivory/70 mb-2 mt-6">{t("enseigne")}</label>
           <SelecteurCarte cartes={cartes} valeur={slugCarte} onChange={setSlugCarte} />
         </>
       )}
 
-      <label className="block text-sm text-ivory/70 mb-2 mt-4">Design</label>
+      <label className="block text-sm text-ivory/70 mb-2 mt-4">{t("design")}</label>
       <div className="grid grid-cols-4 gap-2">
         {designs.map((d) => (
           <button
             key={`${prefixeCle}-${d.id}`}
             type="button"
             onClick={() => setDesignId(d.id)}
-            title={d.nom}
+            title={tDesign.has(d.nom) ? tDesign(d.nom) : d.nom}
+            aria-label={tDesign.has(d.nom) ? tDesign(d.nom) : d.nom}
+            aria-pressed={designId === d.id}
             className={`h-9 rounded-lg border-2 transition-all ${
               designId === d.id ? "border-gold scale-105" : "border-transparent opacity-70"
             }`}
@@ -233,7 +213,7 @@ export default function CreerCagnotte() {
       </div>
       {!carteChoisie && (
         <p className="mt-1 text-xs text-ivory/40">
-          Le bénéficiaire pourra garder ce design ou en choisir un autre à la clôture.
+          {t("designAide")}
         </p>
       )}
     </>
@@ -247,10 +227,9 @@ export default function CreerCagnotte() {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pt-6 md:pt-32 pb-20">
-        <p className="text-sm uppercase tracking-wide text-gold mb-2 mt-4">Cagnotte</p>
-        <h1 className="text-3xl font-semibold text-ivory mb-8">
-          Créez une cagnotte pour un cadeau collectif
-        </h1>
+        <p className="text-sm text-gold mb-2 mt-4">{t("surtitre")}</p>
+        <h1 className="text-3xl md:text-4xl font-semibold text-ivory">{t("titre")}</h1>
+        <p className="mt-3 mb-10 text-ivory/65 max-w-[40rem]">{t("intro")}</p>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
 
@@ -259,13 +238,14 @@ export default function CreerCagnotte() {
             <div className="md:sticky md:top-28">
               {carteVisuel}
 
-              <label className="flex items-center gap-2 text-sm text-ivory/70 mt-6">
+              <label className="flex items-start gap-3 text-sm text-ivory/70 mt-6 cursor-pointer">
                 <input
                   type="checkbox"
+                  className="mt-1 w-4 h-4 shrink-0 accent-[#C9A227]"
                   checked={!carteChoisie}
                   onChange={(e) => setCarteChoisie(!e.target.checked)}
                 />
-                La carte sera choisie à la clôture (le bénéficiaire choisira lui-même)
+                {t("choisieCloture")}
               </label>
 
               {selecteurEtDesigns("desktop")}
@@ -276,31 +256,32 @@ export default function CreerCagnotte() {
           <div>
             {/* Sur mobile uniquement : checkbox + enseigne + design, puisque la carte est déjà affichée en haut, collée */}
             <div className="md:hidden">
-              <label className="flex items-center gap-2 text-sm text-ivory/70">
+              <label className="flex items-start gap-3 text-sm text-ivory/70 cursor-pointer">
                 <input
                   type="checkbox"
+                  className="mt-1 w-4 h-4 shrink-0 accent-[#C9A227]"
                   checked={!carteChoisie}
                   onChange={(e) => setCarteChoisie(!e.target.checked)}
                 />
-                La carte sera choisie à la clôture (le bénéficiaire choisira lui-même)
+                {t("choisieCloture")}
               </label>
 
               {selecteurEtDesigns("mobile")}
             </div>
 
-            <label className="block text-sm text-ivory/70 mb-2 mt-6">Pour qui ?</label>
+            <label className="block text-sm text-ivory/70 mb-2 mt-6">{t("pourQui")}</label>
             <input
               type="text"
               value={beneficiaire}
               onChange={(e) => setBeneficiaire(e.target.value)}
               required
               maxLength={30}
-              placeholder="Ex : Thomas"
+              placeholder={t("pourQuiExemple")}
               className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
             />
 
             <div className="flex items-center justify-between mb-2 mt-6">
-              <label className="block text-sm text-ivory/70">Message</label>
+              <label className="block text-sm text-ivory/70">{t("message")}</label>
               <span className="text-xs text-ivory/40">{message.length}/40</span>
             </div>
             <textarea
@@ -308,35 +289,36 @@ export default function CreerCagnotte() {
               onChange={(e) => setMessage(e.target.value)}
               rows={2}
               maxLength={40}
-              placeholder="Pourquoi cette cagnotte ?"
+              placeholder={t("messageExemple")}
               className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory resize-none"
             />
 
-            <label className="flex items-center gap-2 text-sm text-ivory/70 mt-6">
+            <label className="flex items-start gap-3 text-sm text-ivory/70 mt-6 cursor-pointer">
               <input
                 type="checkbox"
+                className="mt-1 w-4 h-4 shrink-0 accent-[#C9A227]"
                 checked={montantLibre}
                 onChange={(e) => setMontantLibre(e.target.checked)}
               />
-              Pas de montant objectif (les contributions s'accumulent librement)
+              {t("sansObjectif")}
             </label>
 
             {!montantLibre && (
               <>
-                <label className="block text-sm text-ivory/70 mb-2 mt-4">Montant objectif (€)</label>
+                <label className="block text-sm text-ivory/70 mb-2 mt-4">{t("objectif")}</label>
                 <input
                   type="number"
                   min="5"
                   value={montantObjectif}
                   onChange={(e) => setMontantObjectif(e.target.value)}
                   required={!montantLibre}
-                  placeholder="Ex : 100"
+                  placeholder={t("objectifExemple")}
                   className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
                 />
               </>
             )}
 
-            <label className="block text-sm text-ivory/70 mb-2 mt-6">Date de clôture</label>
+            <label className="block text-sm text-ivory/70 mb-2 mt-6">{t("dateFin")}</label>
             <input
               type="date"
               value={dateFin}
@@ -346,10 +328,10 @@ export default function CreerCagnotte() {
               className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory [color-scheme:dark]"
             />
             <p className="mt-1 text-xs text-ivory/40">
-              À cette date, la cagnotte se clôture et la carte est préparée avec le montant collecté.
+              {t("dateFinAide")}
             </p>
 
-            <label className="block text-sm text-ivory/70 mb-2 mt-6">Envoi de la carte</label>
+            <label className="block text-sm text-ivory/70 mb-2 mt-6">{t("envoi")}</label>
             <div className="flex gap-2 border border-ivory/10 rounded-lg p-1">
               <button
                 type="button"
@@ -358,7 +340,7 @@ export default function CreerCagnotte() {
                   !envoiBeneficiaire ? "bg-gold text-ink font-medium" : "text-ivory/60"
                 }`}
               >
-                À mon email
+                {t("envoiMoi")}
               </button>
               <button
                 type="button"
@@ -367,13 +349,13 @@ export default function CreerCagnotte() {
                   envoiBeneficiaire ? "bg-gold text-ink font-medium" : "text-ivory/60"
                 }`}
               >
-                Direct au bénéficiaire
+                {t("envoiBenef")}
               </button>
             </div>
 
             {envoiBeneficiaire && (
               <>
-                <label className="block text-sm text-ivory/70 mb-2 mt-4">Email du bénéficiaire</label>
+                <label className="block text-sm text-ivory/70 mb-2 mt-4">{t("emailBenef")}</label>
                 <input
                   type="email"
                   value={emailBeneficiaire}
@@ -386,17 +368,17 @@ export default function CreerCagnotte() {
 
             {utilisateurConnecte ? (
               <p className="text-sm text-ivory/60 mt-6">
-                Connecté en tant que <span className="text-gold">{emailCreateur}</span>
+                {t("connecte")} <span className="text-gold">{emailCreateur}</span>
               </p>
             ) : (
               <>
-                <label className="block text-sm text-ivory/70 mb-2 mt-6">Votre email</label>
+                <label className="block text-sm text-ivory/70 mb-2 mt-6">{t("votreEmail")}</label>
                 <input
                   type="email"
                   value={emailCreateur}
                   onChange={(e) => setEmailCreateur(e.target.value)}
                   required
-                  placeholder="Pour vous prévenir de l'avancement"
+                  placeholder={t("votreEmailAide")}
                   className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
                 />
               </>
@@ -407,11 +389,11 @@ export default function CreerCagnotte() {
               disabled={envoi}
               className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40"
             >
-              {envoi ? "Création..." : "Créer la cagnotte"}
+              {envoi ? t("creation") : t("creer")}
             </button>
             <p className="mt-3 text-xs text-ivory/45 leading-relaxed">
-              En créant la cagnotte, vous acceptez les{" "}
-              <a href="/fr/cgv#cagnottes" target="_blank" className="underline hover:text-ivory/70">conditions générales de vente</a>.
+              {t("cgvAvant")}{" "}
+              <a href={`/${locale}/cgv#cagnottes`} target="_blank" className="underline hover:text-ivory/70">{t("cgvLien")}</a>.
             </p>
 
             {erreur && <p className="mt-3 text-sm text-corail">{erreur}</p>}

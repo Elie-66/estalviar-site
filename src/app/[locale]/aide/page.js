@@ -1,54 +1,63 @@
 "use client";
 
-const questions = [
-  {
-    q: "Comment fonctionne l'envoi de ma carte cadeau ?",
-    r: "Après paiement, votre carte est envoyée par email immédiatement, ou à la date et l'heure que vous avez choisies lors de la personnalisation.",
-  },
-  {
-    q: "Puis-je envoyer la carte directement au bénéficiaire ?",
-    r: "Oui, sur la page de paiement, vous pouvez renseigner l'email du destinataire pour chaque carte de votre panier. Sans cela, c'est vous qui la recevez pour la transmettre.",
-  },
-  {
-    q: "Comment fonctionne le programme de fidélité ?",
-    r: "Chaque euro dépensé vous rapporte 1 point. Les points débloquent des paliers (Bronze, Argent, Or, Platine) visibles dans votre profil.",
-  },
-  {
-    q: "Qu'est-ce qu'une cagnotte ?",
-    r: "Une cagnotte permet à plusieurs personnes de contribuer ensemble à l'achat d'une carte cadeau pour une même personne, avec un lien à partager.",
-  },
-  {
-    q: "Je n'ai pas reçu ma carte, que faire ?",
-    r: "Vérifiez vos spams, puis contactez-nous à info@estalviar.com avec votre email de commande — nous pourrons vous la renvoyer.",
-  },
-  {
-    q: "Puis-je me faire rembourser ?",
-    r: "Conformément à nos CGV, le droit de rétractation ne s'applique pas une fois le code de la carte communiqué. Contactez-nous en cas de problème particulier.",
-  },
+import { useLocale, useTranslations } from "next-intl";
+
+// Questions par thème (les textes sont dans messages/*.json, rubrique « aide »)
+const THEMES = [
+  { cle: "envoi", questions: ["q1", "q2", "q3", "q4"] },
+  { cle: "cartes", questions: ["q5", "q6", "q7"] },
+  { cle: "paiement", questions: ["q8", "q9", "q10"] },
+  { cle: "compte", questions: ["q11", "q12", "q13"] },
+  { cle: "cagnottes", questions: ["q14", "q15"] },
 ];
 
 export default function Aide() {
+  const t = useTranslations("aide");
+  const locale = useLocale();
+
   return (
-    <div className="max-w-[800px] mx-auto px-6 pt-32 pb-20">
-      <p className="text-sm uppercase tracking-wide text-gold mb-2">Centre d'aide</p>
-      <h1 className="text-3xl font-semibold text-ivory mb-10">Questions fréquentes</h1>
+    <div className="max-w-[860px] mx-auto px-6 pt-28 md:pt-32 pb-20">
+      <h1 className="text-3xl md:text-4xl font-semibold text-ivory">{t("titre")}</h1>
+      <p className="mt-3 text-ivory/65">{t("intro")}</p>
 
-      <div className="space-y-6">
-        {questions.map((item, i) => (
-          <div key={i} className="border-b border-ivory/10 pb-6">
-            <h2 className="text-ivory font-medium mb-2">{item.q}</h2>
-            <p className="text-ivory/60 text-sm leading-relaxed">{item.r}</p>
-          </div>
+      <nav aria-label={t("themes")} className="mt-8 flex flex-wrap gap-2">
+        {THEMES.map((th) => (
+          <a key={th.cle} href={`#${th.cle}`}
+            className="text-sm rounded-full border border-ivory/15 px-4 py-2 text-ivory/80 hover:border-gold/50 hover:text-gold transition-colors">
+            {t(`theme_${th.cle}`)}
+          </a>
         ))}
-      </div>
+      </nav>
 
-      <div className="mt-12 border border-gold/20 bg-gold/5 rounded-lg p-6 text-center">
-        <p className="text-ivory/80 text-sm">Vous ne trouvez pas de réponse à votre question&nbsp;?</p>
-        <a
-          href="/fr/contact"
-          className="inline-block mt-4 bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-2.5 hover:bg-gold/90 transition-colors"
-        >
-          Nous contacter
+      {THEMES.map((th) => (
+        <section key={th.cle} id={th.cle} className="scroll-mt-28 mt-12">
+          <h2 className="text-xl font-semibold text-ivory mb-3">{t(`theme_${th.cle}`)}</h2>
+          <div className="divide-y divide-ivory/10 border-y border-ivory/10">
+            {th.questions.map((q) => (
+              <details key={q} className="group py-5">
+                <summary className="flex items-center justify-between gap-4 cursor-pointer list-none text-ivory font-medium [&::-webkit-details-marker]:hidden">
+                  {t(`${q}`)}
+                  <span aria-hidden className="text-gold text-xl leading-none transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 text-sm text-ivory/70 leading-relaxed max-w-[44rem]">
+                  {t.rich(`${q}r`, {
+                    lien: (c) => <a href={`/${locale}${t(`${q}lien`)}`} className="text-gold underline underline-offset-2">{c}</a>,
+                  })}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <div className="mt-14 rounded-2xl border border-gold/25 bg-gold/[0.06] p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p className="text-ivory font-semibold">{t("pasTrouve")}</p>
+          <p className="mt-1 text-sm text-ivory/65">{t("pasTrouveTexte")}</p>
+        </div>
+        <a href={`/${locale}/contact`}
+          className="shrink-0 bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors text-center">
+          {t("contact")}
         </a>
       </div>
     </div>

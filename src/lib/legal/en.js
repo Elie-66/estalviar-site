@@ -489,7 +489,7 @@ export const cookies = {
               ["estalviar-emails-beneficiaires", "Keep the emails entered during payment", "Deleted after the order"],
               ["sb-…-auth-token", "Keep you logged in to your account", "Until you log out"],
               ["NEXT_LOCALE", "Remember the language chosen", "1 year maximum"],
-              ["estalviar-cookies-consentement", "Remember your choice in the cookie banner", "Until you delete it"],
+              ["estalviar-cookies-consentement", "Stop showing the cookie information banner", "Until you delete it"],
             ],
           },
         },

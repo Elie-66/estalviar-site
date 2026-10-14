@@ -1,38 +1,58 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { supabase } from "../../../lib/supabase";
+import { fetchSession } from "../../../lib/fetchSession";
 import SoldeCashback from "../components/SoldeCashback";
-import { anniversaireValide, formaterJourMois, JOURS_AVANT_RAPPEL } from "../../../lib/rappelsAnniversaire";
+import { ChampMotDePasse, motDePasseValide } from "../components/CadreCompte";
+import { anniversaireValide, JOURS_AVANT_RAPPEL } from "../../../lib/rappelsAnniversaire";
 import { POINTS_NEWSLETTER } from "../../../lib/newsletter";
 
 const ONGLETS = ["infos", "commandes", "cashback", "beneficiaires", "cagnottes", "securite"];
-const NOMS_MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+const PALIERS = [
+  { cle: "bronze", seuil: 0, couleur: "#B08D57" },
+  { cle: "argent", seuil: 100, couleur: "#C0C0C0" },
+  { cle: "or", seuil: 300, couleur: "#C9A227" },
+  { cle: "platine", seuil: 700, couleur: "#E5E4E2" },
+];
+const COULEURS_AVATAR = ["#C9A227", "#E5604D", "#5B3A5C", "#2E7D6B", "#3A5A8C", "#B5563F", "#8C6A3A", "#4A4A6A"];
+const AVATARS = Array.from({ length: 7 }, (_, i) => `/avatars/avatar-${i + 1}.svg`);
+
+const champ = "w-full bg-ivory/[0.04] border border-ivory/20 rounded-lg px-4 py-3 text-ivory outline-none focus:border-gold/60 transition-colors";
+const libelle = "block text-sm text-ivory/70 mb-2";
 
 /** Deux listes (jour, mois) pour l'anniversaire d'un bénéficiaire */
 function ChampAnniversaire({ jour, mois, onChange, id }) {
-  const classe = "bg-transparent border border-ivory/20 rounded-lg px-3 py-2.5 text-ivory text-sm [color-scheme:dark]";
+  const t = useTranslations("profil");
+  const locale = useLocale();
+  const classe = "bg-ivory/[0.04] border border-ivory/20 rounded-lg px-3 py-2.5 text-ivory text-sm [color-scheme:dark]";
+  const nomsMois = Array.from({ length: 12 }, (_, i) =>
+    new Date(Date.UTC(2000, i, 15)).toLocaleDateString(locale, { month: "long", timeZone: "UTC" })
+  );
   return (
     <div className="flex gap-2">
-      <select id={id} aria-label="Jour" value={jour} onChange={(e) => onChange(e.target.value, mois)} className={classe}>
-        <option value="" className="bg-ink">Jour</option>
+      <select id={id} aria-label={t("jour")} value={jour} onChange={(e) => onChange(e.target.value, mois)} className={classe}>
+        <option value="" className="bg-ink">{t("jour")}</option>
         {Array.from({ length: 31 }, (_, i) => i + 1).map((j) => <option key={j} value={j} className="bg-ink">{j}</option>)}
       </select>
-      <select aria-label="Mois" value={mois} onChange={(e) => onChange(jour, e.target.value)} className={`${classe} flex-1`}>
-        <option value="" className="bg-ink">Mois</option>
-        {NOMS_MOIS.map((m, i) => <option key={m} value={i + 1} className="bg-ink">{m}</option>)}
+      <select aria-label={t("mois")} value={mois} onChange={(e) => onChange(jour, e.target.value)} className={`${classe} flex-1`}>
+        <option value="" className="bg-ink">{t("mois")}</option>
+        {nomsMois.map((m, i) => <option key={m} value={i + 1} className="bg-ink">{m}</option>)}
       </select>
     </div>
   );
 }
 
-const couleursAvatar = [
-  "#C9A227", "#E5604D", "#5B3A5C", "#2E7D6B", "#3A5A8C", "#B5563F", "#8C6A3A", "#4A4A6A",
-];
-
-const avatarsIllustration = Array.from({ length: 7 }, (_, i) => `/avatars/avatar-${i + 1}.svg`);
-
 export default function Profil() {
+  const t = useTranslations("profil");
+  const tFid = useTranslations("fideliteAccueil");
+  const tCompte = useTranslations("compte");
+  const locale = useLocale();
+  const euros = (n) => new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" }).format(Number(n) || 0);
+  const dateLongue = (d) => new Date(d).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
+  const jourMois = (j, m) => new Date(Date.UTC(2000, m - 1, j)).toLocaleDateString(locale, { day: "numeric", month: "long", timeZone: "UTC" });
+
   const [utilisateur, setUtilisateur] = useState(null);
   const [onglet, setOnglet] = useState("infos");
   const [chargement, setChargement] = useState(true);
@@ -50,11 +70,10 @@ export default function Profil() {
   const [couleurAvatar, setCouleurAvatar] = useState("#C9A227");
   const [avatarIllustration, setAvatarIllustration] = useState(null);
   const [enregistrementInfos, setEnregistrementInfos] = useState(false);
-  const [succesInfos, setSuccesInfos] = useState(false);
+  const [messageInfos, setMessageInfos] = useState(null); // { texte, ok }
 
-  // Commandes
+  // Commandes et points
   const [commandes, setCommandes] = useState([]);
-  const [chargementCommandes, setChargementCommandes] = useState(true);
   const [points, setPoints] = useState(0);
 
   // Bénéficiaires
@@ -71,96 +90,66 @@ export default function Profil() {
 
   // Sécurité
   const [nouveauMotDePasse, setNouveauMotDePasse] = useState("");
-  const [motDePasseActuelMdp, setMotDePasseActuelMdp] = useState("");
+  const [motDePasseActuel, setMotDePasseActuel] = useState("");
   const [enregistrementMdp, setEnregistrementMdp] = useState(false);
-  const [succesMdp, setSuccesMdp] = useState(false);
-  const [erreurSecurite, setErreurSecurite] = useState("");
+  const [messageSecurite, setMessageSecurite] = useState(null); // { texte, ok }
   const [confirmationSuppression, setConfirmationSuppression] = useState(false);
   const [suppression, setSuppression] = useState(false);
 
   useEffect(() => {
     const charger = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-
       if (!user) {
-        window.location.href = "/fr/connexion";
+        window.location.href = `/${locale}/connexion`;
         return;
       }
-
       setUtilisateur(user);
       // Lien direct vers un onglet (ex. depuis l'email de rappel : ?onglet=beneficiaires)
       const ongletDemande = new URLSearchParams(window.location.search).get("onglet");
       if (ONGLETS.includes(ongletDemande)) setOnglet(ongletDemande);
 
-      let { data: profil } = await supabase
-        .from("profils")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
+      let { data: profil } = await supabase.from("profils").select("*").eq("id", user.id).maybeSingle();
       if (!profil) {
         await supabase.from("profils").insert({ id: user.id, email: user.email });
         profil = { email: user.email };
       } else if (profil.email !== user.email) {
         await supabase.from("profils").update({ email: user.email }).eq("id", user.id);
       }
+      setPrenom(profil.prenom || "");
+      setNom(profil.nom || "");
+      setTelephone(profil.telephone || "");
+      setPseudo(profil.pseudo || "");
+      setAccepteMarketing(profil.accepte_marketing || false);
+      setCouleurAvatar(profil.couleur_avatar || "#C9A227");
+      setAvatarIllustration(profil.avatar_illustration || null);
+      setDateNaissance(profil.date_naissance || "");
+      setGenre(profil.genre || "");
+      setEnseigneFavorite(profil.enseigne_favorite || "");
+      setPoints(profil.points || 0);
 
-      if (profil) {
-        setPrenom(profil.prenom || "");
-        setNom(profil.nom || "");
-        setTelephone(profil.telephone || "");
-        setPseudo(profil.pseudo || "");
-        setAccepteMarketing(profil.accepte_marketing || false);
-        setCouleurAvatar(profil.couleur_avatar || "#C9A227");
-        setAvatarIllustration(profil.avatar_illustration || null);
-        setDateNaissance(profil.date_naissance || "");
-        setGenre(profil.genre || "");
-        setEnseigneFavorite(profil.enseigne_favorite || "");
-      }
-
-      setPoints(profil?.points || 0);
-
-      const { data: mesCommandes } = await supabase
-        .from("commandes")
-        .select("*")
-        .eq("email_acheteur", user.email)
-        .order("created_at", { ascending: false });
-
+      const [{ data: mesCommandes }, { data: mesBeneficiaires }, { data: cagnottesCreees }, { data: contribs }, { data: catalogueData }] =
+        await Promise.all([
+          supabase.from("commandes").select("*").eq("email_acheteur", user.email).order("created_at", { ascending: false }),
+          supabase.from("beneficiaires").select("*").eq("profil_id", user.id).order("created_at", { ascending: false }),
+          supabase.from("cagnottes").select("*").eq("email_createur", user.email),
+          supabase.from("contributions_cagnotte").select("cagnotte_id").eq("email_contributeur", user.email).eq("statut", "payee"),
+          supabase.from("catalogue").select("nom, slug").eq("actif", true).order("nom", { ascending: true }),
+        ]);
       setCommandes(mesCommandes || []);
-      setChargementCommandes(false);
-
-      const { data: mesBeneficiaires } = await supabase
-        .from("beneficiaires")
-        .select("*")
-        .eq("profil_id", user.id)
-        .order("created_at", { ascending: false });
-
       setBeneficiaires(mesBeneficiaires || []);
-
-      const { data: cagnottesCreees } = await supabase
-        .from("cagnottes")
-        .select("*")
-        .eq("email_createur", user.email);
-
-      const { data: contribs } = await supabase
-        .from("contributions_cagnotte")
-        .select("cagnotte_id")
-        .eq("email_contributeur", user.email)
-        .eq("statut", "payee");
+      setCatalogue(catalogueData || []);
 
       let cagnottesContribuees = [];
-      if (contribs && contribs.length > 0) {
+      if (contribs?.length) {
         const ids = [...new Set(contribs.map((c) => c.cagnotte_id))];
         const { data } = await supabase.from("cagnottes").select("*").in("id", ids);
         cagnottesContribuees = data || [];
       }
-
-      const toutesCagnottes = [...(cagnottesCreees || []), ...cagnottesContribuees].filter(
-        (c, i, arr) => arr.findIndex((x) => x.id === c.id) === i
+      const toutes = [...(cagnottesCreees || []), ...cagnottesContribuees].filter(
+        (c, i, liste) => liste.findIndex((x) => x.id === c.id) === i
       );
-
-      const cagnottesAvecContributeurs = await Promise.all(
-        toutesCagnottes.map(async (c) => {
+      const avecContributeurs = await Promise.all(
+        toutes.map(async (c) => {
           const { count } = await supabase
             .from("contributions_cagnotte")
             .select("*", { count: "exact", head: true })
@@ -169,28 +158,23 @@ export default function Profil() {
           return { ...c, nombreContributeurs: count || 0 };
         })
       );
-
-      setCagnottes(cagnottesAvecContributeurs);
-
-      const { data: catalogueData } = await supabase
-        .from("catalogue")
-        .select("nom, slug")
-        .eq("actif", true)
-        .order("nom", { ascending: true });
-      setCatalogue(catalogueData || []);
-
+      setCagnottes(avecContributeurs);
       setChargement(false);
     };
-
     charger();
-  }, []);
+  }, [locale]);
+
+  const changerOnglet = (o) => {
+    setOnglet(o);
+    const url = new URL(window.location.href);
+    url.searchParams.set("onglet", o);
+    window.history.replaceState(null, "", url);
+  };
 
   const handleEnregistrerInfos = async (e) => {
     e.preventDefault();
     setEnregistrementInfos(true);
-    setSuccesInfos(false);
-    setErreurSecurite("");
-
+    setMessageInfos(null);
     const { data: profilEnregistre, error } = await supabase.from("profils").upsert({
       id: utilisateur.id,
       prenom,
@@ -204,12 +188,11 @@ export default function Profil() {
       genre: genre || null,
       enseigne_favorite: enseigneFavorite || null,
     }).select("points").single();
-
     if (error) {
       console.error(error);
-      setErreurSecurite(error.message);
+      setMessageInfos({ texte: t("erreur"), ok: false });
     } else {
-      setSuccesInfos(true);
+      setMessageInfos({ texte: t("infosOk"), ok: true });
       // Les points peuvent changer (bonus newsletter)
       if (profilEnregistre) setPoints(profilEnregistre.points || 0);
     }
@@ -218,53 +201,43 @@ export default function Profil() {
 
   const handleChangerMotDePasse = async (e) => {
     e.preventDefault();
+    setMessageSecurite(null);
+    if (!motDePasseValide(nouveauMotDePasse)) return setMessageSecurite({ texte: tCompte("mdpRegle"), ok: false });
     setEnregistrementMdp(true);
-    setErreurSecurite("");
-    setSuccesMdp(false);
-
-    const res = await fetch("/api/changer-mot-de-passe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: utilisateur.id,
-        email: utilisateur.email,
-        motDePasseActuel: motDePasseActuelMdp,
-        nouveauMotDePasse,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setErreurSecurite(data.error || "Une erreur est survenue.");
-      setEnregistrementMdp(false);
-      return;
+    try {
+      const res = await fetchSession("/api/changer-mot-de-passe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ motDePasseActuel, nouveauMotDePasse }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMessageSecurite({ texte: t.has(`mdpErreur_${data.code}`) ? t(`mdpErreur_${data.code}`) : t("erreur"), ok: false });
+      } else {
+        setMessageSecurite({ texte: t("mdpOk"), ok: true });
+        setNouveauMotDePasse("");
+        setMotDePasseActuel("");
+      }
+    } catch {
+      setMessageSecurite({ texte: t("erreur"), ok: false });
     }
-
-    setSuccesMdp(true);
-    setNouveauMotDePasse("");
-    setMotDePasseActuelMdp("");
     setEnregistrementMdp(false);
   };
 
   const handleDeconnexion = async () => {
     await supabase.auth.signOut();
-    window.location.href = "/fr";
+    window.location.href = `/${locale}`;
   };
 
   const handleSupprimerCompte = async () => {
     setSuppression(true);
-    const res = await fetch('/api/supprimer-compte', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: utilisateur.id }),
-    });
+    const res = await fetchSession("/api/supprimer-compte", { method: "POST" });
     if (res.ok) {
       await supabase.auth.signOut();
-      window.location.href = '/fr';
+      window.location.href = `/${locale}`;
     } else {
       setSuppression(false);
-      setErreurSecurite('Une erreur est survenue lors de la suppression.');
+      setMessageSecurite({ texte: t("suppressionErreur"), ok: false });
     }
   };
 
@@ -279,25 +252,20 @@ export default function Profil() {
     e.preventDefault();
     setErreurBenef("");
     const anniversaire = lireAnniversaire(nouvelAnniv);
-    if (!anniversaire) {
-      setErreurBenef("Cette date d'anniversaire n'existe pas.");
-      return;
-    }
+    if (!anniversaire) return setErreurBenef(t("annivInvalide"));
     setAjoutBenef(true);
-
     const { data } = await supabase
       .from("beneficiaires")
       .insert({ profil_id: utilisateur.id, nom: nouveauNom, email: nouvelEmailBenef || null, ...anniversaire })
       .select()
       .single();
-
     if (data) {
       setBeneficiaires((prev) => [data, ...prev]);
       setNouveauNom("");
       setNouvelEmailBenef("");
       setNouvelAnniv({ jour: "", mois: "" });
     } else {
-      setErreurBenef("Le bénéficiaire n'a pas pu être ajouté, réessayez.");
+      setErreurBenef(t("benefErreur"));
     }
     setAjoutBenef(false);
   };
@@ -305,10 +273,7 @@ export default function Profil() {
   const handleEnregistrerAnniversaire = async () => {
     setErreurBenef("");
     const anniversaire = lireAnniversaire(annivEnEdition);
-    if (!anniversaire) {
-      setErreurBenef("Cette date d'anniversaire n'existe pas.");
-      return;
-    }
+    if (!anniversaire) return setErreurBenef(t("annivInvalide"));
     const { data } = await supabase
       .from("beneficiaires")
       .update({ ...anniversaire, dernier_rappel: null })
@@ -319,7 +284,7 @@ export default function Profil() {
       setBeneficiaires((prev) => prev.map((b) => (b.id === data.id ? data : b)));
       setAnnivEnEdition(null);
     } else {
-      setErreurBenef("La date n'a pas pu être enregistrée, réessayez.");
+      setErreurBenef(t("benefErreur"));
     }
   };
 
@@ -328,381 +293,261 @@ export default function Profil() {
     setBeneficiaires((prev) => prev.filter((b) => b.id !== id));
   };
 
-  const paliers = [
-    { nom: "Bronze", seuil: 0, couleur: "#B08D57" },
-    { nom: "Argent", seuil: 100, couleur: "#C0C0C0" },
-    { nom: "Or", seuil: 300, couleur: "#C9A227" },
-    { nom: "Platine", seuil: 700, couleur: "#E5E4E2" },
-  ];
-
-  const palierActuel = [...paliers].reverse().find((p) => points >= p.seuil) || paliers[0];
-  const prochainPalier = paliers.find((p) => p.seuil > points);
-
-  const initiale = (pseudo || prenom || utilisateur?.email || "?").charAt(0).toUpperCase();
-
   if (chargement) {
     return (
-      <div className="max-w-[440px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
-        Chargement...
+      <div className="max-w-[440px] mx-auto px-6 pt-40 pb-24 text-center" role="status">
+        <div className="mx-auto w-10 h-10 rounded-full border-2 border-gold/30 border-t-gold animate-spin" aria-hidden />
+        <p className="mt-6 text-ivory/60">{t("chargement")}</p>
       </div>
     );
   }
 
-  const statutLabel = {
-    payee: "Payée",
-    a_programmer: "Programmée",
-    envoi_en_cours: "Programmée",
+  const palierActuel = [...PALIERS].reverse().find((p) => points >= p.seuil) || PALIERS[0];
+  const prochainPalier = PALIERS.find((p) => p.seuil > points);
+  const progression = prochainPalier
+    ? Math.min(100, ((points - palierActuel.seuil) / (prochainPalier.seuil - palierActuel.seuil)) * 100)
+    : 100;
+  const initiale = (pseudo || prenom || utilisateur?.email || "?").charAt(0).toUpperCase();
+  const statutCommande = (c) => {
+    if (["a_programmer", "envoi_en_cours"].includes(c.statut)) return t("statut_programmee");
+    return t.has(`statut_${c.statut}`) ? t(`statut_${c.statut}`) : c.statut;
   };
 
   return (
-    <div className="max-w-[700px] mx-auto px-6 pt-32 pb-20">
-      <div className="flex items-center gap-4 mb-1">
-        {avatarIllustration ? (
-          <div
-            className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0"
-            style={{ backgroundColor: couleurAvatar }}
-          >
-            <img src={avatarIllustration} alt="Avatar" className="w-full h-full object-cover" />
-          </div>
-        ) : (
-          <div
-            className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-semibold text-ink flex-shrink-0 font-[family-name:var(--font-fraunces)]"
-            style={{ backgroundColor: couleurAvatar }}
-          >
-            {initiale}
-          </div>
-        )}
-        <div>
-          <h1 className="text-3xl font-semibold text-ivory">Mon compte</h1>
+    <div className="max-w-[760px] mx-auto px-6 pt-28 md:pt-32 pb-20">
+      {/* En-tête : avatar, nom, palier */}
+      <div className="flex items-center gap-4">
+        <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-2xl font-semibold text-ink font-[family-name:var(--font-fraunces)]"
+          style={{ backgroundColor: couleurAvatar }}>
+          {avatarIllustration ? <img src={avatarIllustration} alt="" className="w-full h-full object-cover" /> : initiale}
         </div>
-      </div>
-      <p className="text-sm text-ivory/50 mb-6 ml-[72px]">{utilisateur.email}</p>
-
-      <div className="border border-ivory/10 rounded-xl p-5 mb-8 flex items-center justify-between">
-        <div>
-          <span
-            className="text-xs uppercase tracking-wide font-semibold px-2.5 py-1 rounded-full"
-            style={{ backgroundColor: `${palierActuel.couleur}20`, color: palierActuel.couleur }}
-          >
-            {palierActuel.nom}
-          </span>
-          <p className="mt-2 text-ivory text-lg font-semibold">{points} points</p>
-          {prochainPalier && (
-            <p className="text-xs text-ivory/40 mt-1">
-              Encore {prochainPalier.seuil - points} points avant {prochainPalier.nom}
-            </p>
-          )}
+        <div className="min-w-0">
+          <h1 className="text-3xl font-semibold text-ivory truncate">{pseudo || prenom ? t("bonjour", { nom: pseudo || prenom }) : t("titre")}</h1>
+          <p className="text-sm text-ivory/55 truncate">{utilisateur.email}</p>
         </div>
       </div>
 
-      <div className="flex gap-2 border border-ivory/10 rounded-lg p-1 mb-10 flex-wrap">
-        <button
-          onClick={() => setOnglet("infos")}
-          className={`flex-1 text-sm py-2 rounded-md transition-colors ${
-            onglet === "infos" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-          }`}
-        >
-          Infos
-        </button>
-        <button
-          onClick={() => setOnglet("commandes")}
-          className={`flex-1 text-sm py-2 rounded-md transition-colors ${
-            onglet === "commandes" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-          }`}
-        >
-          Commandes
-        </button>
-        <button
-          onClick={() => setOnglet("cashback")}
-          className={`flex-1 text-sm py-2 rounded-md transition-colors ${
-            onglet === "cashback" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-          }`}
-        >
-          Cashback
-        </button>
-        <button
-          onClick={() => setOnglet("beneficiaires")}
-          className={`flex-1 text-sm py-2 rounded-md transition-colors ${
-            onglet === "beneficiaires" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-          }`}
-        >
-          Bénéficiaires
-        </button>
-        <button
-          onClick={() => setOnglet("cagnottes")}
-          className={`flex-1 text-sm py-2 rounded-md transition-colors ${
-            onglet === "cagnottes" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-          }`}
-        >
-          Cagnottes
-        </button>
-        <button
-          onClick={() => setOnglet("securite")}
-          className={`flex-1 text-sm py-2 rounded-md transition-colors ${
-            onglet === "securite" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-          }`}
-        >
-          Sécurité
-        </button>
+      <a href={`/${locale}/fidelite`} className="mt-6 block rounded-2xl border border-ivory/15 bg-ivory/[0.03] p-5 hover:border-ivory/30 transition-colors">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="w-11 h-11 rounded-full shrink-0 flex items-center justify-center text-ink font-semibold font-[family-name:var(--font-fraunces)]"
+              style={{ background: `radial-gradient(circle at 30% 30%, #fff8, transparent 45%), ${palierActuel.couleur}` }}>
+              {tFid(`${palierActuel.cle}Nom`).charAt(0)}
+            </span>
+            <div>
+              <p className="text-ivory font-semibold">{tFid(`${palierActuel.cle}Nom`)}</p>
+              <p className="text-sm text-ivory/60">{t("points", { n: points })}</p>
+            </div>
+          </div>
+          <span className="text-sm text-gold whitespace-nowrap">{t("voirProgramme")} ›</span>
+        </div>
+        <div className="mt-4 h-1.5 rounded-full bg-ivory/10 overflow-hidden">
+          <div className="h-full rounded-full" style={{ width: `${progression}%`, background: prochainPalier?.couleur || palierActuel.couleur }} />
+        </div>
+        <p className="mt-2 text-xs text-ivory/50">
+          {prochainPalier ? t("encore", { n: prochainPalier.seuil - points, palier: tFid(`${prochainPalier.cle}Nom`) }) : t("max")}
+        </p>
+      </a>
+
+      {/* Onglets (défilent à l'horizontale sur téléphone) */}
+      <div className="-mx-6 px-6 mt-8 mb-8 overflow-x-auto [scrollbar-width:none]">
+        <div role="tablist" className="flex gap-1 w-max border border-ivory/10 rounded-lg p-1">
+          {ONGLETS.map((o) => (
+            <button key={o} role="tab" aria-selected={onglet === o} onClick={() => changerOnglet(o)}
+              className={`text-sm px-4 py-2 rounded-md whitespace-nowrap transition-colors ${
+                onglet === o ? "bg-gold text-ink font-medium" : "text-ivory/65 hover:text-ivory"
+              }`}>
+              {t(`onglet_${o}`)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {onglet === "infos" && (
-        <form onSubmit={handleEnregistrerInfos}>
-          <label className="block text-sm text-ivory/70 mb-3">Avatar</label>
-
-          <div className="grid grid-cols-4 gap-3 mb-6">
-            <button
-              type="button"
-              onClick={() => setAvatarIllustration(null)}
-              className={`w-14 h-14 rounded-full flex items-center justify-center text-lg font-semibold text-ink font-[family-name:var(--font-fraunces)] transition-all ${
-                !avatarIllustration ? "ring-2 ring-offset-2 ring-offset-ink ring-gold scale-105" : "opacity-70 hover:opacity-100"
-              }`}
-              style={{ backgroundColor: couleurAvatar }}
-            >
-              {initiale}
-            </button>
-            {avatarsIllustration.map((src) => (
-              <button
-                key={src}
-                type="button"
-                onClick={() => setAvatarIllustration(src)}
-                className={`w-14 h-14 rounded-full overflow-hidden transition-all ${
-                  avatarIllustration === src ? "ring-2 ring-offset-2 ring-offset-ink ring-gold scale-105" : "opacity-70 hover:opacity-100"
-                }`}
-                style={{ backgroundColor: couleurAvatar }}
-              >
-                <img src={src} alt="Avatar" className="w-full h-full object-cover" />
+        <form onSubmit={handleEnregistrerInfos} className="space-y-6">
+          <div>
+            <p className={libelle}>{t("avatar")}</p>
+            <div className="flex flex-wrap gap-3">
+              <button type="button" onClick={() => setAvatarIllustration(null)} aria-pressed={!avatarIllustration} aria-label={t("avatarInitiale")}
+                className={`w-14 h-14 rounded-full flex items-center justify-center text-lg font-semibold text-ink font-[family-name:var(--font-fraunces)] transition-all ${
+                  !avatarIllustration ? "ring-2 ring-offset-2 ring-offset-ink ring-gold" : "opacity-70 hover:opacity-100"
+                }`} style={{ backgroundColor: couleurAvatar }}>
+                {initiale}
               </button>
-            ))}
+              {AVATARS.map((src, i) => (
+                <button key={src} type="button" onClick={() => setAvatarIllustration(src)} aria-pressed={avatarIllustration === src}
+                  aria-label={t("avatarNumero", { n: i + 1 })}
+                  className={`w-14 h-14 rounded-full overflow-hidden transition-all ${
+                    avatarIllustration === src ? "ring-2 ring-offset-2 ring-offset-ink ring-gold" : "opacity-70 hover:opacity-100"
+                  }`} style={{ backgroundColor: couleurAvatar }}>
+                  <img src={src} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+            <p className={`${libelle} mt-5`}>{t("couleurFond")}</p>
+            <div className="flex flex-wrap gap-3">
+              {COULEURS_AVATAR.map((c) => (
+                <button key={c} type="button" onClick={() => setCouleurAvatar(c)} aria-pressed={couleurAvatar === c}
+                  aria-label={t("couleur", { c })}
+                  className={`w-9 h-9 rounded-full transition-all ${couleurAvatar === c ? "ring-2 ring-offset-2 ring-offset-ink ring-gold" : "opacity-70 hover:opacity-100"}`}
+                  style={{ backgroundColor: c }} />
+              ))}
+            </div>
           </div>
 
-          <label className="block text-sm text-ivory/70 mb-3">Couleur de fond</label>
-          <div className="flex flex-wrap gap-3 mb-2">
-            {couleursAvatar.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setCouleurAvatar(c)}
-                className={`w-9 h-9 rounded-full transition-all ${
-                  couleurAvatar === c ? "ring-2 ring-offset-2 ring-offset-ink ring-gold scale-110" : "opacity-70 hover:opacity-100"
-                }`}
-                style={{ backgroundColor: c }}
-                aria-label={`Choisir la couleur ${c}`}
-              />
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label htmlFor="pf-pseudo" className={libelle}>{t("pseudo")}</label>
+              <input id="pf-pseudo" type="text" value={pseudo} onChange={(e) => setPseudo(e.target.value)} maxLength={20} className={champ} />
+            </div>
+            <div>
+              <label htmlFor="pf-tel" className={libelle}>{t("telephone")}</label>
+              <input id="pf-tel" type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} autoComplete="tel" className={champ} />
+            </div>
+            <div>
+              <label htmlFor="pf-prenom" className={libelle}>{t("prenom")}</label>
+              <input id="pf-prenom" type="text" value={prenom} onChange={(e) => setPrenom(e.target.value)} autoComplete="given-name" className={champ} />
+            </div>
+            <div>
+              <label htmlFor="pf-nom" className={libelle}>{t("nom")}</label>
+              <input id="pf-nom" type="text" value={nom} onChange={(e) => setNom(e.target.value)} autoComplete="family-name" className={champ} />
+            </div>
+            <div>
+              <label htmlFor="pf-naissance" className={libelle}>{t("dateNaissance")}</label>
+              <input id="pf-naissance" type="date" value={dateNaissance} onChange={(e) => setDateNaissance(e.target.value)}
+                className={`${champ} [color-scheme:dark]`} />
+              <p className="mt-1 text-xs text-ivory/45">{t("dateNaissanceAide")}</p>
+            </div>
+            <div>
+              <label htmlFor="pf-genre" className={libelle}>{t("genre")}</label>
+              <select id="pf-genre" value={genre} onChange={(e) => setGenre(e.target.value)} className={`${champ} [color-scheme:dark]`}>
+                <option value="" className="bg-ink">{t("genreNon")}</option>
+                <option value="femme" className="bg-ink">{t("genreFemme")}</option>
+                <option value="homme" className="bg-ink">{t("genreHomme")}</option>
+                <option value="autre" className="bg-ink">{t("genreAutre")}</option>
+              </select>
+            </div>
           </div>
 
-          <label className="block text-sm text-ivory/70 mb-2 mt-6">Pseudo</label>
-          <input
-            type="text"
-            value={pseudo}
-            onChange={(e) => setPseudo(e.target.value)}
-            maxLength={20}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-          />
+          <div>
+            <label htmlFor="pf-enseigne" className={libelle}>{t("enseigneFavorite")}</label>
+            <select id="pf-enseigne" value={enseigneFavorite} onChange={(e) => setEnseigneFavorite(e.target.value)} className={`${champ} [color-scheme:dark]`}>
+              <option value="" className="bg-ink">{t("aucunePreference")}</option>
+              {catalogue.map((c) => <option key={c.slug} value={c.nom} className="bg-ink">{c.nom}</option>)}
+            </select>
+          </div>
 
-          <label className="block text-sm text-ivory/70 mb-2 mt-6">Prénom</label>
-          <input
-            type="text"
-            value={prenom}
-            onChange={(e) => setPrenom(e.target.value)}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-          />
-
-          <label className="block text-sm text-ivory/70 mb-2 mt-6">Nom</label>
-          <input
-            type="text"
-            value={nom}
-            onChange={(e) => setNom(e.target.value)}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-          />
-
-          <label className="block text-sm text-ivory/70 mb-2 mt-6">Téléphone</label>
-          <input
-            type="tel"
-            value={telephone}
-            onChange={(e) => setTelephone(e.target.value)}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-          />
-
-          <label className="block text-sm text-ivory/70 mb-2 mt-6">Date de naissance</label>
-          <input
-            type="date"
-            value={dateNaissance}
-            onChange={(e) => setDateNaissance(e.target.value)}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory [color-scheme:dark]"
-          />
-          <p className="mt-1 text-xs text-ivory/40">
-            Pour vous souhaiter votre anniversaire (facultatif).
-          </p>
-
-          <label className="block text-sm text-ivory/70 mb-2 mt-6">Genre</label>
-          <select
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-          >
-            <option value="" className="bg-ink">Préférer ne pas préciser</option>
-            <option value="femme" className="bg-ink">Femme</option>
-            <option value="homme" className="bg-ink">Homme</option>
-            <option value="autre" className="bg-ink">Autre</option>
-          </select>
-
-          <label className="block text-sm text-ivory/70 mb-2 mt-6">Enseigne favorite</label>
-          <select
-            value={enseigneFavorite}
-            onChange={(e) => setEnseigneFavorite(e.target.value)}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-          >
-            <option value="" className="bg-ink">Aucune préférence</option>
-            {catalogue.map((c) => (
-              <option key={c.slug} value={c.nom} className="bg-ink">{c.nom}</option>
-            ))}
-          </select>
-
-          <label className="flex items-start gap-2 mt-6 text-sm text-ivory/70">
-            <input
-              type="checkbox"
-              checked={accepteMarketing}
-              onChange={(e) => setAccepteMarketing(e.target.checked)}
-              className="mt-0.5"
-            />
+          <label className="flex items-start gap-3 text-sm text-ivory/75 cursor-pointer">
+            <input type="checkbox" checked={accepteMarketing} onChange={(e) => setAccepteMarketing(e.target.checked)}
+              className="mt-1 w-4 h-4 shrink-0 accent-[#C9A227]" />
             <span>
-              Recevoir des emails pour les fêtes, occasions et offres spéciales
-              <span className="block text-xs text-gold/80 mt-0.5">{POINTS_NEWSLETTER} points de fidélité offerts à la première inscription</span>
+              {t("newsletter")}
+              <span className="block text-xs text-gold/80 mt-0.5">{t("newsletterBonus", { points: POINTS_NEWSLETTER })}</span>
             </span>
           </label>
 
-          <button
-            type="submit"
-            disabled={enregistrementInfos}
-            className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40"
-          >
-            {enregistrementInfos ? "Enregistrement..." : "Enregistrer"}
+          <button type="submit" disabled={enregistrementInfos}
+            className="w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40">
+            {enregistrementInfos ? t("enregistrement") : t("enregistrer")}
           </button>
-
-          {succesInfos && <p className="mt-3 text-sm text-vert">Profil mis à jour !</p>}
-          {erreurSecurite && <p className="mt-3 text-sm text-corail">{erreurSecurite}</p>}
+          {messageInfos && <p role="status" className={`text-sm ${messageInfos.ok ? "text-vert" : "text-corail"}`}>{messageInfos.texte}</p>}
         </form>
       )}
 
       {onglet === "cashback" && <SoldeCashback />}
 
       {onglet === "commandes" && (
-        <div>
-          {chargementCommandes ? (
-            <p className="text-ivory/50 text-sm">Chargement des commandes...</p>
-          ) : commandes.length === 0 ? (
-            <p className="text-ivory/50 text-sm">Aucune commande pour le moment.</p>
-          ) : (
-            <div className="space-y-3">
-              {commandes.map((c) => (
-                <div key={c.id} className="border border-ivory/10 rounded-lg p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-ivory font-medium">{c.marque}</p>
-                      {c.beneficiaire && (
-                        <p className="text-sm text-ivory/50">Pour {c.beneficiaire}</p>
-                      )}
-                      <p className="text-xs text-ivory/40 mt-1">
-                        Commandée le {new Date(c.created_at).toLocaleDateString("fr-FR")}
-                      </p>
-                      {c.date_envoi ? (
-                        <p className="text-xs text-gold/70 mt-1">
-                          {c.statut === "a_programmer" ||
-                          new Date(`${c.date_envoi}T${c.heure_envoi || "00:00"}`) > new Date()
-                            ? "Envoi prévu"
-                            : "Envoyée"} le{" "}
-                          {new Date(c.date_envoi).toLocaleDateString("fr-FR")}
-                          {c.heure_envoi && ` à ${c.heure_envoi}`}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-vert/70 mt-1">Envoyée immédiatement</p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-ivory font-semibold">{c.montant} €</p>
-                      <span className="text-xs text-gold/70">
-                        {statutLabel[c.statut] || c.statut}
-                      </span>
-                    </div>
+        commandes.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-ivory/60">{t("aucuneCommande")}</p>
+            <a href={`/${locale}/boutique`} className="inline-block mt-5 bg-gold text-ink font-semibold rounded-lg px-6 py-3 hover:bg-gold/90">{t("offrir")}</a>
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {commandes.map((c) => {
+              const programmee = c.date_envoi && (c.statut === "a_programmer" || new Date(`${c.date_envoi}T${c.heure_envoi || "00:00"}`) > new Date());
+              return (
+                <li key={c.id} className="border border-ivory/10 rounded-xl p-4 flex justify-between items-start gap-4">
+                  <div className="min-w-0">
+                    <p className="text-ivory font-medium truncate">{c.marque}</p>
+                    {c.beneficiaire && <p className="text-sm text-ivory/55 truncate">{t("pour", { prenom: c.beneficiaire })}</p>}
+                    <p className="text-xs text-ivory/45 mt-1">{t("commandeeLe", { date: dateLongue(c.created_at) })}</p>
+                    <p className={`text-xs mt-1 ${programmee ? "text-gold/85" : "text-vert/85"}`}>
+                      {c.date_envoi
+                        ? t(programmee ? "envoiPrevu" : "envoyeeLe", {
+                            date: new Date(`${c.date_envoi}T12:00:00Z`).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }),
+                            heure: c.heure_envoi || "",
+                          })
+                        : t("envoyeeImmediatement")}
+                    </p>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-ivory font-semibold">{euros(c.montant)}</p>
+                    <span className="text-xs text-gold/80">{statutCommande(c)}</span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )
       )}
 
       {onglet === "beneficiaires" && (
         <div>
-          <form onSubmit={handleAjouterBeneficiaire} className="mb-8 border border-ivory/10 rounded-lg p-4">
-            <label className="block text-sm text-ivory/70 mb-2">Nom</label>
-            <input
-              type="text"
-              value={nouveauNom}
-              onChange={(e) => setNouveauNom(e.target.value)}
-              required
-              placeholder="Ex : Maman"
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
-            />
-            <label className="block text-sm text-ivory/70 mb-2 mt-4">Email (facultatif)</label>
-            <input
-              type="email"
-              value={nouvelEmailBenef}
-              onChange={(e) => setNouvelEmailBenef(e.target.value)}
-              placeholder="maman@exemple.com"
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
-            />
-            <label htmlFor="anniv-nouveau" className="block text-sm text-ivory/70 mb-2 mt-4">Anniversaire (facultatif)</label>
-            <ChampAnniversaire id="anniv-nouveau" jour={nouvelAnniv.jour} mois={nouvelAnniv.mois}
-              onChange={(jour, mois) => setNouvelAnniv({ jour, mois })} />
-            <p className="mt-1.5 text-xs text-ivory/40">On vous envoie un rappel par email {JOURS_AVANT_RAPPEL} jours avant.</p>
-            <button
-              type="submit"
-              disabled={ajoutBenef}
-              className="mt-4 bg-gold text-ink text-sm font-medium rounded-lg px-5 py-2.5 hover:bg-gold/90 transition-colors disabled:opacity-40"
-            >
-              {ajoutBenef ? "Ajout..." : "Ajouter"}
+          <p className="text-sm text-ivory/60 mb-5">{t("benefIntro", { jours: JOURS_AVANT_RAPPEL })}</p>
+          <form onSubmit={handleAjouterBeneficiaire} className="mb-8 border border-ivory/10 rounded-xl p-5 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="b-nom" className={libelle}>{t("benefNom")}</label>
+                <input id="b-nom" type="text" value={nouveauNom} onChange={(e) => setNouveauNom(e.target.value)} required
+                  placeholder={t("benefNomExemple")} className={champ} />
+              </div>
+              <div>
+                <label htmlFor="b-email" className={libelle}>{t("benefEmail")}</label>
+                <input id="b-email" type="email" value={nouvelEmailBenef} onChange={(e) => setNouvelEmailBenef(e.target.value)}
+                  placeholder={t("benefEmailExemple")} className={champ} />
+              </div>
+            </div>
+            <div>
+              <label htmlFor="anniv-nouveau" className={libelle}>{t("benefAnniv")}</label>
+              <ChampAnniversaire id="anniv-nouveau" jour={nouvelAnniv.jour} mois={nouvelAnniv.mois}
+                onChange={(jour, mois) => setNouvelAnniv({ jour, mois })} />
+              <p className="mt-1.5 text-xs text-ivory/45">{t("benefRappel", { jours: JOURS_AVANT_RAPPEL })}</p>
+            </div>
+            <button type="submit" disabled={ajoutBenef}
+              className="bg-gold text-ink text-sm font-semibold rounded-lg px-5 py-2.5 hover:bg-gold/90 transition-colors disabled:opacity-40">
+              {ajoutBenef ? t("ajout") : t("ajouter")}
             </button>
           </form>
-
           {erreurBenef && <p className="-mt-4 mb-6 text-sm text-corail">{erreurBenef}</p>}
 
           {beneficiaires.length === 0 ? (
-            <p className="text-ivory/50 text-sm">Aucun bénéficiaire enregistré pour le moment.</p>
+            <p className="text-ivory/55 text-sm">{t("aucunBenef")}</p>
           ) : (
-            <div className="space-y-3">
+            <ul className="space-y-3">
               {beneficiaires.map((b) => (
-                <div key={b.id} className="border border-ivory/10 rounded-lg p-4">
+                <li key={b.id} className="border border-ivory/10 rounded-xl p-4">
                   <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-ivory font-medium">{b.nom}</p>
-                      {b.email && <p className="text-sm text-ivory/50">{b.email}</p>}
+                    <div className="min-w-0">
+                      <p className="text-ivory font-medium truncate">{b.nom}</p>
+                      {b.email && <p className="text-sm text-ivory/55 truncate">{b.email}</p>}
                       {annivEnEdition?.id !== b.id && (
                         b.anniversaire_mois ? (
                           <button type="button" onClick={() => setAnnivEnEdition({ id: b.id, jour: String(b.anniversaire_jour), mois: String(b.anniversaire_mois) })}
-                            className="mt-1 text-xs text-gold/80 hover:text-gold">
-                            🎂 Anniversaire le {formaterJourMois(b.anniversaire_jour, b.anniversaire_mois)} · modifier
+                            className="mt-1 text-xs text-gold/85 hover:text-gold">
+                            🎂 {t("annivLe", { date: jourMois(b.anniversaire_jour, b.anniversaire_mois) })} · {t("modifier")}
                           </button>
                         ) : (
                           <button type="button" onClick={() => setAnnivEnEdition({ id: b.id, jour: "", mois: "" })}
-                            className="mt-1 text-xs text-ivory/45 hover:text-gold underline underline-offset-2">
-                            Ajouter son anniversaire
+                            className="mt-1 text-xs text-ivory/50 hover:text-gold underline underline-offset-2">
+                            {t("ajouterAnniv")}
                           </button>
                         )
                       )}
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
-                      <a href={`/fr/boutique?pour=${encodeURIComponent(b.nom)}`} className="text-sm text-gold/80 hover:text-gold">
-                        Offrir
-                      </a>
-                      <button
-                        onClick={() => handleSupprimerBeneficiaire(b.id)}
-                        className="text-ivory/40 hover:text-corail transition-colors text-sm"
-                      >
-                        Retirer
-                      </button>
+                      <a href={`/${locale}/boutique?pour=${encodeURIComponent(b.nom)}`} className="text-sm text-gold/85 hover:text-gold">{t("offrirCourt")}</a>
+                      <button onClick={() => handleSupprimerBeneficiaire(b.id)} className="text-ivory/45 hover:text-corail transition-colors text-sm">{t("retirer")}</button>
                     </div>
                   </div>
                   {annivEnEdition?.id === b.id && (
@@ -713,168 +558,99 @@ export default function Profil() {
                       </div>
                       <div className="flex gap-3 items-center">
                         <button type="button" onClick={handleEnregistrerAnniversaire}
-                          className="bg-gold text-ink text-sm font-medium rounded-lg px-4 py-2 hover:bg-gold/90">
-                          Enregistrer
-                        </button>
-                        <button type="button" onClick={() => setAnnivEnEdition(null)} className="text-sm text-ivory/50 hover:text-ivory">
-                          Annuler
-                        </button>
+                          className="bg-gold text-ink text-sm font-medium rounded-lg px-4 py-2 hover:bg-gold/90">{t("enregistrer")}</button>
+                        <button type="button" onClick={() => setAnnivEnEdition(null)} className="text-sm text-ivory/55 hover:text-ivory">{t("annuler")}</button>
                       </div>
                     </div>
                   )}
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </div>
       )}
 
       {onglet === "cagnottes" && (
-        <div>
-          {cagnottes.length === 0 ? (
-            <p className="text-ivory/50 text-sm">Aucune cagnotte pour le moment.</p>
-          ) : (
-            <div className="space-y-4">
-              {cagnottes.map((c) => {
-                const pourcentage = c.montant_libre
-                  ? 100
-                  : Math.min(100, Math.round((c.montant_collecte / c.montant_objectif) * 100));
-                const statutLabelCagnotte =
-                  c.statut === "cloturee" ? "Clôturée" : c.statut === "attente_choix" ? "En attente de choix" : "Ouverte";
-
-                return (
-                  <a
-                    key={c.id}
-                    href={`/fr/cagnotte/${c.slug}`}
-                    className="block border border-ivory/10 rounded-xl overflow-hidden hover:border-gold/30 transition-colors"
-                  >
-                    <div
-                      className="relative p-5"
-                      style={{
-                        background: c.background || "linear-gradient(150deg, #5B3A5C 0%, #0d1022 100%)",
-                      }}
-                    >
-                      <div
-                        className="absolute inset-0 opacity-[0.07]"
-                        style={{ background: "linear-gradient(115deg, transparent 30%, white 48%, transparent 65%)" }}
-                      />
-                      <div className="relative flex items-center justify-between">
-                        <span className={`text-sm font-medium ${c.texte_fonce ? "text-ink" : "text-white"}`}>
-                          Pour {c.beneficiaire}
-                        </span>
-                        <span className="text-gold/70 text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)]">
-                          Estalviar
-                        </span>
-                      </div>
-                      <div className="relative mt-4">
-                        <div className="flex items-end justify-between mb-2">
-                          <p className={`text-3xl font-semibold font-[family-name:var(--font-fraunces)] ${c.texte_fonce ? "text-ink" : "text-white"}`}>
-                            {c.montant_collecte}<span className="text-lg text-gold ml-1">€</span>
-                            {!c.montant_libre && (
-                              <span className={`text-sm font-sans ml-2 ${c.texte_fonce ? "text-ink/40" : "text-white/40"}`}>
-                                / {c.montant_objectif} €
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-gold rounded-full" style={{ width: `${pourcentage}%` }} />
-                        </div>
-                        <p className={`text-xs mt-2 ${c.texte_fonce ? "text-ink/40" : "text-white/40"}`}>
-                          {c.nombreContributeurs || 0} contributeur{(c.nombreContributeurs || 0) > 1 ? "s" : ""}
-                        </p>
-                      </div>
+        cagnottes.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-ivory/60">{t("aucuneCagnotte")}</p>
+            <a href={`/${locale}/cagnotte/creer`} className="inline-block mt-5 bg-gold text-ink font-semibold rounded-lg px-6 py-3 hover:bg-gold/90">{t("creerCagnotte")}</a>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {cagnottes.map((c) => {
+              const pourcentage = c.montant_libre ? 100 : Math.min(100, Math.round((c.montant_collecte / c.montant_objectif) * 100));
+              const statut = c.statut === "cloturee" ? t("cagnotteCloturee") : c.statut === "attente_choix" ? t("cagnotteAttente") : t("cagnotteOuverte");
+              const fonce = c.texte_fonce;
+              return (
+                <a key={c.id} href={`/${locale}/cagnotte/${c.slug}`}
+                  className="block border border-ivory/10 rounded-xl overflow-hidden hover:border-gold/30 transition-colors">
+                  <div className="relative p-5" style={{ background: c.background || "linear-gradient(150deg, #5B3A5C 0%, #0d1022 100%)" }}>
+                    <div aria-hidden className="absolute inset-0 opacity-[0.07]" style={{ background: "linear-gradient(115deg, transparent 30%, white 48%, transparent 65%)" }} />
+                    <div className="relative flex items-center justify-between">
+                      <span className={`text-sm font-medium ${fonce ? "text-ink" : "text-white"}`}>{t("pour", { prenom: c.beneficiaire })}</span>
+                      <span className="text-gold/80 text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
                     </div>
-
-                    <div className="flex justify-between items-center px-5 py-3 bg-ink-secondary/50">
-                      <p className="text-xs text-ivory/40">
-                        {c.email_createur === utilisateur.email ? "Créée par vous" : "Vous avez contribué"}
+                    <div className="relative mt-4">
+                      <p className={`text-3xl font-semibold font-[family-name:var(--font-fraunces)] ${fonce ? "text-ink" : "text-white"}`}>
+                        {euros(c.montant_collecte)}
+                        {!c.montant_libre && <span className={`text-sm font-sans ml-2 ${fonce ? "text-ink/45" : "text-white/45"}`}>/ {euros(c.montant_objectif)}</span>}
                       </p>
-                      <span className="text-xs text-gold/70">{statutLabelCagnotte}</span>
+                      <div className="mt-2 h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-gold rounded-full" style={{ width: `${pourcentage}%` }} />
+                      </div>
+                      <p className={`text-xs mt-2 ${fonce ? "text-ink/45" : "text-white/50"}`}>{t("contributeurs", { n: c.nombreContributeurs || 0 })}</p>
                     </div>
-                  </a>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  </div>
+                  <div className="flex justify-between items-center px-5 py-3 bg-ivory/[0.03]">
+                    <p className="text-xs text-ivory/50">{c.email_createur === utilisateur.email ? t("creeeParVous") : t("vousAvezContribue")}</p>
+                    <span className="text-xs text-gold/80">{statut}</span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        )
       )}
 
       {onglet === "securite" && (
         <div className="space-y-10">
           <div>
-            <label className="block text-sm text-ivory/70 mb-2">Adresse email</label>
-            <p className="w-full bg-ivory/5 border border-ivory/10 rounded-lg px-4 py-3 text-ivory/60">
-              {utilisateur.email}
-            </p>
-            <p className="mt-2 text-xs text-ivory/40">
-              L'adresse email associée à votre compte ne peut pas être modifiée. Contactez-nous si besoin.
-            </p>
+            <p className={libelle}>{t("adresseEmail")}</p>
+            <p className="w-full bg-ivory/5 border border-ivory/10 rounded-lg px-4 py-3 text-ivory/65 break-all">{utilisateur.email}</p>
+            <p className="mt-2 text-xs text-ivory/45">{t("emailFixe")}</p>
           </div>
 
           <form onSubmit={handleChangerMotDePasse}>
-            <label className="block text-sm text-ivory/70 mb-2">Mot de passe actuel</label>
-            <input
-              type="password"
-              value={motDePasseActuelMdp}
-              onChange={(e) => setMotDePasseActuelMdp(e.target.value)}
-              required
-              placeholder="Confirmez votre mot de passe pour continuer"
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory mb-4"
-            />
-
-            <label className="block text-sm text-ivory/70 mb-2">Nouveau mot de passe</label>
-            <input
-              type="password"
-              value={nouveauMotDePasse}
-              onChange={(e) => setNouveauMotDePasse(e.target.value)}
-              minLength={6}
-              placeholder="Minimum 6 caractères"
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-            />
-            <button
-              type="submit"
-              disabled={enregistrementMdp || !nouveauMotDePasse}
-              className="mt-4 bg-transparent border border-gold text-gold font-medium rounded-lg px-6 py-2.5 hover:bg-gold/10 transition-colors disabled:opacity-40"
-            >
-              {enregistrementMdp ? "Enregistrement..." : "Changer le mot de passe"}
+            <h2 className="text-lg font-semibold text-ivory mb-4">{t("changerMdp")}</h2>
+            <label htmlFor="s-actuel" className={libelle}>{t("mdpActuel")}</label>
+            <ChampMotDePasse id="s-actuel" value={motDePasseActuel} onChange={(e) => setMotDePasseActuel(e.target.value)} />
+            <label htmlFor="s-nouveau" className={`${libelle} mt-4`}>{t("mdpNouveau")}</label>
+            <ChampMotDePasse id="s-nouveau" value={nouveauMotDePasse} onChange={(e) => setNouveauMotDePasse(e.target.value)} autoComplete="new-password" minLength={8} />
+            <p className="mt-1.5 text-xs text-ivory/45">{tCompte("mdpRegle")}</p>
+            <button type="submit" disabled={enregistrementMdp || !nouveauMotDePasse || !motDePasseActuel}
+              className="mt-4 border border-gold text-gold font-medium rounded-lg px-6 py-2.5 hover:bg-gold/10 transition-colors disabled:opacity-40">
+              {enregistrementMdp ? t("enregistrement") : t("changerMdp")}
             </button>
-            {succesMdp && <p className="mt-3 text-sm text-vert">Mot de passe mis à jour !</p>}
           </form>
 
-          {erreurSecurite && <p className="text-sm text-corail">{erreurSecurite}</p>}
+          {messageSecurite && <p role="status" className={`text-sm ${messageSecurite.ok ? "text-vert" : "text-corail"}`}>{messageSecurite.texte}</p>}
 
-          <div className="border-t border-ivory/10 pt-8 flex items-center justify-between">
-            <button
-              onClick={handleDeconnexion}
-              className="text-sm text-ivory/50 hover:text-ivory transition-colors"
-            >
-              Se déconnecter
-            </button>
-
+          <div className="border-t border-ivory/10 pt-8 flex flex-wrap items-center justify-between gap-4">
+            <button onClick={handleDeconnexion} className="text-sm text-ivory/60 hover:text-ivory transition-colors">{t("deconnexion")}</button>
             {!confirmationSuppression ? (
-              <button
-                onClick={() => setConfirmationSuppression(true)}
-                className="text-sm text-corail/70 hover:text-corail transition-colors"
-              >
-                Supprimer mon compte
+              <button onClick={() => setConfirmationSuppression(true)} className="text-sm text-corail/75 hover:text-corail transition-colors">
+                {t("supprimer")}
               </button>
             ) : (
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-ivory/50">Confirmer ?</span>
-                <button
-                  onClick={handleSupprimerCompte}
-                  disabled={suppression}
-                  className="text-sm text-corail font-medium hover:underline disabled:opacity-40"
-                >
-                  {suppression ? "Suppression..." : "Oui, supprimer"}
-                </button>
-                <button
-                  onClick={() => setConfirmationSuppression(false)}
-                  className="text-sm text-ivory/50 hover:text-ivory"
-                >
-                  Annuler
-                </button>
+              <div className="w-full rounded-xl border border-corail/40 bg-corail/10 p-4">
+                <p className="text-sm text-ivory/80">{t("supprimerAvertissement")}</p>
+                <div className="mt-3 flex gap-4">
+                  <button onClick={handleSupprimerCompte} disabled={suppression} className="text-sm text-corail font-medium hover:underline disabled:opacity-40">
+                    {suppression ? t("suppression") : t("supprimerOui")}
+                  </button>
+                  <button onClick={() => setConfirmationSuppression(false)} className="text-sm text-ivory/60 hover:text-ivory">{t("annuler")}</button>
+                </div>
               </div>
             )}
           </div>

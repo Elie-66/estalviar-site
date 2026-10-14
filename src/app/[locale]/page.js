@@ -34,6 +34,7 @@ export default function Home() {
   const tCategories = useTranslations("categories");
   const tFid = useTranslations("fideliteAccueil");
   const tFaq = useTranslations("faqAccueil");
+  const tPlus = useTranslations("accueilPlus");
   const locale = useLocale();
   const [populaires, setPopulaires] = useState([]);
   const [categories, setCategories] = useState([]); // [{ nom, nombre }]
@@ -291,7 +292,7 @@ export default function Home() {
               <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                 <div className="h-full bg-gold rounded-full" style={{ width: "70%" }} />
               </div>
-              <p className="text-white/40 text-xs mt-2">6 contributeurs</p>
+              <p className="text-white/40 text-xs mt-2">{tPlus("cagnotteExemple")}</p>
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { usePanier } from "../../context/PanierContext";
 import { supabase } from "../../../../lib/supabase";
-import SelecteurCarte from "../../components/SelecteurCarte";
+import { logoEnBlanc } from "../../../../lib/couleursCartes";
 
 const designs = [
   { id: "marque", nom: "Marque", background: (couleur = "#1b3a5c") => `linear-gradient(150deg, ${couleur} 0%, #0d1022 100%)` },
@@ -23,6 +23,7 @@ export default function FicheCarte({ params }) {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
   const t = useTranslations("ficheProduit");
+  const tDesign = useTranslations("designs");
   const { ajouterArticle } = usePanier();
 
   const [carte, setCarte] = useState(null);
@@ -126,10 +127,9 @@ export default function FicheCarte({ params }) {
 
   const aujourdHui = new Date();
   const annees = [aujourdHui.getFullYear(), aujourdHui.getFullYear() + 1];
-  const mois = [
-    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
-  ];
+  const mois = Array.from({ length: 12 }, (_, i) =>
+    new Date(Date.UTC(2000, i, 15)).toLocaleDateString(locale, { month: "long", timeZone: "UTC" })
+  ).map((m) => m.charAt(0).toUpperCase() + m.slice(1));
   const jours = Array.from({ length: 31 }, (_, i) => i + 1);
   const heures = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
   const minutes = ["00", "15", "30", "45"];
@@ -141,48 +141,56 @@ export default function FicheCarte({ params }) {
   const heureEnvoiComplete =
     dateEnvoiComplete ? `${heureEnvoi || "09"}:${minuteEnvoi || "00"}` : null;
 
+  // Vérifications avant l'ajout au panier
+  const versTexte = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const dansUnAn = new Date(aujourdHui.getFullYear() + 1, aujourdHui.getMonth(), aujourdHui.getDate());
+  const dateIncomplete = (jourEnvoi || moisEnvoi || anneeEnvoi) && !dateEnvoiComplete;
+  const dateExiste = !dateEnvoiComplete || (() => {
+    const d = new Date(Number(anneeEnvoi), Number(moisEnvoi), Number(jourEnvoi));
+    return d.getMonth() === Number(moisEnvoi) && d.getDate() === Number(jourEnvoi);
+  })();
+  const maintenantTexte = `${versTexte(aujourdHui)}T${String(aujourdHui.getHours()).padStart(2, "0")}:${String(aujourdHui.getMinutes()).padStart(2, "0")}`;
+  const erreurDate = dateIncomplete ? t("dateIncomplete")
+    : !dateExiste ? t("dateInvalide")
+    : dateEnvoiComplete && `${dateEnvoiComplete}T${heureEnvoiComplete}` <= maintenantTexte ? t("datePassee")
+    : dateEnvoiComplete && dateEnvoiComplete > versTexte(dansUnAn) ? t("dateTropLoin")
+    : "";
+  const montantValide = Number.isFinite(montant) && montant >= carte.montant_min && montant <= carte.montant_max;
+  const logoBlanc = !texteFonce && logoEnBlanc(carte);
+
   const carteVisuel = (
     <div
-      className="relative overflow-hidden rounded-2xl p-8 aspect-[1.6/1] flex flex-col justify-between border border-gold/30"
-      style={{
-        background: backgroundActuel,
-        boxShadow: `0 25px 60px -15px #00000066, 0 0 0 1px rgba(255,255,255,0.03)`,
-      }}
+      className="relative overflow-hidden rounded-2xl p-6 sm:p-8 aspect-[1.586/1] flex flex-col justify-between border border-white/10"
+      style={{ background: backgroundActuel, boxShadow: "0 30px 60px -20px rgba(0,0,0,0.8)" }}
     >
-      <div
-        className="absolute inset-0 opacity-[0.07]"
-        style={{
-          background: "linear-gradient(115deg, transparent 30%, white 48%, transparent 65%)",
-        }}
-      />
+      <div aria-hidden className="absolute inset-0 opacity-[0.14]"
+        style={{ background: "linear-gradient(115deg, transparent 35%, #fff 50%, transparent 65%)" }} />
 
-      <div className="relative flex items-center justify-between">
-        <img
-          src={carte.image}
-          alt={carte.nom}
-          className="h-10 object-contain opacity-95 drop-shadow-md"
-        />
-        <span className={`text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${texteFonce ? "text-ink/50" : "text-gold/70"}`}>
-          Estalviar
+      <div className="relative flex items-start justify-between">
+        {/* Logo posé sur la carte, sans cadre (comme sur l'accueil) */}
+        <div className="h-10 sm:h-12 w-36 flex items-center">
+          {carte.image ? (
+            <img src={carte.image} alt={carte.nom}
+              className={`max-h-full max-w-full object-contain object-left drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] ${logoBlanc ? "brightness-0 invert" : "rounded-md"}`} />
+          ) : (
+            <span className={`text-lg font-semibold font-[family-name:var(--font-fraunces)] ${couleurTexte}`}>{carte.nom}</span>
+          )}
+        </div>
+        <span className={`text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${texteFonce ? "text-ink/50" : "text-white/70"}`}>
+          ESTALVIAR
         </span>
       </div>
 
       <div className="relative">
         {(beneficiaire || message) && (
-          <div className="mb-4">
-            {beneficiaire && (
-              <p className={`text-sm font-medium ${couleurTexte}`}>Pour {beneficiaire}</p>
-            )}
-            {message && (
-              <p className={`text-sm italic line-clamp-2 max-w-[85%] mt-0.5 ${couleurTexteAtt}`}>"{message}"</p>
-            )}
+          <div className="mb-3">
+            {beneficiaire && <p className={`text-lg font-medium truncate ${couleurTexte}`}>{t("pour", { prenom: beneficiaire })}</p>}
+            {message && <p className={`text-sm italic line-clamp-2 max-w-[85%] mt-0.5 ${couleurTexteAtt}`}>« {message} »</p>}
           </div>
         )}
-
-        <div className={`h-px mb-4 ${texteFonce ? "bg-ink/20" : "bg-gradient-to-r from-gold/40 via-gold/10 to-transparent"}`} />
-
+        <div className={`h-px mb-3 ${texteFonce ? "bg-ink/20" : "bg-white/25"}`} />
         <div className="flex items-end justify-between">
-          <p className={`text-5xl font-semibold tracking-tight font-[family-name:var(--font-fraunces)] ${couleurTexte}`}>
+          <p className={`text-4xl sm:text-5xl font-semibold leading-none font-[family-name:var(--font-fraunces)] ${couleurTexte}`}>
             {montant || 0}<span className="text-2xl text-gold ml-1">€</span>
           </p>
           <span className={`text-[10px] font-[family-name:var(--font-space-mono)] tracking-wider ${couleurTexteAtt2}`}>
@@ -200,7 +208,7 @@ export default function FicheCarte({ params }) {
         {carteVisuel}
       </div>
 
-      <div className="max-w-[1100px] mx-auto px-6 pt-8 md:pt-32 pb-20 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+      <div className="max-w-[1100px] mx-auto px-6 pt-8 md:pt-32 pb-20 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-start">
 
         <div>
           {/* Carte : version desktop uniquement, collée dans sa colonne */}
@@ -223,7 +231,9 @@ export default function FicheCarte({ params }) {
                 <button
                   key={d.id}
                   onClick={() => setDesignId(d.id)}
-                  title={d.nom}
+                  title={tDesign.has(d.nom) ? tDesign(d.nom) : d.nom}
+                  aria-label={tDesign.has(d.nom) ? tDesign(d.nom) : d.nom}
+                  aria-pressed={designId === d.id}
                   className={`h-12 rounded-lg border-2 transition-all ${
                     designId === d.id ? "border-gold scale-105" : "border-transparent opacity-70 hover:opacity-100"
                   }`}
@@ -249,7 +259,7 @@ export default function FicheCarte({ params }) {
                 {autresCartes.map((c) => (
                   <a
                     key={c.slug}
-                    href={`/fr/boutique/${c.slug}`}
+                    href={`/${locale}/boutique/${c.slug}`}
                     className="border border-ivory/10 rounded-lg p-3 flex items-center gap-3 hover:border-gold/40 transition-colors"
                   >
                     <div className="bg-white rounded-md p-1.5 flex-shrink-0">
@@ -267,7 +277,8 @@ export default function FicheCarte({ params }) {
         </div>
 
         <div>
-          <p className="text-sm uppercase tracking-wide text-gold mb-2">{t("carteCadeau")}</p>
+          <a href={`/${locale}/boutique`} className="text-sm text-ivory/55 hover:text-gold">‹ {t("retourBoutique")}</a>
+          <p className="mt-4 text-sm text-gold mb-1">{t("carteCadeau")}</p>
           <h1 className="text-4xl font-semibold text-ivory">{carte.nom}</h1>
           {carte.made_in_france && (
             <p className="mt-3 inline-block text-xs rounded-full px-3 py-1 bg-ivory/10 text-ivory/80">
@@ -284,6 +295,8 @@ export default function FicheCarte({ params }) {
               {carte.suggestions.map((s) => (
                 <button
                   key={s}
+                  type="button"
+                  aria-pressed={montant === s}
                   onClick={() => setMontant(s)}
                   className={`border rounded-lg py-3 transition-colors ${
                     montant === s
@@ -305,8 +318,13 @@ export default function FicheCarte({ params }) {
               max={carte.montant_max}
               value={montant}
               onChange={(e) => setMontant(Number(e.target.value))}
-              className="mt-2 w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
+              aria-label={t("choisirMontant")}
+              aria-invalid={!montantValide}
+              className={`mt-2 w-full bg-transparent border rounded-lg px-4 py-3 text-ivory ${montantValide ? "border-ivory/20" : "border-corail/70"}`}
             />
+            {!montantValide && (
+              <p className="mt-1.5 text-xs text-corail">{t("montantInvalide", { min: carte.montant_min, max: carte.montant_max })}</p>
+            )}
           </div>
 
           <div className="mt-8">
@@ -400,14 +418,17 @@ export default function FicheCarte({ params }) {
               </select>
             </div>
 
-            <p className="mt-2 text-xs text-ivory/40">
-              {t("envoiImmediat")}
-            </p>
+            {erreurDate
+              ? <p className="mt-2 text-xs text-corail">{erreurDate}</p>
+              : <p className="mt-2 text-xs text-ivory/40">{t("envoiImmediat")}</p>}
           </div>
 
           <button
+            type="button"
+            disabled={!montantValide || !!erreurDate}
             onClick={() => {
               ajouterArticle({
+                slug: carte.slug,
                 marque: carte.nom,
                 montant,
                 beneficiaire,
@@ -420,17 +441,18 @@ export default function FicheCarte({ params }) {
                 heureEnvoi: heureEnvoiComplete,
               });
               setConfirmationVisible(true);
-              setTimeout(() => setConfirmationVisible(false), 2500);
+              setTimeout(() => setConfirmationVisible(false), 6000);
             }}
-            className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors"
+            className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {t("ajouterPanier")}
           </button>
 
           {confirmationVisible && (
-            <div className="mt-3 flex items-center gap-2 text-sm text-vert bg-vert/10 border border-vert/30 rounded-lg px-4 py-3">
-              <span>✓</span>
-              <span>{t("ajouteePanier")}</span>
+            <div role="status" className="mt-3 flex items-center gap-2 text-sm text-vert bg-vert/10 border border-vert/30 rounded-lg px-4 py-3">
+              <span aria-hidden>✓</span>
+              <span className="flex-1">{t("ajouteePanier")}</span>
+              <a href={`/${locale}/panier`} className="text-ivory underline underline-offset-2 hover:text-gold whitespace-nowrap">{t("voirPanier")}</a>
             </div>
           )}
         </div>

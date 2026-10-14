@@ -35,7 +35,6 @@ export default function VerifierSolde() {
 
   return (
     <div className="max-w-[500px] mx-auto px-6 pt-32 pb-20">
-      <p className="text-sm uppercase tracking-wide text-gold mb-2">Estalviar</p>
       <h1 className="text-3xl font-semibold text-ivory mb-3">{t("titre")}</h1>
       <p className="text-ivory/60 text-sm mb-8">{t("description")}</p>
 

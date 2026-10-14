@@ -2,7 +2,9 @@
 
 import { use, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { supabase } from "../../../../../lib/supabase";
+import { logoEnBlanc } from "../../../../../lib/couleursCartes";
 import SelecteurCarte from "../../../components/SelecteurCarte";
 
 const designs = [
@@ -19,6 +21,10 @@ const designs = [
 export default function ChoisirCarte({ params }) {
   const { slug } = use(params);
   const jeton = useSearchParams().get("jeton") || "";
+  const t = useTranslations("cagnotteChoisir");
+  const tDesign = useTranslations("designs");
+  const locale = useLocale();
+  const euros = (n) => new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(Number(n) || 0);
   const [cagnotte, setCagnotte] = useState(null);
   const [cartes, setCartes] = useState({});
   const [chargement, setChargement] = useState(true);
@@ -38,7 +44,7 @@ export default function ChoisirCarte({ params }) {
 
       const cartesParSlug = {};
       (catalogueData || []).forEach((c) => {
-        cartesParSlug[c.slug] = { nom: c.nom, image: c.image, couleur: c.couleur };
+        cartesParSlug[c.slug] = { slug: c.slug, nom: c.nom, image: c.image, couleur: c.couleur };
       });
       setCartes(cartesParSlug);
 
@@ -75,7 +81,7 @@ export default function ChoisirCarte({ params }) {
     setErreur("");
 
     if (totalAlloue !== cagnotte.montant_collecte) {
-      setErreur(`Le total doit être exactement ${cagnotte.montant_collecte} € (actuellement ${totalAlloue} €).`);
+      setErreur(t("totalExact", { total: euros(cagnotte.montant_collecte), actuel: euros(totalAlloue) }));
       return;
     }
 
@@ -104,14 +110,14 @@ export default function ChoisirCarte({ params }) {
       setSucces(true);
     } else {
       const data = await res.json().catch(() => ({}));
-      setErreur(data.error || "Une erreur est survenue, réessayez.");
+      setErreur(data.error || t("erreur"));
     }
   };
 
   if (chargement) {
     return (
       <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
-        Chargement...
+        {t("chargement")}
       </div>
     );
   }
@@ -119,7 +125,8 @@ export default function ChoisirCarte({ params }) {
   if (!cagnotte || cagnotte.statut !== "attente_choix" || !jeton) {
     return (
       <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center">
-        <h1 className="text-3xl font-semibold text-ivory">Cette page n'est plus disponible</h1>
+        <h1 className="text-3xl font-semibold text-ivory">{t("indisponible")}</h1>
+        <p className="mt-4 text-ivory/60">{t("indisponibleTexte")}</p>
       </div>
     );
   }
@@ -127,9 +134,9 @@ export default function ChoisirCarte({ params }) {
   if (succes) {
     return (
       <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center">
-        <div className="text-5xl mb-4">✓</div>
-        <h1 className="text-3xl font-semibold text-ivory">Vos cartes arrivent !</h1>
-        <p className="mt-4 text-ivory/60">Vous allez les recevoir par email dans quelques instants.</p>
+        <div className="w-14 h-14 rounded-full border border-gold/50 text-gold text-2xl flex items-center justify-center mx-auto" aria-hidden>✓</div>
+        <h1 className="mt-6 text-3xl font-semibold text-ivory">{t("succesTitre")}</h1>
+        <p className="mt-4 text-ivory/60">{t("succesTexte")}</p>
       </div>
     );
   }
@@ -137,15 +144,11 @@ export default function ChoisirCarte({ params }) {
   return (
     <div className="max-w-[650px] mx-auto px-6 pt-32 pb-20">
       <div className="text-center">
-        <p className="text-sm uppercase tracking-wide text-gold mb-2">Cagnotte clôturée</p>
-        <h1 className="text-3xl font-semibold text-ivory mb-2">
-          {cagnotte.montant_collecte} € vous attendent
-        </h1>
-        <p className="text-ivory/60 mb-4">
-          Répartissez la somme sur une ou plusieurs cartes cadeaux, et choisissez leur design.
-        </p>
-        <p className={`text-sm font-medium ${restant === 0 ? "text-vert" : "text-gold"}`}>
-          {restant === 0 ? "Montant réparti en entier ✓" : `Reste à répartir : ${restant} €`}
+        <p className="text-sm text-gold mb-2">{t("surtitre", { prenom: cagnotte.beneficiaire })}</p>
+        <h1 className="text-3xl md:text-4xl font-semibold text-ivory mb-3">{t("titre", { montant: euros(cagnotte.montant_collecte) })}</h1>
+        <p className="text-ivory/65 mb-4">{t("intro")}</p>
+        <p className={`text-sm font-medium ${restant === 0 ? "text-vert" : "text-gold"}`} aria-live="polite">
+          {restant === 0 ? t("reparti") : t("reste", { montant: euros(restant) })}
         </p>
       </div>
 
@@ -158,45 +161,47 @@ export default function ChoisirCarte({ params }) {
           return (
             <div key={index} className="border border-ivory/10 rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-ivory/50">Carte {index + 1}</span>
+                <span className="text-sm text-ivory/55">{t("carteNumero", { n: index + 1 })}</span>
                 {selections.length > 1 && (
                   <button
                     onClick={() => retirerLigne(index)}
                     className="text-xs text-ivory/40 hover:text-corail transition-colors"
                   >
-                    Retirer
+                    {t("retirer")}
                   </button>
                 )}
               </div>
 
               <div
-                className="rounded-xl p-5 aspect-[1.6/1] flex flex-col justify-between mb-4 border border-gold/20"
+                className="rounded-xl p-5 aspect-[1.586/1] max-w-[340px] flex flex-col justify-between mb-4 border border-white/10 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)]"
                 style={{ background: designActuel.background(carteActuelle.couleur) }}
               >
-                <img
-                  src={carteActuelle.image}
-                  alt={carteActuelle.nom}
-                  className="h-6 object-contain drop-shadow-md"
-                />
-                <p className={`text-2xl font-semibold ${designActuel.texteFonce ? "text-ink" : "text-white"}`}>
-                  {sel.montant || 0} <span className="text-gold text-sm">€</span>
+                {carteActuelle.image
+                  ? <img src={carteActuelle.image} alt={carteActuelle.nom}
+                      className={`h-7 w-fit max-w-[55%] object-contain object-left ${!designActuel.texteFonce && logoEnBlanc(carteActuelle) ? "brightness-0 invert" : "rounded"}`} />
+                  : <span className={`text-sm font-semibold ${designActuel.texteFonce ? "text-ink" : "text-white"}`}>{carteActuelle.nom}</span>}
+                <p className={`text-3xl font-semibold font-[family-name:var(--font-fraunces)] ${designActuel.texteFonce ? "text-ink" : "text-white"}`}>
+                  {sel.montant || 0}<span className="text-gold text-lg ml-0.5">€</span>
                 </p>
               </div>
 
-              <label className="block text-sm text-ivory/70 mb-2">Enseigne</label>
+              <label className="block text-sm text-ivory/70 mb-2">{t("enseigne")}</label>
               <SelecteurCarte
                 cartes={cartes}
                 valeur={sel.slugCarte}
                 onChange={(slug) => modifierLigne(index, "slugCarte", slug)}
               />
 
-              <label className="block text-sm text-ivory/70 mb-2 mt-4">Design</label>
+              <label className="block text-sm text-ivory/70 mb-2 mt-4">{t("design")}</label>
               <div className="grid grid-cols-4 gap-2">
                 {designs.map((d) => (
                   <button
                     key={d.id}
+                    type="button"
                     onClick={() => modifierLigne(index, "designId", d.id)}
-                    title={d.nom}
+                    title={tDesign.has(d.nom) ? tDesign(d.nom) : d.nom}
+                    aria-label={tDesign.has(d.nom) ? tDesign(d.nom) : d.nom}
+                    aria-pressed={sel.designId === d.id}
                     className={`h-9 rounded-lg border-2 transition-all ${
                       sel.designId === d.id ? "border-gold scale-105" : "border-transparent opacity-70"
                     }`}
@@ -205,7 +210,7 @@ export default function ChoisirCarte({ params }) {
                 ))}
               </div>
 
-              <label className="block text-sm text-ivory/70 mb-2 mt-4">Montant pour cette carte (€)</label>
+              <label className="block text-sm text-ivory/70 mb-2 mt-4">{t("montantCarte")}</label>
               <input
                 type="number"
                 min="1"
@@ -222,7 +227,7 @@ export default function ChoisirCarte({ params }) {
         onClick={ajouterLigne}
         className="mt-4 text-sm text-gold hover:underline"
       >
-        + Ajouter une autre carte
+        + {t("ajouter")}
       </button>
 
       <button
@@ -230,7 +235,7 @@ export default function ChoisirCarte({ params }) {
         disabled={envoi || restant !== 0}
         className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40"
       >
-        {envoi ? "Envoi..." : "Recevoir mes cartes"}
+        {envoi ? t("envoi") : t("recevoir")}
       </button>
 
       {erreur && <p className="mt-3 text-sm text-corail text-center">{erreur}</p>}

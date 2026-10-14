@@ -65,7 +65,7 @@ export default function AdminClients() {
   const handleReinitialiserMdp = async (email) => {
     setMessageAction((prev) => ({ ...prev, [email]: "Envoi..." }));
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/fr/connexion`,
+      redirectTo: `${window.location.origin}/fr/nouveau-mot-de-passe`,
     });
     setMessageAction((prev) => ({
       ...prev,

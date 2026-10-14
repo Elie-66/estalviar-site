@@ -22,11 +22,12 @@ export default function Header() {
   const [avatarIllustration, setAvatarIllustration] = useState(null);
   const [menuOuvert, setMenuOuvert] = useState(false);
 
+  const tPalier = useTranslations("fideliteAccueil");
   const paliers = [
-    { nom: "Bronze", seuil: 0, couleur: "#B08D57" },
-    { nom: "Argent", seuil: 100, couleur: "#C0C0C0" },
-    { nom: "Or", seuil: 300, couleur: "#C9A227" },
-    { nom: "Platine", seuil: 700, couleur: "#E5E4E2" },
+    { nom: tPalier("bronzeNom"), seuil: 0, couleur: "#B08D57" },
+    { nom: tPalier("argentNom"), seuil: 100, couleur: "#C0C0C0" },
+    { nom: tPalier("orNom"), seuil: 300, couleur: "#C9A227" },
+    { nom: tPalier("platineNom"), seuil: 700, couleur: "#E5E4E2" },
   ];
   const palierActuel = [...paliers].reverse().find((p) => points >= p.seuil) || paliers[0];
   const initiale = (prenom || utilisateur?.email || "?").charAt(0).toUpperCase();
@@ -142,7 +143,8 @@ export default function Header() {
           <button
             onClick={() => setMenuOuvert(!menuOuvert)}
             className="md:hidden text-ivory p-1"
-            aria-label={menuOuvert ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-label={menuOuvert ? t("fermerMenu") : t("ouvrirMenu")}
+            aria-expanded={menuOuvert}
           >
             {menuOuvert ? (
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -162,7 +164,7 @@ export default function Header() {
       </div>
 
       {menuOuvert && (
-        <div className="md:hidden bg-ink border-t border-ivory/10 px-6 py-6">
+        <div className="md:hidden absolute inset-x-0 top-full h-[calc(100dvh-74px)] overflow-y-auto bg-ink border-t border-ivory/10 px-6 py-6">
           <nav className="flex flex-col gap-1">
             {liensNav.map((lien) => (
               <a

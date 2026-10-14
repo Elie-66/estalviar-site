@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { supabase } from "../../../lib/supabase";
 
 export default function CartePhysique() {
+  const t = useTranslations("cartePhysique");
+  const locale = useLocale();
   const [code, setCode] = useState("");
   const [email, setEmail] = useState("");
   const [chargement, setChargement] = useState(false);
@@ -23,7 +26,7 @@ export default function CartePhysique() {
     }
 
     if (!emailUtilise) {
-      setErreur("Veuillez indiquer votre email.");
+      setErreur(t("emailRequis"));
       setChargement(false);
       return;
     }
@@ -40,20 +43,19 @@ export default function CartePhysique() {
     if (res.ok) {
       setResultat(data);
     } else {
-      setErreur(data.error || "Une erreur est survenue.");
+      setErreur(data.error || t("erreur"));
     }
   };
 
   return (
     <div className="max-w-[500px] mx-auto px-6 pt-32 pb-20">
-      <p className="text-sm uppercase tracking-wide text-gold mb-2">Estalviar</p>
-      <h1 className="text-3xl font-semibold text-ivory mb-3">Activer ma carte physique</h1>
+      <h1 className="text-3xl font-semibold text-ivory mb-3">{t("titre")}</h1>
       <p className="text-ivory/60 text-sm mb-8">
-        Entrez le code présent au dos de votre carte pour lier son solde à votre compte.
+        {t("intro")}
       </p>
 
       <form onSubmit={handleSubmit}>
-        <label className="block text-sm text-ivory/70 mb-2">Code de la carte</label>
+        <label className="block text-sm text-ivory/70 mb-2">{t("code")}</label>
         <input
           type="text"
           value={code}
@@ -63,12 +65,12 @@ export default function CartePhysique() {
           className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory font-mono text-sm"
         />
 
-        <label className="block text-sm text-ivory/70 mb-2 mt-4">Votre email</label>
+        <label className="block text-sm text-ivory/70 mb-2 mt-4">{t("email")}</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="vous@exemple.com"
+          placeholder={t("emailExemple")}
           required
           className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory text-sm"
         />
@@ -78,22 +80,22 @@ export default function CartePhysique() {
           disabled={chargement}
           className="mt-6 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors disabled:opacity-40"
         >
-          {chargement ? "Vérification..." : "Activer ma carte"}
+          {chargement ? t("verification") : t("activer")}
         </button>
       </form>
 
       {resultat && (
         <div className="mt-8 border border-gold/30 bg-gold/5 rounded-xl p-6 text-center">
-          <p className="text-xs uppercase tracking-wide text-gold mb-1">Carte activée</p>
-          <p className="text-sm text-ivory/50 mt-1">Solde disponible</p>
+          <p className="text-sm text-gold mb-1">{t("activee")}</p>
+          <p className="text-sm text-ivory/50 mt-1">{t("solde")}</p>
           <p className="text-4xl font-semibold text-ivory mt-2 font-[family-name:var(--font-fraunces)]">
             {resultat.solde} <span className="text-gold text-xl">€</span>
           </p>
           <a
-            href="/fr/boutique"
+            href={`/${locale}/boutique`}
             className="inline-block mt-4 text-sm text-gold hover:underline"
           >
-            Utiliser ce solde sur la boutique →
+            {t("utiliser")}
           </a>
         </div>
       )}

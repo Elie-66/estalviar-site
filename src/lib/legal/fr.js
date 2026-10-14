@@ -492,7 +492,7 @@ export const cookies = {
               ["estalviar-emails-beneficiaires", "Garder les emails saisis pendant le paiement", "Supprimé après la commande"],
               ["sb-…-auth-token", "Vous garder connecté à votre compte", "Jusqu'à la déconnexion"],
               ["NEXT_LOCALE", "Retenir la langue choisie", "1 an maximum"],
-              ["estalviar-cookies-consentement", "Retenir votre choix dans le bandeau cookies", "Jusqu'à suppression par vous"],
+              ["estalviar-cookies-consentement", "Ne plus afficher le bandeau d'information sur les cookies", "Jusqu'à suppression par vous"],
             ],
           },
         },

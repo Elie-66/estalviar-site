@@ -36,12 +36,12 @@ export default function Footer() {
       liens: [
         { href: `/${locale}/aide`, label: t("centreAide") },
         { href: `/${locale}/contact`, label: t("contact") },
-        { href: `/${locale}/blog`, label: "Blog" },
+        { href: `/${locale}/blog`, label: t("blog") },
       ],
     },
     {
       id: "legal",
-      titre: "Légal",
+      titre: t("legal"),
       liens: [
         { href: `/${locale}/mentions-legales`, label: t("mentionsLegales") },
         { href: `/${locale}/cgv`, label: t("cgv") },
@@ -64,13 +64,14 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-[1240px] mx-auto px-6 py-16">
+      <div className="max-w-[1240px] mx-auto px-6 py-14 md:py-16 md:grid md:grid-cols-[1.4fr_repeat(4,1fr)] md:gap-10">
 
+        {/* La marque */}
         <div className="mb-8 md:mb-0">
           <p className="text-lg uppercase tracking-wide text-ivory font-[family-name:var(--font-fraunces)]">
             Estalviar<span className="text-gold">.</span>
           </p>
-          <p className="mt-3 text-sm text-ivory/60">
+          <p className="mt-3 text-sm text-ivory/60 max-w-[16rem]">
             {t("accroche")}
           </p>
         </div>
@@ -81,10 +82,11 @@ export default function Footer() {
             <div key={section.id} className="border-t border-ivory/10">
               <button
                 onClick={() => toggle(section.id)}
+                aria-expanded={ouvert === section.id}
                 className="w-full flex items-center justify-between py-4 text-left"
               >
                 <span className="text-sm uppercase tracking-wide text-ivory/70">{section.titre}</span>
-                <span className={`text-ivory/50 transition-transform ${ouvert === section.id ? "rotate-45" : ""}`}>
+                <span aria-hidden className={`text-ivory/50 transition-transform ${ouvert === section.id ? "rotate-45" : ""}`}>
                   +
                 </span>
               </button>
@@ -103,23 +105,19 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Version desktop : grille classique */}
-        <div className="hidden md:grid md:grid-cols-5 gap-10 mt-0">
-          <div />
-          {sections.map((section) => (
-            <div key={section.id}>
-              <p className="text-sm uppercase tracking-wide text-ivory/50 mb-3">{section.titre}</p>
-              <ul className="space-y-2 text-sm text-ivory/80">
-                {section.liens.map((lien) => (
-                  <li key={lien.href}>
-                    <a href={lien.href} className="hover:text-ivory">{lien.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
+        {/* Version ordinateur : une colonne par rubrique */}
+        {sections.map((section) => (
+          <div key={section.id} className="hidden md:block">
+            <p className="text-sm uppercase tracking-wide text-ivory/50 mb-3">{section.titre}</p>
+            <ul className="space-y-2 text-sm text-ivory/80">
+              {section.liens.map((lien) => (
+                <li key={lien.href}>
+                  <a href={lien.href} className="hover:text-ivory">{lien.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
       <div className="border-t border-ivory/10">

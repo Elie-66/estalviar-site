@@ -2,7 +2,10 @@
 
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { supabase } from "../../../lib/supabase";
+import { POINTS_NEWSLETTER } from "../../../lib/newsletter";
+import CadreCompte, { ChampMotDePasse, classeChamp, motDePasseValide } from "../components/CadreCompte";
 
 // L'email peut être pré-rempli par un lien (ex. invitation après une participation à une cagnotte)
 export default function PageInscription() {
@@ -14,6 +17,8 @@ export default function PageInscription() {
 }
 
 function Inscription() {
+  const t = useTranslations("compte");
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const [pseudo, setPseudo] = useState("");
   const [email, setEmail] = useState(() => (searchParams.get("email") || "").slice(0, 200));
@@ -22,20 +27,13 @@ function Inscription() {
   const [chargement, setChargement] = useState(false);
   const [erreur, setErreur] = useState("");
   const [succes, setSucces] = useState(false);
-  const [afficherMotDePasse, setAfficherMotDePasse] = useState(false);
-
-  const motDePasseValide = (mdp) => {
-    return mdp.length >= 8 && /[a-zA-Z]/.test(mdp) && /[0-9]/.test(mdp);
-  };
 
   const handleInscription = async (e) => {
     e.preventDefault();
-
     if (!motDePasseValide(motDePasse)) {
-      setErreur("Le mot de passe doit contenir au moins 8 caractères, dont une lettre et un chiffre.");
+      setErreur(t("mdpRegle"));
       return;
     }
-
     setChargement(true);
     setErreur("");
 
@@ -44,11 +42,15 @@ function Inscription() {
     const { error } = await supabase.auth.signUp({
       email,
       password: motDePasse,
-      options: { data: { pseudo, accepte_marketing: accepteMarketing } },
+      options: {
+        data: { pseudo, accepte_marketing: accepteMarketing },
+        emailRedirectTo: `${window.location.origin}/${locale}/connexion`,
+      },
     });
 
     if (error) {
-      setErreur(error.message);
+      const message = error.message || "";
+      setErreur(/registered|exists/i.test(message) ? t("dejaInscrit") : /password/i.test(message) ? t("mdpRegle") : t("erreur"));
     } else {
       setSucces(true);
     }
@@ -57,96 +59,55 @@ function Inscription() {
 
   if (succes) {
     return (
-      <div className="max-w-[440px] mx-auto px-6 pt-32 pb-20 text-center">
-        <h1 className="text-3xl font-semibold text-ivory">Vérifiez votre email</h1>
-        <p className="mt-4 text-ivory/60">
-          Un lien de confirmation vous a été envoyé à {email}. Cliquez dessus pour activer votre compte.
-        </p>
+      <div className="max-w-[520px] mx-auto px-6 pt-32 pb-20 text-center">
+        <div className="w-14 h-14 rounded-full border border-gold/50 text-gold text-2xl flex items-center justify-center mx-auto" aria-hidden>✉</div>
+        <h1 className="mt-6 text-3xl font-semibold text-ivory">{t("verifiezTitre")}</h1>
+        <p className="mt-4 text-ivory/65 leading-relaxed">{t("verifiezTexte", { email })}</p>
+        <p className="mt-3 text-sm text-ivory/45">{t("verifiezSpam")}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-[440px] mx-auto px-6 pt-32 pb-20">
-      <h1 className="text-3xl font-semibold text-ivory mb-8">Créer un compte</h1>
-
+    <CadreCompte
+      titre={t("inscriptionTitre")}
+      sousTitre={t("inscriptionSousTitre")}
+      pied={<>{t("dejaCompte")} <a href={`/${locale}/connexion`} className="text-gold hover:underline">{t("seConnecter")}</a></>}
+    >
       <form onSubmit={handleInscription}>
-        <label className="block text-sm text-ivory/70 mb-2">Pseudo</label>
-        <input
-          type="text"
-          value={pseudo}
-          onChange={(e) => setPseudo(e.target.value)}
-          required
-          maxLength={20}
-          className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-        />
+        <label htmlFor="i-pseudo" className="block text-sm text-ivory/70 mb-2">{t("pseudo")}</label>
+        <input id="i-pseudo" type="text" value={pseudo} onChange={(e) => setPseudo(e.target.value)} required maxLength={20}
+          autoComplete="nickname" className={classeChamp} />
 
-        <label className="block text-sm text-ivory/70 mb-2 mt-6">Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
-        />
+        <label htmlFor="i-email" className="block text-sm text-ivory/70 mb-2 mt-6">{t("email")}</label>
+        <input id="i-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={classeChamp} />
 
-        <label className="block text-sm text-ivory/70 mb-2 mt-6">Mot de passe</label>
-        <div className="relative">
-          <input
-            type={afficherMotDePasse ? "text" : "password"}
-            value={motDePasse}
-            onChange={(e) => setMotDePasse(e.target.value)}
-            required
-            minLength={8}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 pr-12 text-ivory outline-none focus:border-gold/50 transition-colors"
-          />
-          <button
-            type="button"
-            onClick={() => setAfficherMotDePasse(!afficherMotDePasse)}
-            aria-label={afficherMotDePasse ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/50 hover:text-ink/80 transition-colors"
-          >
-            {afficherMotDePasse ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-10-8-10-8a18.6 18.6 0 0 1 4.22-5.66M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 10 8 10 8a18.6 18.6 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24" strokeLinecap="round" strokeLinejoin="round" />
-                <line x1="1" y1="1" x2="23" y2="23" strokeLinecap="round" />
-              </svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M1 12s3-8 11-8 11 8 11 8-3 8-11 8-11-8-11-8Z" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-            )}
-          </button>
-        </div>
-        <p className="mt-1 text-xs text-ivory/40">
-          Au moins 8 caractères, avec une lettre et un chiffre.
-        </p>
+        <label htmlFor="i-mdp" className="block text-sm text-ivory/70 mb-2 mt-6">{t("motDePasse")}</label>
+        <ChampMotDePasse id="i-mdp" value={motDePasse} onChange={(e) => setMotDePasse(e.target.value)} autoComplete="new-password" minLength={8} />
+        <p className={`mt-1.5 text-xs ${motDePasse && !motDePasseValide(motDePasse) ? "text-corail/90" : "text-ivory/45"}`}>{t("mdpRegle")}</p>
 
-        <label className="flex items-start gap-2 mt-6 text-sm text-ivory/60">
-          <input
-            type="checkbox"
-            checked={accepteMarketing}
-            onChange={(e) => setAccepteMarketing(e.target.checked)}
-            className="mt-0.5"
-          />
-          Je souhaite recevoir des emails pour les fêtes, occasions et offres spéciales
+        <label className="flex items-start gap-3 mt-6 text-sm text-ivory/70 cursor-pointer">
+          <input type="checkbox" checked={accepteMarketing} onChange={(e) => setAccepteMarketing(e.target.checked)}
+            className="mt-1 w-4 h-4 shrink-0 accent-[#C9A227]" />
+          <span>
+            {t("newsletter")}
+            <span className="block text-xs text-gold/85 mt-0.5">{t("newsletterBonus", { points: POINTS_NEWSLETTER })}</span>
+          </span>
         </label>
 
-        <button
-          type="submit"
-          disabled={chargement}
-          className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40"
-        >
-          {chargement ? "Création..." : "Créer mon compte"}
+        <button type="submit" disabled={chargement}
+          className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40">
+          {chargement ? t("creationEnCours") : t("creerMonCompte")}
         </button>
+        {erreur && <p role="alert" className="mt-3 text-sm text-corail">{erreur}</p>}
 
-        {erreur && <p className="mt-3 text-sm text-corail">{erreur}</p>}
+        <p className="mt-4 text-xs text-ivory/45 leading-relaxed">
+          {t("mentionAvant")}{" "}
+          <a href={`/${locale}/cgv`} className="underline hover:text-ivory/70">{t("cgv")}</a>{" "}
+          {t("et")}{" "}
+          <a href={`/${locale}/confidentialite`} className="underline hover:text-ivory/70">{t("confidentialite")}</a>.
+        </p>
       </form>
-
-      <p className="mt-6 text-center text-sm text-ivory/50">
-        Déjà un compte ? <a href="/fr/connexion" className="text-gold hover:underline">Se connecter</a>
-      </p>
-    </div>
+    </CadreCompte>
   );
 }

@@ -9,7 +9,7 @@ const supabase = createClient(
 // Infos PUBLIQUES d'une cagnotte (n'importe qui ayant le lien peut les voir).
 // Aucune adresse email, aucun code de carte n'est renvoyé.
 const CHAMPS_CAGNOTTE =
-  "id, slug, beneficiaire, message, image, marque, background, texte_fonce, montant_collecte, montant_objectif, montant_libre, date_fin, statut";
+  "id, slug, beneficiaire, message, image, marque, background, texte_fonce, montant_collecte, montant_objectif, montant_libre, date_fin, statut, carte_choisie";
 
 export async function GET(req) {
   try {

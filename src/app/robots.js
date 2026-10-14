@@ -3,7 +3,7 @@ export default function robots() {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin", "/api"],
+      disallow: ["/api/", "/*/admin", "/*/paiement", "/*/profil", "/*/confirmation"],
     },
     sitemap: "https://estalviar.com/sitemap.xml",
   };
