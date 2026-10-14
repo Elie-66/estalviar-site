@@ -6,7 +6,6 @@ import { supabase } from "../../lib/supabase";
 import CarteVivante from "./components/CarteVivante";
 import CarteVitrine from "./components/CarteVitrine";
 import { couleurCategorie, fondCarte } from "../../lib/couleursCartes";
-import { OCCASIONS, pourOccasion } from "../../lib/occasions";
 import BandeauEvenement from "./components/BandeauEvenement";
 
 // Enseignes proposées sur la carte de l'accueil si le catalogue n'est pas encore chargé
@@ -32,13 +31,11 @@ export default function Home() {
   const tCagnotte = useTranslations("cagnotteAccueil");
   const tPop = useTranslations("populairesAccueil");
   const tCategories = useTranslations("categories");
-  const tOcc = useTranslations("occasions");
   const tFid = useTranslations("fideliteAccueil");
   const locale = useLocale();
   const [populaires, setPopulaires] = useState([]);
   const [categories, setCategories] = useState([]); // [{ nom, nombre }]
   const [marquesHero, setMarquesHero] = useState(apercus);
-  const [occasions, setOccasions] = useState([]); // occasions qui ont au moins une enseigne
   const [fabriquees, setFabriquees] = useState([]); // enseignes fabriquées en France
   const [avecEvenement, setAvecEvenement] = useState(false); // bandeau d'événement affiché en haut
 
@@ -71,8 +68,6 @@ export default function Home() {
       const avecLogo = tri.filter((c) => c.image).slice(0, 5);
       if (avecLogo.length >= 3) setMarquesHero(avecLogo);
 
-      const actives = toutesCartes || [];
-      setOccasions(OCCASIONS.filter((o) => actives.some((c) => pourOccasion(o, c))));
       setFabriquees(tri.filter((c) => c.made_in_france).slice(0, 4));
 
       const compte = {};
@@ -128,21 +123,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Une idée par occasion */}
-      {occasions.length > 0 && (
-        <section className="max-w-[1240px] w-full mx-auto px-6 pb-20">
-          <h2 className="text-2xl md:text-3xl font-semibold text-ivory mb-6">{tOcc("titre")}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            {occasions.map((o) => (
-              <a key={o.slug} href={`/${locale}/boutique?occasion=${o.slug}`}
-                className="group rounded-2xl bg-ivory text-ink p-5 flex flex-col gap-6 min-h-[132px] transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">
-                <svg viewBox="0 0 24 24" className="w-8 h-8 text-ink/80 group-hover:text-[#B5563F] transition-colors" fill="none"
-                  stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d={o.icone} />
-                </svg>
-                <span className="text-lg font-semibold leading-tight font-[family-name:var(--font-fraunces)]">{tOcc(o.slug)}</span>
+      {/* Fabriqué en France : l'argument qui nous distingue */}
+      {fabriquees.length > 0 && (
+        <section>
+          <div className="max-w-[1240px] mx-auto px-6 pb-20 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-10 items-center">
+            <div>
+              <div aria-hidden className="flex w-16 h-1.5 rounded-full overflow-hidden mb-6">
+                <span className="flex-1 bg-[#2f5bd3]" /><span className="flex-1 bg-ivory" /><span className="flex-1 bg-[#e1293b]" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-semibold text-ivory">{tFid("francaisTitre")}</h2>
+              <p className="mt-4 text-ivory/65 leading-relaxed">{tFid("francaisTexte")}</p>
+              <a href={`/${locale}/boutique?onglet=francaises`}
+                className="inline-block mt-6 text-sm text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold">
+                {tFid("francaisLien")}
               </a>
-            ))}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {fabriquees.map((carte) => (
+                <CarteVitrine key={carte.slug} carte={carte} href={`/${locale}/boutique/${carte.slug}`}
+                  prixLabel={t("des", { montant: carte.montant_min })} />
+              ))}
+            </div>
           </div>
         </section>
       )}
@@ -157,31 +158,6 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {populaires.map((carte) => (
-                <CarteVitrine key={carte.slug} carte={carte} href={`/${locale}/boutique/${carte.slug}`}
-                  prixLabel={t("des", { montant: carte.montant_min })} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Fabriqué en France : l'argument qui nous distingue */}
-      {fabriquees.length > 0 && (
-        <section className="border-t border-ivory/10">
-          <div className="max-w-[1240px] mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-10 items-center">
-            <div>
-              <div aria-hidden className="flex w-16 h-1.5 rounded-full overflow-hidden mb-6">
-                <span className="flex-1 bg-[#2f5bd3]" /><span className="flex-1 bg-ivory" /><span className="flex-1 bg-[#e1293b]" />
-              </div>
-              <h2 className="text-2xl md:text-3xl font-semibold text-ivory">{tFid("francaisTitre")}</h2>
-              <p className="mt-4 text-ivory/65 leading-relaxed">{tFid("francaisTexte")}</p>
-              <a href={`/${locale}/boutique?onglet=francaises`}
-                className="inline-block mt-6 text-sm text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold">
-                {tFid("francaisLien")}
-              </a>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {fabriquees.map((carte) => (
                 <CarteVitrine key={carte.slug} carte={carte} href={`/${locale}/boutique/${carte.slug}`}
                   prixLabel={t("des", { montant: carte.montant_min })} />
               ))}
