@@ -1,11 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
-export default function Inscription() {
+// L'email peut être pré-rempli par un lien (ex. invitation après une participation à une cagnotte)
+export default function PageInscription() {
+  return (
+    <Suspense fallback={null}>
+      <Inscription />
+    </Suspense>
+  );
+}
+
+function Inscription() {
+  const searchParams = useSearchParams();
   const [pseudo, setPseudo] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => (searchParams.get("email") || "").slice(0, 200));
   const [motDePasse, setMotDePasse] = useState("");
   const [accepteMarketing, setAccepteMarketing] = useState(false);
   const [chargement, setChargement] = useState(false);

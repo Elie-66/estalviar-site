@@ -23,6 +23,7 @@ export default function PageCagnotte({ params }) {
   const [commandesCagnotte, setCommandesCagnotte] = useState([]);
   const [messageRenvoi, setMessageRenvoi] = useState({});
   const [lienCopie, setLienCopie] = useState(false);
+  const [merci, setMerci] = useState(null); // retour de paiement : remerciement + invitation
 
   useEffect(() => {
     const charger = async () => {
@@ -41,11 +42,13 @@ export default function PageCagnotte({ params }) {
       }
 
       if (sessionId && contributionId) {
-        await fetch("/api/confirmer-contribution", {
+        const reponse = await fetch("/api/confirmer-contribution", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sessionId, contributionId }),
         });
+        const confirmation = await reponse.json().catch(() => ({}));
+        if (confirmation.merci) setMerci(confirmation.merci);
       }
 
       // Infos publiques de la cagnotte (sans emails) via le serveur
@@ -195,6 +198,35 @@ export default function PageCagnotte({ params }) {
       </div>
       <p className="text-center text-sm text-gold mt-2">{pourcentage}%</p>
 
+      {merci && (
+        <div className="mt-8 border border-gold/30 bg-gold/5 rounded-xl p-6 text-center">
+          <p className="text-ivory font-medium">Merci pour votre participation de {merci.montant} € !</p>
+          {utilisateurConnecte || merci.compteExiste ? (
+            <p className="text-sm text-ivory/60 mt-2">
+              Elle vous rapporte {Math.floor(merci.montant)} point{Math.floor(merci.montant) > 1 ? "s" : ""} de fidélité.
+            </p>
+          ) : merci.email ? (
+            <>
+              <p className="text-sm text-ivory/60 mt-2">
+                Créez votre compte avec <span className="text-gold">{merci.email}</span> : cette participation comptera
+                aussitôt pour votre palier fidélité ({Math.floor(merci.montant)} points), et vos prochains achats vous
+                rapporteront du cashback.
+              </p>
+              <a
+                href={`/fr/inscription?email=${encodeURIComponent(merci.email)}`}
+                className="inline-block mt-4 bg-gold text-ink font-semibold rounded-lg px-5 py-2.5 text-sm hover:bg-gold/90 transition-colors"
+              >
+                Créer mon compte
+              </a>
+            </>
+          ) : (
+            <p className="text-sm text-ivory/60 mt-2">
+              La prochaine fois, indiquez votre email : avec un compte Estalviar, vos participations comptent pour votre palier fidélité.
+            </p>
+          )}
+        </div>
+      )}
+
       {complete ? (
         <div className="mt-10">
           <div className="text-center border border-vert/30 bg-vert/10 rounded-lg p-6">
@@ -261,6 +293,10 @@ export default function PageCagnotte({ params }) {
                 placeholder="Pour cumuler des points et voir cet achat dans votre historique"
                 className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
               />
+              <p className="mt-1 text-xs text-ivory/40">
+                Avec un compte Estalviar (même créé plus tard avec cet email), votre participation compte pour votre
+                palier fidélité. Les cagnottes ne rapportent pas de cashback.
+              </p>
             </>
           )}
 

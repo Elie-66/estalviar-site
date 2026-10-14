@@ -6,6 +6,12 @@ import { estAdmin } from "../../../../lib/admin";
 import { adminLire, adminModifier } from "../../../../lib/adminDb";
 import { fetchAdmin } from "../../../../lib/fetchAdmin";
 
+const euros = (n) =>
+  `${Number(n || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+const dateFr = (d) => new Date(d).toLocaleDateString("fr-FR");
+
+const LIBELLES_MOUVEMENT = { gain: "Gagné", utilisation: "Utilisé", expiration: "Expiré" };
+
 export default function AdminClients() {
   const [chargement, setChargement] = useState(true);
   const [autorise, setAutorise] = useState(false);
@@ -14,6 +20,9 @@ export default function AdminClients() {
   const [clientOuvert, setClientOuvert] = useState(null);
   const [commandesClient, setCommandesClient] = useState([]);
   const [messageAction, setMessageAction] = useState({});
+  const [cashback, setCashback] = useState({ parClient: {}, totaux: null });
+  const [historiqueCashback, setHistoriqueCashback] = useState([]);
+  const [tri, setTri] = useState("recents"); // recents | cashback | points
 
   useEffect(() => {
     const verifier = async () => {
@@ -24,9 +33,13 @@ export default function AdminClients() {
       }
       setAutorise(true);
 
-      const { data } = await adminLire("profils", "created_at", false);
+      const [{ data }, reponseCashback] = await Promise.all([
+        adminLire("profils", "created_at", false),
+        fetchAdmin("/api/admin-cashback").then((r) => r.json()).catch(() => ({})),
+      ]);
 
       setClients(data || []);
+      setCashback({ parClient: reponseCashback.parClient || {}, totaux: reponseCashback.totaux || null });
       setChargement(false);
     };
     verifier();
@@ -38,10 +51,15 @@ export default function AdminClients() {
       return;
     }
     setClientOuvert(client.id);
+    setHistoriqueCashback([]);
 
-    const { data } = await adminLire("commandes", "created_at", false, { email_acheteur: client.email });
+    const [{ data }, reponseHistorique] = await Promise.all([
+      adminLire("commandes", "created_at", false, { email_acheteur: client.email }),
+      fetchAdmin(`/api/admin-cashback?profil=${client.id}`).then((r) => r.json()).catch(() => ({})),
+    ]);
 
     setCommandesClient(data || []);
+    setHistoriqueCashback(reponseHistorique.historique || []);
   };
 
   const handleReinitialiserMdp = async (email) => {
@@ -76,14 +94,26 @@ export default function AdminClients() {
   ];
   const palierDe = (points) => [...paliers].reverse().find((p) => points >= p.seuil) || paliers[0];
 
-  const clientsFiltres = clients.filter(
-    (c) =>
-      !recherche ||
-      c.email?.toLowerCase().includes(recherche.toLowerCase()) ||
-      c.prenom?.toLowerCase().includes(recherche.toLowerCase()) ||
-      c.nom?.toLowerCase().includes(recherche.toLowerCase()) ||
-      c.pseudo?.toLowerCase().includes(recherche.toLowerCase())
-  );
+  const soldeDe = (id) => cashback.parClient[id] || { disponible: 0, enAttente: 0, gagne: 0, utilise: 0, expire: 0 };
+
+  const clientsFiltres = clients
+    .filter(
+      (c) =>
+        !recherche ||
+        c.email?.toLowerCase().includes(recherche.toLowerCase()) ||
+        c.prenom?.toLowerCase().includes(recherche.toLowerCase()) ||
+        c.nom?.toLowerCase().includes(recherche.toLowerCase()) ||
+        c.pseudo?.toLowerCase().includes(recherche.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (tri === "cashback") {
+        const sa = soldeDe(a.id), sb = soldeDe(b.id);
+        return sb.disponible + sb.enAttente - (sa.disponible + sa.enAttente);
+      }
+      if (tri === "points") return (b.points || 0) - (a.points || 0);
+      return 0; // déjà triés du plus récent au plus ancien
+    });
+  const totaux = cashback.totaux;
 
   if (chargement || !autorise) {
     return (
@@ -98,6 +128,32 @@ export default function AdminClients() {
       <a href="/fr/admin" className="text-sm text-gold hover:underline">← Retour au tableau de bord</a>
       <h1 className="text-3xl font-semibold text-ivory mt-2 mb-8">Comptes clients</h1>
 
+      {totaux && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="border border-ivory/10 rounded-xl p-5">
+            <p className="text-xs text-ivory/50 uppercase tracking-wide">Cashback disponible</p>
+            <p className="text-2xl font-semibold text-gold mt-1">{euros(totaux.disponible)}</p>
+            <p className="text-[11px] text-ivory/40 mt-1">ce que tes clients peuvent dépenser aujourd&apos;hui</p>
+          </div>
+          <div className="border border-ivory/10 rounded-xl p-5">
+            <p className="text-xs text-ivory/50 uppercase tracking-wide">En attente</p>
+            <p className="text-2xl font-semibold text-ivory mt-1">{euros(totaux.enAttente)}</p>
+            <p className="text-[11px] text-ivory/40 mt-1">débloqué dans les 14 jours</p>
+          </div>
+          <div className="border border-ivory/10 rounded-xl p-5">
+            <p className="text-xs text-ivory/50 uppercase tracking-wide">Expire sous 30 jours</p>
+            <p className="text-2xl font-semibold text-corail mt-1">{euros(totaux.expire30Jours)}</p>
+            <p className="text-[11px] text-ivory/40 mt-1">les clients reçoivent un rappel</p>
+          </div>
+          <div className="border border-ivory/10 rounded-xl p-5">
+            <p className="text-xs text-ivory/50 uppercase tracking-wide">Depuis le début</p>
+            <p className="text-sm text-ivory/80 mt-2">Gagné {euros(totaux.gagne)}</p>
+            <p className="text-sm text-ivory/80">Utilisé {euros(totaux.utilise)}</p>
+            <p className="text-sm text-ivory/50">Expiré {euros(totaux.expire)}</p>
+          </div>
+        </div>
+      )}
+
       <input
         type="text"
         value={recherche}
@@ -106,12 +162,27 @@ export default function AdminClients() {
         className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm mb-6"
       />
 
-      <p className="text-sm text-ivory/50 mb-4">{clientsFiltres.length} client(s)</p>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <p className="text-sm text-ivory/50">{clientsFiltres.length} client(s)</p>
+        <div className="flex items-center gap-2 text-xs text-ivory/50">
+          Trier par
+          <select
+            value={tri}
+            onChange={(e) => setTri(e.target.value)}
+            className="bg-ink border border-ivory/20 rounded-md px-2 py-1 text-ivory"
+          >
+            <option value="recents">plus récents</option>
+            <option value="cashback">cashback</option>
+            <option value="points">points</option>
+          </select>
+        </div>
+      </div>
 
       <div className="space-y-3">
         {clientsFiltres.map((c) => {
           const palier = palierDe(c.points || 0);
           const nomAffiche = c.pseudo || [c.prenom, c.nom].filter(Boolean).join(" ") || "—";
+          const solde = soldeDe(c.id);
 
           return (
             <div key={c.id} className="border border-ivory/10 rounded-lg overflow-hidden">
@@ -131,6 +202,12 @@ export default function AdminClients() {
                     {palier.nom}
                   </span>
                   <p className="text-sm text-gold mt-1">{c.points || 0} pts</p>
+                  {(solde.disponible > 0 || solde.enAttente > 0) && (
+                    <p className="text-xs text-ivory/60 mt-0.5">
+                      Cashback {euros(solde.disponible)}
+                      {solde.enAttente > 0 && <span className="text-ivory/40"> + {euros(solde.enAttente)} en attente</span>}
+                    </p>
+                  )}
                 </div>
               </button>
 
@@ -151,6 +228,38 @@ export default function AdminClients() {
                       <span className="text-xs text-ivory/50">{messageAction[c.email]}</span>
                     )}
                   </div>
+
+                  <p className="text-xs uppercase tracking-wide text-ivory/50 mb-2">Cashback</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3 text-sm">
+                    <div><p className="text-[11px] text-ivory/40">Disponible</p><p className="text-gold">{euros(solde.disponible)}</p></div>
+                    <div><p className="text-[11px] text-ivory/40">En attente</p><p className="text-ivory/80">{euros(solde.enAttente)}</p></div>
+                    <div><p className="text-[11px] text-ivory/40">Gagné</p><p className="text-ivory/80">{euros(solde.gagne)}</p></div>
+                    <div><p className="text-[11px] text-ivory/40">Utilisé</p><p className="text-ivory/80">{euros(solde.utilise)}</p></div>
+                    <div><p className="text-[11px] text-ivory/40">Expiré</p><p className="text-ivory/50">{euros(solde.expire)}</p></div>
+                  </div>
+                  {solde.prochaineExpiration && (
+                    <p className="text-xs text-corail/80 mb-3">
+                      {euros(solde.prochaineExpiration.montant)} expirent le {dateFr(solde.prochaineExpiration.date)}
+                    </p>
+                  )}
+                  {historiqueCashback.length > 0 && (
+                    <div className="max-h-48 overflow-y-auto mb-5 space-y-1">
+                      {historiqueCashback.map((m, i) => (
+                        <div key={i} className="flex justify-between text-xs">
+                          <span className="text-ivory/60">
+                            {dateFr(m.created_at)} · {LIBELLES_MOUVEMENT[m.type] || m.type}
+                            {m.statut === "reserve" && " (paiement en cours)"}
+                            {m.description ? ` — ${m.description}` : ""}
+                            {m.type === "gain" && new Date(m.disponible_le) > new Date() && ` · utilisable le ${dateFr(m.disponible_le)}`}
+                          </span>
+                          <span className={m.type === "gain" ? "text-gold" : "text-ivory/50"}>
+                            {m.type === "gain" ? "+" : "−"}{euros(m.montant)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {historiqueCashback.length === 0 && <p className="text-sm text-ivory/40 mb-5">Aucun mouvement de cashback.</p>}
 
                   <p className="text-xs uppercase tracking-wide text-ivory/50 mb-2">
                     Commandes ({commandesClient.length})

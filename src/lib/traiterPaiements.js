@@ -8,6 +8,7 @@ import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { chiffrerCode } from "./chiffrement";
 import { echapperHtml } from "./designs";
+import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from "./emailTemplate";
 import { calculerCashbackGagne, REGLES_CASHBACK } from "./cashback";
 import { calculerCode, filtreCartes } from "./codeInfluence";
 
@@ -56,19 +57,52 @@ function construireEmailCarte({ article, code }) {
   `;
 }
 
+// Pour comparer des emails sans tenir compte des majuscules : « _ » et « % » sont des jokers
+// dans ilike, on les neutralise (sinon « jea_@x.fr » pourrait désigner « jean@x.fr »).
+export const emailExact = (email) => String(email).replace(/[\\%_]/g, (c) => `\\${c}`);
+
+// Renvoie true si l'email correspond à un compte (les points ont été ajoutés)
 async function ajouterPoints(email, montant) {
-  if (!email) return;
+  if (!email) return false;
   const { data: profil } = await supabase
     .from("profils")
     .select("id, points")
-    .ilike("email", email)
+    .ilike("email", emailExact(email))
     .maybeSingle();
   if (profil) {
     await supabase
       .from("profils")
       .update({ points: (profil.points || 0) + Math.floor(montant) })
       .eq("id", profil.id);
+    return true;
   }
+  return false;
+}
+
+// Email de remerciement au participant d'une cagnotte (+ invitation à créer un compte)
+function construireEmailMerciContribution({ contribution, cagnotte, compteExiste }) {
+  const nom = echapperHtml(contribution.nom_contributeur);
+  const beneficiaire = echapperHtml(cagnotte.beneficiaire);
+  const montant = Number(contribution.montant);
+  const points = Math.floor(montant);
+  const lienCagnotte = `${SITE}/fr/cagnotte/${encodeURIComponent(cagnotte.slug)}`;
+  const lienInscription = `${SITE}/fr/inscription?email=${encodeURIComponent(contribution.email_contributeur)}`;
+
+  let contenu =
+    titreEmail("Merci pour votre participation !") +
+    texteEmail(`${nom ? `Bonjour ${nom},<br/><br/>` : ""}Votre participation de <strong>${montant} €</strong> à la cagnotte pour <strong>${beneficiaire}</strong> a bien été enregistrée.`);
+
+  if (compteExiste) {
+    contenu += texteEmail(`Elle vous rapporte <strong>${points} point${points > 1 ? "s" : ""} de fidélité</strong> sur votre compte Estalviar.`);
+    contenu += boutonEmail({ texte: "Voir la cagnotte", lien: lienCagnotte });
+  } else {
+    contenu += texteEmail(
+      `Créez votre compte Estalviar avec cette adresse email : cette participation comptera aussitôt pour votre palier fidélité (<strong>${points} point${points > 1 ? "s" : ""}</strong>), et vos prochains achats vous rapporteront du cashback.`
+    );
+    contenu += boutonEmail({ texte: "Créer mon compte", lien: lienInscription });
+    contenu += texteEmail(`<a href="${lienCagnotte}" style="color:#C9A227;">Voir la cagnotte</a>`);
+  }
+  return enveloppeEmail({ titre: "Merci pour votre participation", contenuHtml: contenu, siteUrl: SITE });
 }
 
 const centimes = (euros) => Math.round(Number(euros) * 100);
@@ -127,7 +161,7 @@ export async function traiterPaiementPanier(sessionOuId) {
     ({ data: profil } = await supabase.from("profils").select("id, points").eq("id", panier.profil_id).maybeSingle());
   }
   if (!profil) {
-    ({ data: profil } = await supabase.from("profils").select("id, points").ilike("email", emailAcheteur).maybeSingle());
+    ({ data: profil } = await supabase.from("profils").select("id, points").ilike("email", emailExact(emailAcheteur)).maybeSingle());
   }
   const pointsAvant = profil?.points || 0;
 
@@ -345,7 +379,19 @@ export async function traiterPaiementContribution(sessionOuId, contributionIdAtt
       design: cagnotte.design,
       statut: "payee",
     });
-    await ajouterPoints(contribution.email_contributeur, contribution.montant);
+    // Les cagnottes comptent pour le palier (points) mais ne rapportent pas de cashback
+    const compteExiste = await ajouterPoints(contribution.email_contributeur, contribution.montant);
+
+    try {
+      await resend.emails.send({
+        from: "Estalviar <onboarding@resend.dev>",
+        to: contribution.email_contributeur,
+        subject: `Merci pour votre participation à la cagnotte pour ${cagnotte.beneficiaire}`,
+        html: construireEmailMerciContribution({ contribution, cagnotte, compteExiste }),
+      });
+    } catch (e) {
+      console.error("Email de remerciement non envoyé", contribution.id, e);
+    }
   }
 
   return { ok: true };
