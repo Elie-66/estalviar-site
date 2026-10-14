@@ -643,7 +643,7 @@ export default function Profil() {
               value={nouveauNom}
               onChange={(e) => setNouveauNom(e.target.value)}
               required
-              placeholder="Ex : Camille"
+              placeholder="Ex : Maman"
               className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
             />
             <label className="block text-sm text-ivory/70 mb-2 mt-4">Email (facultatif)</label>
@@ -651,7 +651,7 @@ export default function Profil() {
               type="email"
               value={nouvelEmailBenef}
               onChange={(e) => setNouvelEmailBenef(e.target.value)}
-              placeholder="camille@exemple.com"
+              placeholder="maman@exemple.com"
               className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
             />
             <label htmlFor="anniv-nouveau" className="block text-sm text-ivory/70 mb-2 mt-4">Anniversaire (facultatif)</label>

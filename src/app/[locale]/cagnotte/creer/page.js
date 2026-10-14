@@ -295,7 +295,7 @@ export default function CreerCagnotte() {
               onChange={(e) => setBeneficiaire(e.target.value)}
               required
               maxLength={30}
-              placeholder="Ex : Camille"
+              placeholder="Ex : Thomas"
               className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory"
             />
 

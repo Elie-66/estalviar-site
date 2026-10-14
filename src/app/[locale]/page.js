@@ -276,7 +276,7 @@ export default function Home() {
               style={{ background: "linear-gradient(115deg, transparent 30%, white 48%, transparent 65%)" }}
             />
             <div className="relative flex items-center justify-between">
-              <span className="text-white text-sm font-medium">Pour Camille</span>
+              <span className="text-white text-sm font-medium">{t("pour")} Julien</span>
               <span className="text-gold/70 text-[10px] uppercase tracking-[0.2em] font-[family-name:var(--font-space-mono)]">
                 Estalviar
               </span>
