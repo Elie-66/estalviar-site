@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import { DecorEvenement } from "../components/BandeauEvenement";
+import { themeDe } from "../components/themesEvenements";
 
 export default function Boutique() {
   const t = useTranslations("boutiqueVitrine");
@@ -139,16 +141,15 @@ export default function Boutique() {
         )}
       </div>
 
-      <h1 className="text-3xl font-semibold text-ivory mb-3">
-        {onglet === "francaises" ? t("titreFrancaises")
-          : onglet === "evenement" && evenement ? evenement.nom
-          : t("titre")}
-      </h1>
-      {onglet === "francaises" ? (
-        <p className="text-ivory/60 text-sm max-w-[640px] mb-8">{t("introFrancaises")}</p>
-      ) : onglet === "evenement" && evenement ? (
-        <div className="mb-8 max-w-[640px]">
-          <p className="text-gold text-sm">
+      {onglet === "evenement" && evenement ? (
+        <div
+          className="relative overflow-hidden rounded-2xl border px-6 py-8 mb-8"
+          style={{ background: themeDe(evenement.slug).fond, borderColor: themeDe(evenement.slug).bordure }}
+        >
+          <DecorEvenement slug={evenement.slug} />
+          <div className="relative max-w-[640px]">
+          <h1 className="text-3xl font-semibold text-ivory mb-3">{evenement.nom}</h1>
+          <p className="text-sm" style={{ color: themeDe(evenement.slug).accent }}>
             {new Date(`${evenement.date}T12:00:00Z`).toLocaleDateString(locale, {
               weekday: "long", day: "numeric", month: "long", timeZone: "UTC",
             })}
@@ -157,10 +158,20 @@ export default function Boutique() {
               : evenement.joursRestants === 1 ? tEvenement("demain")
               : tEvenement("dansJours", { jours: evenement.joursRestants })}
           </p>
-          {evenement.description && <p className="text-ivory/60 text-sm mt-2">{evenement.description}</p>}
+          {evenement.description && <p className="text-ivory/75 text-sm mt-2">{evenement.description}</p>}
+          </div>
         </div>
       ) : (
-        <div className="mb-5" />
+        <>
+          <h1 className="text-3xl font-semibold text-ivory mb-3">
+            {onglet === "francaises" ? t("titreFrancaises") : t("titre")}
+          </h1>
+          {onglet === "francaises" ? (
+            <p className="text-ivory/60 text-sm max-w-[640px] mb-8">{t("introFrancaises")}</p>
+          ) : (
+            <div className="mb-5" />
+          )}
+        </>
       )}
 
       <div className="flex flex-col sm:flex-row gap-4 mb-8">

@@ -59,3 +59,11 @@ h1, h2, h3, h4 {
   --font-inter: 'Inter', sans-serif;
   --font-space-mono: 'Space Mono', monospace;
 }
+/* Motifs du bandeau d'événement : flottent doucement (désactivé si l'utilisateur limite les animations) */
+@keyframes flotter {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[flotter"] { animation: none !important; }
+}

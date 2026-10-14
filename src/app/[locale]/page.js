@@ -50,6 +50,7 @@ export default function Home() {
   const tCategories = useTranslations("categories");
   const [populaires, setPopulaires] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [avecEvenement, setAvecEvenement] = useState(false); // bandeau d'événement affiché en haut
 
   useEffect(() => {
     const charger = async () => {
@@ -85,7 +86,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col flex-1 bg-ink overflow-hidden">
-      <main className="flex-1 max-w-[1240px] w-full mx-auto px-6 pt-40 pb-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      {/* Bandeau de l'événement du moment (Fête des mères, Noël…), juste sous le menu */}
+      <BandeauEvenement onAffiche={setAvecEvenement} />
+
+      <main className={`flex-1 max-w-[1240px] w-full mx-auto px-6 ${avecEvenement ? "pt-16" : "pt-40"} pb-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center`}>
 
         <div className="text-center md:text-left">
           <p className="text-xs uppercase tracking-[0.2em] text-gold mb-4 flex items-center justify-center md:justify-start gap-2">
@@ -142,8 +146,6 @@ export default function Home() {
         </div>
 
       </main>
-
-      <BandeauEvenement />
 
       <section className="border-t border-ivory/10">
         <div className="max-w-[1240px] mx-auto px-6 py-24">
