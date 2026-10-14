@@ -265,5 +265,20 @@
     "francaisTitre": "Fabriqué en France",
     "francaisTexte": "Des marques qui fabriquent en France, souvent introuvables ailleurs en carte cadeau. Un cadeau qui fait vivre les ateliers français.",
     "francaisLien": "Voir toutes les marques fabriquées en France"
+  },
+  "faqAccueil": {
+    "titre": "Questions fréquentes",
+    "q1": "Comment la personne utilise-t-elle sa carte ?",
+    "r1": "Elle reçoit un email avec le code de la carte. Elle l'utilise directement chez l'enseigne, en ligne ou en magasin selon les conditions de chaque marque.",
+    "q2": "Combien de temps la carte est-elle valable ?",
+    "r2": "La durée de validité dépend de chaque enseigne. Une question sur une marque précise ? Écrivez-nous avant votre achat, nous vous répondons rapidement.",
+    "q3": "Puis-je choisir le jour de l'envoi ?",
+    "r3": "Oui. Choisissez la date et l'heure en personnalisant la carte : elle arrive pile au bon moment, même dans plusieurs mois.",
+    "q4": "Et si l'email n'arrive pas ?",
+    "r4": "Vérifiez d'abord les courriers indésirables. Sinon, écrivez-nous à info@estalviar.com avec l'adresse utilisée pour la commande : nous renvoyons la carte.",
+    "toutes": "Voir toutes les questions",
+    "proTitre": "Vous êtes une entreprise ou un CSE ?",
+    "proTexte": "Cadeaux pour vos équipes ou vos clients : une seule facture, des tarifs selon le volume, devis sous 48 h.",
+    "proBouton": "Demander un devis"
   }
 }

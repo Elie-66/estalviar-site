@@ -265,5 +265,20 @@
     "francaisTitre": "Hergestellt in Frankreich",
     "francaisTexte": "Marken, die in Frankreich produzieren – als Geschenkkarte oft nirgendwo sonst erhältlich.",
     "francaisLien": "Alle in Frankreich hergestellten Marken"
+  },
+  "faqAccueil": {
+    "titre": "Häufige Fragen",
+    "q1": "Wie löst die beschenkte Person die Karte ein?",
+    "r1": "Sie erhält eine E-Mail mit dem Code und löst ihn direkt bei der Marke ein, online oder im Geschäft – je nach den Bedingungen der Marke.",
+    "q2": "Wie lange ist die Karte gültig?",
+    "r2": "Die Gültigkeit hängt von der jeweiligen Marke ab. Fragen zu einer bestimmten Marke? Schreiben Sie uns vor dem Kauf.",
+    "q3": "Kann ich den Versandtag wählen?",
+    "r3": "Ja. Wählen Sie Datum und Uhrzeit beim Personalisieren: Die Karte kommt pünktlich an, auch in einigen Monaten.",
+    "q4": "Und wenn die E-Mail nicht ankommt?",
+    "r4": "Prüfen Sie zuerst den Spam-Ordner. Andernfalls schreiben Sie an info@estalviar.com mit der Bestelladresse – wir senden die Karte erneut.",
+    "toutes": "Alle Fragen ansehen",
+    "proTitre": "Sie sind ein Unternehmen oder Betriebsrat?",
+    "proTexte": "Geschenke für Ihr Team oder Ihre Kunden: eine Rechnung, Mengenpreise, Angebot innerhalb von 48 Std.",
+    "proBouton": "Angebot anfordern"
   }
 }

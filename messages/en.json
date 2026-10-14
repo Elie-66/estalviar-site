@@ -265,5 +265,20 @@
     "francaisTitre": "Made in France",
     "francaisTexte": "Brands that make their products in France, often not available as gift cards anywhere else.",
     "francaisLien": "See all Made in France brands"
+  },
+  "faqAccueil": {
+    "titre": "Frequently asked questions",
+    "q1": "How does the recipient use the card?",
+    "r1": "They receive an email with the card code and use it directly with the brand, online or in store depending on each brand's terms.",
+    "q2": "How long is the card valid?",
+    "r2": "Validity depends on each brand. A question about a specific brand? Write to us before buying and we'll answer quickly.",
+    "q3": "Can I choose the delivery date?",
+    "r3": "Yes. Pick the date and time when personalising the card: it arrives right on time, even months from now.",
+    "q4": "What if the email doesn't arrive?",
+    "r4": "First check the spam folder. Otherwise, write to info@estalviar.com with the address used for the order and we'll resend the card.",
+    "toutes": "See all questions",
+    "proTitre": "Are you a company or works council?",
+    "proTexte": "Gifts for your teams or clients: a single invoice, volume pricing, a quote within 48 hours.",
+    "proBouton": "Request a quote"
   }
 }

@@ -265,5 +265,20 @@
     "francaisTitre": "Fabricado en Francia",
     "francaisTexte": "Marcas que fabrican en Francia, a menudo imposibles de encontrar en tarjeta regalo en otro sitio.",
     "francaisLien": "Ver todas las marcas fabricadas en Francia"
+  },
+  "faqAccueil": {
+    "titre": "Preguntas frecuentes",
+    "q1": "¿Cómo usa la tarjeta la persona que la recibe?",
+    "r1": "Recibe un email con el código y lo usa directamente en la marca, en línea o en tienda según las condiciones de cada una.",
+    "q2": "¿Cuánto tiempo es válida la tarjeta?",
+    "r2": "La validez depende de cada marca. ¿Una duda sobre una marca concreta? Escríbenos antes de comprar.",
+    "q3": "¿Puedo elegir el día del envío?",
+    "r3": "Sí. Elige la fecha y la hora al personalizar la tarjeta: llega justo a tiempo, incluso dentro de varios meses.",
+    "q4": "¿Y si el email no llega?",
+    "r4": "Revisa primero el correo no deseado. Si no, escríbenos a info@estalviar.com con la dirección del pedido y la reenviamos.",
+    "toutes": "Ver todas las preguntas",
+    "proTitre": "¿Eres una empresa o un comité de empresa?",
+    "proTexte": "Regalos para tu equipo o tus clientes: una sola factura, precios por volumen, presupuesto en 48 h.",
+    "proBouton": "Pedir presupuesto"
   }
 }

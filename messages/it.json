@@ -265,5 +265,20 @@
     "francaisTitre": "Prodotto in Francia",
     "francaisTexte": "Marchi che producono in Francia, spesso introvabili altrove come carta regalo.",
     "francaisLien": "Vedi tutti i marchi prodotti in Francia"
+  },
+  "faqAccueil": {
+    "titre": "Domande frequenti",
+    "q1": "Come usa la carta chi la riceve?",
+    "r1": "Riceve un'email con il codice e lo usa direttamente presso il marchio, online o in negozio secondo le condizioni di ciascuno.",
+    "q2": "Quanto dura la validità della carta?",
+    "r2": "La validità dipende da ogni marchio. Una domanda su un marchio preciso? Scrivici prima dell'acquisto.",
+    "q3": "Posso scegliere il giorno dell'invio?",
+    "r3": "Sì. Scegli data e ora durante la personalizzazione: la carta arriva al momento giusto, anche tra qualche mese.",
+    "q4": "E se l'email non arriva?",
+    "r4": "Controlla prima lo spam. Altrimenti scrivici a info@estalviar.com con l'indirizzo dell'ordine: rinviamo la carta.",
+    "toutes": "Vedi tutte le domande",
+    "proTitre": "Sei un'azienda o un CRAL?",
+    "proTexte": "Regali per il tuo team o i tuoi clienti: un'unica fattura, prezzi in base al volume, preventivo entro 48 ore.",
+    "proBouton": "Richiedi un preventivo"
   }
 }

@@ -32,6 +32,7 @@ export default function Home() {
   const tPop = useTranslations("populairesAccueil");
   const tCategories = useTranslations("categories");
   const tFid = useTranslations("fideliteAccueil");
+  const tFaq = useTranslations("faqAccueil");
   const locale = useLocale();
   const [populaires, setPopulaires] = useState([]);
   const [categories, setCategories] = useState([]); // [{ nom, nombre }]
@@ -238,11 +239,8 @@ export default function Home() {
       </section>
 
       <section className="border-t border-ivory/10">
-        <div className="max-w-[1240px] mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-[1240px] mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
          <div className="text-center md:text-left">
-            <p className="text-xs uppercase tracking-[0.2em] text-gold mb-4 flex items-center justify-center md:justify-start gap-2">
-              <span className="w-6 h-px bg-gold" /> {tCagnotte("accroche")}
-            </p>
             <h2 className="text-3xl md:text-4xl font-semibold text-ivory leading-tight">
               {tCagnotte("titre")}
             </h2>
@@ -250,7 +248,7 @@ export default function Home() {
               {tCagnotte("description")}
             </p>
             <a
-              href="/fr/cagnotte/creer"
+              href={`/${locale}/cagnotte/creer`}
               className="inline-block mt-8 bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors"
             >
               {tCagnotte("bouton")}
@@ -290,6 +288,40 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Entreprises */}
+      <section className="max-w-[1240px] w-full mx-auto px-6 pb-20">
+        <div className="rounded-2xl border border-gold/25 bg-gold/[0.06] px-6 py-7 sm:px-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div>
+            <h2 className="text-xl md:text-2xl font-semibold text-ivory">{tFaq("proTitre")}</h2>
+            <p className="mt-1.5 text-sm text-ivory/65 max-w-[36rem]">{tFaq("proTexte")}</p>
+          </div>
+          <a href={`/${locale}/professionnels`}
+            className="shrink-0 self-start md:self-auto border border-gold text-gold text-sm font-semibold rounded-lg px-5 py-3 hover:bg-gold hover:text-ink transition-colors">
+            {tFaq("proBouton")}
+          </a>
+        </div>
+      </section>
+
+      {/* Questions fréquentes */}
+      <section className="border-t border-ivory/10">
+        <div className="max-w-[1240px] mx-auto px-6 py-20">
+          <h2 className="text-2xl md:text-3xl font-semibold text-ivory mb-8">{tFaq("titre")}</h2>
+          <div className="max-w-[860px] divide-y divide-ivory/10 border-y border-ivory/10">
+            {[1, 2, 3, 4].map((n) => (
+              <details key={n} className="group py-5">
+                <summary className="flex items-center justify-between gap-4 cursor-pointer list-none text-ivory font-medium [&::-webkit-details-marker]:hidden">
+                  {tFaq(`q${n}`)}
+                  <span aria-hidden className="text-gold text-xl leading-none transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 text-sm text-ivory/65 leading-relaxed max-w-[44rem]">{tFaq(`r${n}`)}</p>
+              </details>
+            ))}
+          </div>
+          <a href={`/${locale}/aide`} className="inline-block mt-6 text-sm text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold">
+            {tFaq("toutes")}
+          </a>
+        </div>
+      </section>
     </div>
   );
 }
