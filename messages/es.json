@@ -235,5 +235,35 @@
     "message2": "Gracias por todo",
     "message3": "¡Enhorabuena!",
     "offrir": "Regalar esta tarjeta {marque}"
+  },
+  "occasions": {
+    "titre": "Una idea para…",
+    "anniversaire": "Un cumpleaños",
+    "merci": "Dar las gracias",
+    "naissance": "Un nacimiento",
+    "mariage": "Una boda",
+    "depart": "Una despedida",
+    "cremaillere": "Una inauguración",
+    "filtre": "Ideas para: {occasion}",
+    "retirer": "Quitar"
+  },
+  "fideliteAccueil": {
+    "titre": "Cada tarjeta que regalas te recompensa",
+    "texte": "Con una cuenta Estalviar, cada euro gastado se convierte en un punto. A partir de 100 €, tus compras te dan cashback para tus próximas tarjetas.",
+    "creerCompte": "Crear mi cuenta",
+    "programme": "Descubrir el programa",
+    "desInscription": "desde el registro",
+    "desAchats": "desde {montant} € de compras",
+    "bronzeNom": "Bronce",
+    "argentNom": "Plata",
+    "orNom": "Oro",
+    "platineNom": "Platino",
+    "bronzeAvantage": "Puntos en cada pedido",
+    "argentAvantage": "Cashback en nuestras marcas favoritas",
+    "orAvantage": "Más cashback, en más marcas",
+    "platineAvantage": "El mejor cashback, grandes marcas incluidas",
+    "francaisTitre": "Fabricado en Francia",
+    "francaisTexte": "Marcas que fabrican en Francia, a menudo imposibles de encontrar en tarjeta regalo en otro sitio.",
+    "francaisLien": "Ver todas las marcas fabricadas en Francia"
   }
 }

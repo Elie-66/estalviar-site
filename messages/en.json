@@ -235,5 +235,35 @@
     "message2": "Thank you for everything",
     "message3": "Congratulations!",
     "offrir": "Give this {marque} card"
+  },
+  "occasions": {
+    "titre": "A gift for…",
+    "anniversaire": "A birthday",
+    "merci": "Saying thank you",
+    "naissance": "A new baby",
+    "mariage": "A wedding",
+    "depart": "A farewell",
+    "cremaillere": "A housewarming",
+    "filtre": "Ideas for: {occasion}",
+    "retirer": "Remove"
+  },
+  "fideliteAccueil": {
+    "titre": "Every card you give earns you rewards",
+    "texte": "With an Estalviar account, every euro you spend becomes a point. From €100, your purchases earn cashback to spend on your next cards.",
+    "creerCompte": "Create my account",
+    "programme": "Discover the programme",
+    "desInscription": "from sign-up",
+    "desAchats": "from €{montant} spent",
+    "bronzeNom": "Bronze",
+    "argentNom": "Silver",
+    "orNom": "Gold",
+    "platineNom": "Platinum",
+    "bronzeAvantage": "Points on every order",
+    "argentAvantage": "Cashback on our favourite brands",
+    "orAvantage": "More cashback, on more brands",
+    "platineAvantage": "The best cashback, big brands included",
+    "francaisTitre": "Made in France",
+    "francaisTexte": "Brands that make their products in France, often not available as gift cards anywhere else.",
+    "francaisLien": "See all Made in France brands"
   }
 }

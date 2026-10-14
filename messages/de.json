@@ -235,5 +235,35 @@
     "message2": "Danke für alles",
     "message3": "Herzlichen Glückwunsch!",
     "offrir": "Diese {marque}-Karte schenken"
+  },
+  "occasions": {
+    "titre": "Eine Idee für…",
+    "anniversaire": "Einen Geburtstag",
+    "merci": "Danke sagen",
+    "naissance": "Eine Geburt",
+    "mariage": "Eine Hochzeit",
+    "depart": "Einen Abschied",
+    "cremaillere": "Eine Einweihung",
+    "filtre": "Ideen für: {occasion}",
+    "retirer": "Entfernen"
+  },
+  "fideliteAccueil": {
+    "titre": "Jede verschenkte Karte zahlt sich aus",
+    "texte": "Mit einem Estalviar-Konto wird jeder ausgegebene Euro zu einem Punkt. Ab 100 € bringen Ihnen Ihre Einkäufe Cashback für Ihre nächsten Karten.",
+    "creerCompte": "Konto erstellen",
+    "programme": "Zum Programm",
+    "desInscription": "ab der Anmeldung",
+    "desAchats": "ab {montant} € Einkäufen",
+    "bronzeNom": "Bronze",
+    "argentNom": "Silber",
+    "orNom": "Gold",
+    "platineNom": "Platin",
+    "bronzeAvantage": "Punkte bei jeder Bestellung",
+    "argentAvantage": "Cashback bei unseren Lieblingsmarken",
+    "orAvantage": "Mehr Cashback, bei mehr Marken",
+    "platineAvantage": "Das beste Cashback, auch bei großen Marken",
+    "francaisTitre": "Hergestellt in Frankreich",
+    "francaisTexte": "Marken, die in Frankreich produzieren – als Geschenkkarte oft nirgendwo sonst erhältlich.",
+    "francaisLien": "Alle in Frankreich hergestellten Marken"
   }
 }

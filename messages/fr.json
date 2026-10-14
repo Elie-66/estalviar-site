@@ -235,5 +235,35 @@
     "message2": "Merci pour tout",
     "message3": "Félicitations !",
     "offrir": "Offrir cette carte {marque}"
+  },
+  "occasions": {
+    "titre": "Une idée pour…",
+    "anniversaire": "Un anniversaire",
+    "merci": "Dire merci",
+    "naissance": "Une naissance",
+    "mariage": "Un mariage",
+    "depart": "Un départ",
+    "cremaillere": "Une crémaillère",
+    "filtre": "Idées pour : {occasion}",
+    "retirer": "Retirer"
+  },
+  "fideliteAccueil": {
+    "titre": "Chaque carte offerte vous rapporte",
+    "texte": "Avec un compte Estalviar, chaque euro dépensé devient un point. Dès 100 €, vos achats vous rapportent du cashback, à dépenser sur vos prochaines cartes.",
+    "creerCompte": "Créer mon compte",
+    "programme": "Découvrir le programme",
+    "desInscription": "dès l'inscription",
+    "desAchats": "dès {montant} € d'achats",
+    "bronzeNom": "Bronze",
+    "argentNom": "Argent",
+    "orNom": "Or",
+    "platineNom": "Platine",
+    "bronzeAvantage": "Vos points à chaque commande",
+    "argentAvantage": "Du cashback sur nos marques coups de cœur",
+    "orAvantage": "Plus de cashback, sur plus de marques",
+    "platineAvantage": "Le meilleur cashback, grandes marques comprises",
+    "francaisTitre": "Fabriqué en France",
+    "francaisTexte": "Des marques qui fabriquent en France, souvent introuvables ailleurs en carte cadeau. Un cadeau qui fait vivre les ateliers français.",
+    "francaisLien": "Voir toutes les marques fabriquées en France"
   }
 }

@@ -8,10 +8,12 @@ import { DecorEvenement } from "../components/BandeauEvenement";
 import { themeDe } from "../components/themesEvenements";
 import CarteVitrine from "../components/CarteVitrine";
 import { couleurCategorie } from "../../../lib/couleursCartes";
+import { pourOccasion, trouverOccasion } from "../../../lib/occasions";
 
 export default function Boutique() {
   const t = useTranslations("boutiqueVitrine");
   const tEvenement = useTranslations("evenement");
+  const tOcc = useTranslations("occasions");
   const locale = useLocale();
   const tCategories = useTranslations("categories");
   const searchParams = useSearchParams();
@@ -19,6 +21,14 @@ export default function Boutique() {
   const [chargement, setChargement] = useState(true);
   const [recherche, setRecherche] = useState("");
   const [categorie, setCategorie] = useState(searchParams.get("categorie") || "Toutes");
+  // Venue d'une tuile « Une idée pour… » de l'accueil (?occasion=naissance)
+  const [occasion, setOccasion] = useState(() => trouverOccasion(searchParams.get("occasion")));
+  const retirerOccasion = () => {
+    setOccasion(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("occasion");
+    window.history.replaceState(null, "", url);
+  };
   // Onglets : « toutes », « francaises » (Fabriqué en France), « evenement » (Fête des mères, Noël…)
   // Liens directs : /fr/boutique?onglet=francaises  ou  /fr/boutique?evenement=fete-des-meres
   const slugEvenement = searchParams.get("evenement");
@@ -87,10 +97,11 @@ export default function Boutique() {
     charger();
   }, []);
 
-  const cartesOnglet =
+  const cartesOnglet = (
     onglet === "francaises" ? cartes.filter((c) => c.made_in_france)
     : onglet === "evenement" && evenement ? cartesEvenement
-    : cartes;
+    : cartes
+  ).filter((c) => pourOccasion(occasion, c));
 
   const categories = ["Toutes", ...Array.from(new Set(cartesOnglet.map((c) => c.categorie)))];
 
@@ -194,6 +205,16 @@ export default function Boutique() {
           className="w-full bg-ivory/[0.05] border border-ivory/15 rounded-full pl-11 pr-4 py-3 text-ivory text-sm focus:border-gold/60 outline-none"
         />
       </div>
+
+      {occasion && (
+        <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-ivory text-ink pl-4 pr-1.5 py-1.5 text-sm">
+          <span className="font-medium">{tOcc("filtre", { occasion: tOcc(occasion.slug).toLowerCase() })}</span>
+          <button type="button" onClick={retirerOccasion}
+            className="rounded-full bg-ink/10 hover:bg-ink/20 px-3 py-1 text-xs transition-colors">
+            {tOcc("retirer")} ✕
+          </button>
+        </div>
+      )}
 
       {/* Catégories : pastilles de couleur (défilent à l'horizontale sur téléphone) */}
       <div className="-mx-6 px-6 overflow-x-auto mb-9 [scrollbar-width:none]">

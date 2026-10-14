@@ -235,5 +235,35 @@
     "message2": "Grazie di tutto",
     "message3": "Congratulazioni!",
     "offrir": "Regala questa carta {marque}"
+  },
+  "occasions": {
+    "titre": "Un'idea per…",
+    "anniversaire": "Un compleanno",
+    "merci": "Dire grazie",
+    "naissance": "Una nascita",
+    "mariage": "Un matrimonio",
+    "depart": "Un addio",
+    "cremaillere": "Una casa nuova",
+    "filtre": "Idee per: {occasion}",
+    "retirer": "Rimuovi"
+  },
+  "fideliteAccueil": {
+    "titre": "Ogni carta che regali ti premia",
+    "texte": "Con un account Estalviar, ogni euro speso diventa un punto. Da 100 €, i tuoi acquisti ti fanno guadagnare cashback per le prossime carte.",
+    "creerCompte": "Crea il mio account",
+    "programme": "Scopri il programma",
+    "desInscription": "dall'iscrizione",
+    "desAchats": "da {montant} € di acquisti",
+    "bronzeNom": "Bronzo",
+    "argentNom": "Argento",
+    "orNom": "Oro",
+    "platineNom": "Platino",
+    "bronzeAvantage": "Punti a ogni ordine",
+    "argentAvantage": "Cashback sui nostri marchi preferiti",
+    "orAvantage": "Più cashback, su più marchi",
+    "platineAvantage": "Il miglior cashback, grandi marchi inclusi",
+    "francaisTitre": "Prodotto in Francia",
+    "francaisTexte": "Marchi che producono in Francia, spesso introvabili altrove come carta regalo.",
+    "francaisLien": "Vedi tutti i marchi prodotti in Francia"
   }
 }

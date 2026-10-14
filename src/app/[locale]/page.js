@@ -6,6 +6,7 @@ import { supabase } from "../../lib/supabase";
 import CarteVivante from "./components/CarteVivante";
 import CarteVitrine from "./components/CarteVitrine";
 import { couleurCategorie, fondCarte } from "../../lib/couleursCartes";
+import { OCCASIONS, pourOccasion } from "../../lib/occasions";
 import BandeauEvenement from "./components/BandeauEvenement";
 
 // Enseignes proposées sur la carte de l'accueil si le catalogue n'est pas encore chargé
@@ -17,16 +18,28 @@ const apercus = [
   { slug: "zara", nom: "Zara", image: "/logos/zara.svg", categorie: "Mode & chaussures", montant_min: 15, montant_max: 200 },
 ];
 
+// Paliers de fidélité (mêmes seuils que la page Fidélité ; 1 € dépensé = 1 point)
+const PALIERS_ACCUEIL = [
+  { cle: "bronze", seuil: 0, couleur: "#B08D57" },
+  { cle: "argent", seuil: 100, couleur: "#C0C0C0" },
+  { cle: "or", seuil: 300, couleur: "#C9A227" },
+  { cle: "platine", seuil: 700, couleur: "#E5E4E2" },
+];
+
 export default function Home() {
   const t = useTranslations("accueilVitrine");
   const tCcm = useTranslations("commentCaMarcheAccueil");
   const tCagnotte = useTranslations("cagnotteAccueil");
   const tPop = useTranslations("populairesAccueil");
   const tCategories = useTranslations("categories");
+  const tOcc = useTranslations("occasions");
+  const tFid = useTranslations("fideliteAccueil");
   const locale = useLocale();
   const [populaires, setPopulaires] = useState([]);
   const [categories, setCategories] = useState([]); // [{ nom, nombre }]
   const [marquesHero, setMarquesHero] = useState(apercus);
+  const [occasions, setOccasions] = useState([]); // occasions qui ont au moins une enseigne
+  const [fabriquees, setFabriquees] = useState([]); // enseignes fabriquées en France
   const [avecEvenement, setAvecEvenement] = useState(false); // bandeau d'événement affiché en haut
 
   useEffect(() => {
@@ -57,6 +70,10 @@ export default function Home() {
       // La carte de l'accueil propose les enseignes les plus demandées qui ont un logo
       const avecLogo = tri.filter((c) => c.image).slice(0, 5);
       if (avecLogo.length >= 3) setMarquesHero(avecLogo);
+
+      const actives = toutesCartes || [];
+      setOccasions(OCCASIONS.filter((o) => actives.some((c) => pourOccasion(o, c))));
+      setFabriquees(tri.filter((c) => c.made_in_france).slice(0, 4));
 
       const compte = {};
       (toutesCartes || []).forEach((c) => { if (c.categorie) compte[c.categorie] = (compte[c.categorie] || 0) + 1; });
@@ -111,19 +128,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Envie de… : les catégories, chacune dans sa couleur */}
-      {categories.length > 0 && (
+      {/* Une idée par occasion */}
+      {occasions.length > 0 && (
         <section className="max-w-[1240px] w-full mx-auto px-6 pb-20">
-          <h2 className="text-2xl md:text-3xl font-semibold text-ivory mb-6">{tPop("categoriesTitre")}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {categories.map((c) => (
-              <a key={c.nom} href={`/${locale}/boutique?categorie=${encodeURIComponent(c.nom)}`}
-                className="group relative overflow-hidden rounded-2xl p-5 min-h-[112px] flex flex-col justify-between transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-gold"
-                style={{ background: fondCarte(couleurCategorie(c.nom)) }}>
-                <span className="text-white text-lg font-semibold leading-tight font-[family-name:var(--font-fraunces)]">
-                  {traduireCategorie(c.nom)}
-                </span>
-                <span className="text-white/75 text-xs">{t("nbEnseignes", { n: c.nombre })}</span>
+          <h2 className="text-2xl md:text-3xl font-semibold text-ivory mb-6">{tOcc("titre")}</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            {occasions.map((o) => (
+              <a key={o.slug} href={`/${locale}/boutique?occasion=${o.slug}`}
+                className="group rounded-2xl bg-ivory text-ink p-5 flex flex-col gap-6 min-h-[132px] transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">
+                <svg viewBox="0 0 24 24" className="w-8 h-8 text-ink/80 group-hover:text-[#B5563F] transition-colors" fill="none"
+                  stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d={o.icone} />
+                </svg>
+                <span className="text-lg font-semibold leading-tight font-[family-name:var(--font-fraunces)]">{tOcc(o.slug)}</span>
               </a>
             ))}
           </div>
@@ -147,6 +164,84 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Fabriqué en France : l'argument qui nous distingue */}
+      {fabriquees.length > 0 && (
+        <section className="border-t border-ivory/10">
+          <div className="max-w-[1240px] mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-10 items-center">
+            <div>
+              <div aria-hidden className="flex w-16 h-1.5 rounded-full overflow-hidden mb-6">
+                <span className="flex-1 bg-[#2f5bd3]" /><span className="flex-1 bg-ivory" /><span className="flex-1 bg-[#e1293b]" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-semibold text-ivory">{tFid("francaisTitre")}</h2>
+              <p className="mt-4 text-ivory/65 leading-relaxed">{tFid("francaisTexte")}</p>
+              <a href={`/${locale}/boutique?onglet=francaises`}
+                className="inline-block mt-6 text-sm text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold">
+                {tFid("francaisLien")}
+              </a>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {fabriquees.map((carte) => (
+                <CarteVitrine key={carte.slug} carte={carte} href={`/${locale}/boutique/${carte.slug}`}
+                  prixLabel={t("des", { montant: carte.montant_min })} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Envie de… : les catégories, chacune dans sa couleur */}
+      {categories.length > 0 && (
+        <section className="max-w-[1240px] w-full mx-auto px-6 py-20">
+          <h2 className="text-2xl md:text-3xl font-semibold text-ivory mb-6">{tPop("categoriesTitre")}</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {categories.map((c) => (
+              <a key={c.nom} href={`/${locale}/boutique?categorie=${encodeURIComponent(c.nom)}`}
+                className="group relative overflow-hidden rounded-2xl p-5 min-h-[112px] flex flex-col justify-between transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-gold"
+                style={{ background: fondCarte(couleurCategorie(c.nom)) }}>
+                <span className="text-white text-lg font-semibold leading-tight font-[family-name:var(--font-fraunces)]">
+                  {traduireCategorie(c.nom)}
+                </span>
+                <span className="text-white/75 text-xs">{t("nbEnseignes", { n: c.nombre })}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Fidélité : chaque achat rapporte */}
+      <section className="border-t border-ivory/10 bg-[radial-gradient(ellipse_at_85%_0%,rgba(201,162,39,0.14),transparent_55%)]">
+        <div className="max-w-[1240px] mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-12 items-center">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-semibold text-ivory">{tFid("titre")}</h2>
+            <p className="mt-4 text-ivory/65 leading-relaxed max-w-[30rem]">{tFid("texte")}</p>
+            <div className="mt-7 flex flex-wrap items-center gap-5">
+              <a href={`/${locale}/inscription`}
+                className="bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors">
+                {tFid("creerCompte")}
+              </a>
+              <a href={`/${locale}/fidelite`} className="text-sm text-ivory/75 underline underline-offset-4 decoration-ivory/30 hover:text-gold">
+                {tFid("programme")}
+              </a>
+            </div>
+          </div>
+
+          <ol className="relative grid grid-cols-2 sm:grid-cols-4 gap-6">
+            <span aria-hidden className="hidden sm:block absolute left-[12%] right-[12%] top-7 h-px bg-gradient-to-r from-[#B08D57] via-[#C9A227] to-[#E5E4E2] opacity-60" />
+            {PALIERS_ACCUEIL.map((p) => (
+              <li key={p.cle} className="relative text-center">
+                <span className="mx-auto w-14 h-14 rounded-full flex items-center justify-center text-ink text-lg font-semibold font-[family-name:var(--font-fraunces)] shadow-[0_8px_24px_-10px_rgba(0,0,0,0.8)]"
+                  style={{ background: `radial-gradient(circle at 30% 30%, #fff8, transparent 45%), ${p.couleur}` }}>
+                  {tFid(`${p.cle}Nom`).charAt(0)}
+                </span>
+                <p className="mt-3 text-ivory font-medium">{tFid(`${p.cle}Nom`)}</p>
+                <p className="text-xs text-gold/80 mt-0.5">{p.seuil === 0 ? tFid("desInscription") : tFid("desAchats", { montant: p.seuil })}</p>
+                <p className="text-xs text-ivory/55 mt-2 leading-relaxed">{tFid(`${p.cle}Avantage`)}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
 
       {/* Comment ça marche : 3 étapes */}
       <section className="border-t border-ivory/10">
