@@ -43,7 +43,13 @@
     "pour": "Pour",
     "messageSteam": "GG bien joué !",
     "messageFnac": "Joyeux anniversaire !",
-    "messageAmazon": "Pour te faire plaisir"
+    "messageAmazon": "Pour te faire plaisir",
+    "atout1": "Prête en 2 minutes",
+    "atout2": "Envoyée par email, quand vous voulez",
+    "atout3": "Plus de 200 enseignes",
+    "nbEnseignes": "{n, plural, one {# enseigne} other {# enseignes}}",
+    "voirTout": "Voir toutes les enseignes",
+    "des": "dès {montant} €"
   },
   "boutiqueVitrine": {
     "titre": "Toutes les enseignes",
@@ -217,5 +223,17 @@
     "dansJours": "dans {jours} jours",
     "demain": "demain",
     "aujourdhui": "c'est aujourd'hui"
+  },
+  "carteVivante": {
+    "pour": "Pour {prenom}",
+    "prenomVide": "…",
+    "prenomLabel": "Pour qui ?",
+    "messageLabel": "Message",
+    "enseigneLabel": "Enseigne",
+    "montantLabel": "Montant",
+    "message1": "Joyeux anniversaire !",
+    "message2": "Merci pour tout",
+    "message3": "Félicitations !",
+    "offrir": "Offrir cette carte {marque}"
   }
 }

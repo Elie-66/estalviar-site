@@ -50,7 +50,16 @@ export default function FicheCarte({ params }) {
         .single();
 
       setCarte(data);
-      if (data) setMontant(data.montant_min);
+      if (data) {
+        // Choix faits sur la carte de l'accueil (?pour=Camille&montant=50&message=…)
+        const params = new URLSearchParams(window.location.search);
+        const montantDemande = Number(params.get("montant"));
+        setMontant(
+          montantDemande >= data.montant_min && montantDemande <= data.montant_max ? montantDemande : data.montant_min
+        );
+        if (params.get("pour")) setBeneficiaire(params.get("pour").slice(0, 30));
+        if (params.get("message")) setMessage(params.get("message").slice(0, 40));
+      }
 
       const { data: memeCategorie } = await supabase
         .from("catalogue")

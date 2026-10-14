@@ -43,7 +43,13 @@
     "pour": "For",
     "messageSteam": "GG well played!",
     "messageFnac": "Happy birthday!",
-    "messageAmazon": "Just for you"
+    "messageAmazon": "Just for you",
+    "atout1": "Ready in 2 minutes",
+    "atout2": "Sent by email, whenever you want",
+    "atout3": "200+ brands",
+    "nbEnseignes": "{n, plural, one {# brand} other {# brands}}",
+    "voirTout": "See all brands",
+    "des": "from €{montant}"
   },
   "boutiqueVitrine": {
     "titre": "All brands",
@@ -217,5 +223,17 @@
     "dansJours": "in {jours} days",
     "demain": "tomorrow",
     "aujourdhui": "it's today"
+  },
+  "carteVivante": {
+    "pour": "For {prenom}",
+    "prenomVide": "…",
+    "prenomLabel": "Who is it for?",
+    "messageLabel": "Message",
+    "enseigneLabel": "Brand",
+    "montantLabel": "Amount",
+    "message1": "Happy birthday!",
+    "message2": "Thank you for everything",
+    "message3": "Congratulations!",
+    "offrir": "Give this {marque} card"
   }
 }

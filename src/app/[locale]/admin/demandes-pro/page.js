@@ -78,7 +78,7 @@ export default function AdminDemandesPro() {
             )}
 
             {d.message && (
-              <p className="text-sm text-ivory/60 mt-2 border-t border-ivory/10 pt-2">{d.message}</p>
+              <p className="text-sm text-ivory/60 mt-2 border-t border-ivory/10 pt-2 whitespace-pre-line">{d.message}</p>
             )}
 
             {d.destinataires && d.destinataires.length > 0 && (

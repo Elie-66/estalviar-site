@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import { DecorEvenement } from "../components/BandeauEvenement";
 import { themeDe } from "../components/themesEvenements";
+import CarteVitrine from "../components/CarteVitrine";
+import { couleurCategorie } from "../../../lib/couleursCartes";
 
 export default function Boutique() {
   const t = useTranslations("boutiqueVitrine");
@@ -109,7 +110,8 @@ export default function Boutique() {
   }
 
   return (
-    <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-20">
+    <div className="max-w-[1240px] w-full mx-auto px-6 pt-32 pb-20">
+      {(evenement || nbFrancaises > 0) && (
       <div className="flex flex-wrap gap-1 sm:gap-2 border border-ivory/10 rounded-lg p-1 w-fit max-w-full mb-8">
         <button
           onClick={() => changerOnglet("toutes")}
@@ -140,6 +142,7 @@ export default function Boutique() {
           </button>
         )}
       </div>
+      )}
 
       {onglet === "evenement" && evenement ? (
         <div
@@ -174,64 +177,67 @@ export default function Boutique() {
         </>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
-        <div className="relative flex-1">
-          <svg
-            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-ivory/40"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" strokeLinecap="round" />
-          </svg>
-          <input
-            type="text"
-            value={recherche}
-            onChange={(e) => setRecherche(e.target.value)}
-            placeholder={t("recherchePlaceholder")}
-            className="w-full bg-transparent border border-ivory/20 rounded-lg pl-11 pr-4 py-3 text-ivory text-sm"
-          />
-        </div>
-
-        <select
-          value={categorie}
-          onChange={(e) => setCategorie(e.target.value)}
-          className="bg-transparent border border-ivory/20 rounded-lg px-4 py-3 text-ivory text-sm"
+      <div className="relative max-w-[520px] mb-5">
+        <svg
+          width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-ivory/40" aria-hidden
         >
-          <option value="Toutes" className="bg-ink">{t("toutes")}</option>
-          {categories.filter((cat) => cat !== "Toutes").map((cat) => (
-            <option key={cat} value={cat} className="bg-ink">
-              {traduireCategorie(cat)}
-            </option>
-          ))}
-        </select>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+        </svg>
+        <input
+          type="search"
+          value={recherche}
+          onChange={(e) => setRecherche(e.target.value)}
+          placeholder={t("recherchePlaceholder")}
+          aria-label={t("recherchePlaceholder")}
+          className="w-full bg-ivory/[0.05] border border-ivory/15 rounded-full pl-11 pr-4 py-3 text-ivory text-sm focus:border-gold/60 outline-none"
+        />
+      </div>
+
+      {/* Catégories : pastilles de couleur (défilent à l'horizontale sur téléphone) */}
+      <div className="-mx-6 px-6 overflow-x-auto mb-9 [scrollbar-width:none]">
+        <div role="group" aria-label={t("toutes")} className="flex gap-2 w-max pb-1">
+          {categories.map((cat) => {
+            const active = categorie === cat;
+            const couleur = cat === "Toutes" ? "#C9A227" : couleurCategorie(cat);
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategorie(cat)}
+                aria-pressed={active}
+                className={`flex items-center gap-2 text-sm rounded-full pl-2.5 pr-4 py-2 border whitespace-nowrap transition-colors ${
+                  active ? "text-ink font-medium border-transparent" : "text-ivory/80 border-ivory/15 hover:border-ivory/35"
+                }`}
+                style={active ? { background: couleur, color: "#fff" } : undefined}
+              >
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: active ? "#fff" : couleur }} />
+                {cat === "Toutes" ? t("toutes") : traduireCategorie(cat)}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {cartesFiltrees.length === 0 ? (
         <p className="text-ivory/50 text-sm">{onglet === "francaises" ? t("aucuneFrancaise") : t("aucunResultat")}</p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-7 sm:gap-x-5 sm:gap-y-9">
           {cartesFiltrees.map((carte) => (
-            <a
+            <CarteVitrine
               key={carte.slug}
-              href={`/fr/boutique/${carte.slug}`}
-              className="border border-ivory/10 rounded-lg p-6 text-center hover:border-gold/50 transition-colors"
-            >
-              <div className="h-24 flex items-center justify-center bg-white rounded-md">
-                {carte.image ? (
-                  <Image src={carte.image} alt={carte.nom} width={100} height={100} className="object-contain" />
-                ) : (
-                  <span className="text-ink text-sm">{carte.nom}</span>
-                )}
-              </div>
-              <p className="mt-4 text-ivory">{carte.nom}</p>
-              <p className="text-xs text-gold/60 mt-0.5">{traduireCategorie(carte.categorie)}</p>
-              <p className="text-sm text-ivory/50">{t("apartirDe")} {carte.montant_min} €</p>
-              {carte.made_in_france && onglet !== "francaises" && (
-                <p className="mt-2 inline-block text-[10px] rounded-full px-2 py-0.5 bg-ivory/10 text-ivory/70">
-                  🇫🇷 {t("badgeFabrique")}
-                </p>
-              )}
-            </a>
+              carte={carte}
+              href={`/${locale}/boutique/${carte.slug}`}
+              prixLabel={`${t("apartirDe")} ${carte.montant_min} €`}
+              badge={
+                carte.made_in_france && onglet !== "francaises" ? (
+                  <span title={t("badgeFabrique")} className="text-[10px] text-ink/70 bg-ink/[0.06] rounded-full px-2 py-0.5 whitespace-nowrap">
+                    🇫🇷 <span className="hidden sm:inline">{t("badgeFabrique")}</span>
+                  </span>
+                ) : null
+              }
+            />
           ))}
         </div>
       )}

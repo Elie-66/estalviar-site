@@ -1,300 +1,207 @@
 "use client";
 
-import { useState, useRef } from "react";
-import * as XLSX from "xlsx";
+import { useState } from "react";
 
-const remises = [
-  { min: 1, max: 9, reduction: 0 },
-  { min: 10, max: 49, reduction: 0 },
-  { min: 50, max: 199, reduction: 0 },
-  { min: 200, max: Infinity, reduction: 0 },
+const OCCASIONS = [
+  "Cadeaux salariés / CSE",
+  "Fêtes de fin d'année",
+  "Clients & partenaires",
+  "Challenge commercial / incentive",
+  "Arrivée, départ, anniversaire",
+  "Autre",
 ];
 
-function trouverRemise(quantite) {
-  return remises.find((r) => quantite >= r.min && quantite <= r.max) || remises[0];
-}
+const VOLUMES = ["Moins de 10", "10 à 49", "50 à 199", "200 à 999", "1 000 et plus"];
+
+const USAGES = [
+  {
+    titre: "Vos équipes",
+    texte: "Fin d'année, primes, anniversaires, bienvenue : un cadeau que chacun choisit vraiment.",
+  },
+  {
+    titre: "Vos clients",
+    texte: "Remerciez vos meilleurs clients et partenaires avec une attention qui marque les esprits.",
+  },
+  {
+    titre: "Vos challenges",
+    texte: "Récompensez vos commerciaux et vos meilleures équipes avec des récompenses qui motivent.",
+  },
+];
+
+const AVANTAGES = [
+  ["Plus de 200 enseignes", "Mode, sport, high-tech, gastronomie, voyages… et des marques fabriquées en France."],
+  ["Personnalisées", "Le prénom, votre message et le design de votre choix sur chaque carte."],
+  ["Envoyées pour vous", "Chaque bénéficiaire reçoit sa carte par email, tout de suite ou à la date que vous choisissez."],
+  ["Une seule facture", "Une commande, une facture, un interlocuteur dédié. Paiement par virement possible."],
+  ["Tarifs selon le volume", "Plus vous commandez, plus le prix est intéressant. Devis gratuit et sans engagement."],
+];
+
+const ETAPES = [
+  ["Vous décrivez votre besoin", "En 2 minutes, avec le formulaire."],
+  ["Nous vous envoyons un devis", "Sous 48 h, adapté à votre budget et à votre volume."],
+  ["Vos cartes sont envoyées", "Aux bénéficiaires, à la date prévue. Vous n'avez rien à gérer."],
+];
+
+const champ = "w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm focus:border-gold/60 outline-none";
 
 export default function Professionnels() {
-  const [entreprise, setEntreprise] = useState("");
-  const [contact, setContact] = useState("");
-  const [email, setEmail] = useState("");
-  const [telephone, setTelephone] = useState("");
-  const [quantite, setQuantite] = useState("");
-  const [montantParCarte, setMontantParCarte] = useState("");
-  const [message, setMessage] = useState("");
-  const [listeDestinataires, setListeDestinataires] = useState("");
+  const [form, setForm] = useState({
+    entreprise: "", contact: "", email: "", telephone: "", occasion: "", volume: "", message: "", site: "",
+  });
   const [envoi, setEnvoi] = useState(false);
   const [succes, setSucces] = useState(false);
-  const fichierInputRef = useRef(null);
+  const [erreur, setErreur] = useState("");
 
-  const quantiteNum = parseInt(quantite) || 0;
-  const montantNum = parseFloat(montantParCarte) || 0;
-  const remise = trouverRemise(quantiteNum || 1);
-  const sousTotal = quantiteNum * montantNum;
-  const total = sousTotal * (1 - remise.reduction);
-
-  const destinatairesParsés = listeDestinataires
-    .split("\n")
-    .map((ligne) => ligne.trim())
-    .filter(Boolean)
-    .map((ligne) => {
-      const [nom, email] = ligne.split(",").map((v) => v.trim());
-      return { nom, email };
-    });
-
-  const handleImportExcel = (e) => {
-    const fichier = e.target.files[0];
-    if (!fichier) return;
-
-    const lecteur = new FileReader();
-    lecteur.onload = (evt) => {
-      const classeur = XLSX.read(evt.target.result, { type: "binary" });
-      const feuille = classeur.Sheets[classeur.SheetNames[0]];
-      const lignes = XLSX.utils.sheet_to_json(feuille, { header: 1 });
-
-      const texte = lignes
-        .filter((ligne) => ligne.length >= 2 && ligne[0] && ligne[1])
-        .map((ligne) => `${ligne[0]}, ${ligne[1]}`)
-        .join("\n");
-
-      setListeDestinataires(texte);
-    };
-    lecteur.readAsBinaryString(fichier);
-
-    e.target.value = "";
-  };
+  const maj = (cle) => (e) => setForm({ ...form, [cle]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setEnvoi(true);
-
-    const res = await fetch('/api/demande-pro', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        entreprise,
-        contact,
-        email,
-        telephone,
-        quantite,
-        message: `${message}${montantParCarte ? ` | Montant estimé par carte : ${montantParCarte} €` : ''}`,
-        destinataires: destinatairesParsés,
-      }),
-    });
-
-    setEnvoi(false);
-    if (res.ok) {
-      setSucces(true);
+    setErreur("");
+    try {
+      const res = await fetch("/api/demande-pro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) setSucces(true);
+      else setErreur(data.error || "Une erreur est survenue, réessayez.");
+    } catch {
+      setErreur("Erreur réseau, réessayez.");
+    } finally {
+      setEnvoi(false);
     }
   };
 
   if (succes) {
     return (
       <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center">
-        <div className="text-5xl mb-4">✓</div>
-        <h1 className="text-3xl font-semibold text-ivory">Demande envoyée</h1>
-        <p className="mt-4 text-ivory/60">
-          Notre équipe revient vers vous sous 48h avec un devis personnalisé.
+        <div className="w-14 h-14 rounded-full border border-gold/50 text-gold text-2xl flex items-center justify-center mx-auto">✓</div>
+        <h1 className="text-3xl font-semibold text-ivory mt-6">Merci, votre demande est envoyée</h1>
+        <p className="mt-4 text-ivory/60 leading-relaxed">
+          Nous revenons vers vous sous 48 h avec un devis personnalisé. Un email de confirmation vient de vous être envoyé.
         </p>
+        <a href="/fr/boutique" className="inline-block mt-8 text-sm text-gold hover:underline">Découvrir les enseignes →</a>
       </div>
     );
   }
 
   return (
-    <div className="max-w-[1100px] mx-auto px-6 pt-32 pb-20 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+    <div className="max-w-[1140px] mx-auto px-6 pt-32 pb-20">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-14 items-start">
 
-      <div>
-        <p className="text-sm uppercase tracking-wide text-gold mb-2">Espace professionnel</p>
-        <h1 className="text-4xl font-semibold text-ivory leading-tight">
-          Des cartes cadeaux pour vos équipes et vos clients.
-        </h1>
-        <p className="mt-6 text-ivory/70 leading-relaxed">
-          Commandez en volume, personnalisez chaque carte, et simplifiez votre gestion administrative avec une facturation unique.
-        </p>
-
-        <div className="mt-10 space-y-4">
-          <div className="flex gap-3">
-            <span className="text-gold">✓</span>
-            <p className="text-sm text-ivory/70">Commande groupée, une seule facture</p>
-          </div>
-          <div className="flex gap-3">
-            <span className="text-gold">✓</span>
-            <p className="text-sm text-ivory/70">Tarifs dégressifs selon le volume</p>
-          </div>
-          <div className="flex gap-3">
-            <span className="text-gold">✓</span>
-            <p className="text-sm text-ivory/70">Import de listes de destinataires</p>
-          </div>
-        </div>
-
-        <div className="mt-10 border border-ivory/10 rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-ivory/10 text-ivory/50 text-xs uppercase">
-                <th className="text-left px-4 py-2 font-medium">Quantité</th>
-                <th className="text-right px-4 py-2 font-medium">Réduction</th>
-              </tr>
-            </thead>
-            <tbody>
-              {remises.map((r, i) => (
-                <tr key={i} className="border-b border-ivory/5 last:border-0">
-                  <td className="px-4 py-2 text-ivory/70">
-                    {r.max === Infinity ? `${r.min}+` : `${r.min} à ${r.max}`}
-                  </td>
-                  <td className="px-4 py-2 text-right text-gold">
-                    {r.reduction > 0 ? `${r.reduction * 100}%` : "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="border border-ivory/10 rounded-xl p-8">
-        <h2 className="text-xl font-semibold text-ivory mb-6">Demander un devis</h2>
-
-        <label className="block text-sm text-ivory/70 mb-2">Entreprise</label>
-        <input
-          type="text"
-          value={entreprise}
-          onChange={(e) => setEntreprise(e.target.value)}
-          required
-          className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
-        />
-
-        <label className="block text-sm text-ivory/70 mb-2 mt-4">Nom du contact</label>
-        <input
-          type="text"
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-          required
-          className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
-        />
-
-        <div className="grid grid-cols-2 gap-4 mt-4">
-          <div>
-            <label className="block text-sm text-ivory/70 mb-2">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-ivory/70 mb-2">Téléphone</label>
-            <input
-              type="tel"
-              value={telephone}
-              onChange={(e) => setTelephone(e.target.value)}
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mt-4">
-          <div>
-            <label className="block text-sm text-ivory/70 mb-2">Quantité estimée</label>
-            <input
-              type="number"
-              min="1"
-              value={quantite}
-              onChange={(e) => setQuantite(e.target.value)}
-              placeholder="Ex : 50"
-              required
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-ivory/70 mb-2">Montant par carte (€)</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={montantParCarte}
-              onChange={(e) => setMontantParCarte(e.target.value)}
-              placeholder="Ex : 30"
-              className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm"
-            />
-          </div>
-        </div>
-
-        {quantiteNum > 0 && montantNum > 0 && (
-          <div className="mt-4 border border-gold/20 bg-gold/5 rounded-lg p-4 text-sm">
-            <div className="flex justify-between text-ivory/70">
-              <span>Sous-total</span>
-              <span>{sousTotal.toFixed(2)} €</span>
-            </div>
-            {remise.reduction > 0 && (
-              <div className="flex justify-between text-gold mt-1">
-                <span>Réduction ({remise.reduction * 100}%)</span>
-                <span>-{(sousTotal - total).toFixed(2)} €</span>
-              </div>
-            )}
-            <div className="flex justify-between text-ivory font-semibold mt-2 pt-2 border-t border-gold/20">
-              <span>Estimation</span>
-              <span>{total.toFixed(2)} €</span>
-            </div>
-            <p className="text-xs text-ivory/40 mt-2">
-              Ceci est une simulation. Les tarifs exacts vous seront communiqués par email après étude de votre besoin.
-            </p>
-          </div>
-        )}
-
-        <label className="block text-sm text-ivory/70 mb-2 mt-4">
-          Liste des destinataires (facultatif)
-        </label>
-        <textarea
-          value={listeDestinataires}
-          onChange={(e) => setListeDestinataires(e.target.value)}
-          rows={4}
-          placeholder={"Un destinataire par ligne, au format :\nNom, email@exemple.com"}
-          className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm resize-none font-mono"
-        />
-        <div className="mt-1 flex items-center justify-between">
-          <p className="text-xs text-gold/70">
-            {destinatairesParsés.length > 0
-              ? `${destinatairesParsés.length} destinataire${destinatairesParsés.length > 1 ? "s" : ""} détecté${destinatairesParsés.length > 1 ? "s" : ""}`
-              : ""}
+        {/* Présentation */}
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-gold mb-4">Entreprises, CSE, associations</p>
+          <h1 className="text-4xl md:text-5xl font-semibold text-ivory leading-tight">
+            Le cadeau que vos équipes et vos clients <span className="italic text-gold">choisissent vraiment.</span>
+          </h1>
+          <p className="mt-6 text-ivory/70 leading-relaxed max-w-[560px]">
+            Offrez des cartes cadeaux personnalisées, valables dans plus de 200 enseignes. Vous fixez le budget,
+            chacun se fait plaisir. Nous nous occupons de tout, de la commande à l&apos;envoi.
           </p>
-          <div>
-            <input
-              type="file"
-              accept=".xlsx,.xls"
-              ref={fichierInputRef}
-              onChange={handleImportExcel}
-              className="hidden"
-            />
-            <button
-              type="button"
-              onClick={() => fichierInputRef.current?.click()}
-              className="text-xs text-ivory/50 hover:text-gold underline transition-colors"
-            >
-              Importer un Excel
-            </button>
+          <a href="#devis"
+            className="lg:hidden inline-block mt-6 bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors">
+            Demander mon devis gratuit
+          </a>
+
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {USAGES.map((u) => (
+              <div key={u.titre} className="border border-ivory/10 rounded-xl p-5">
+                <p className="text-ivory font-medium">{u.titre}</p>
+                <p className="text-sm text-ivory/55 mt-2 leading-relaxed">{u.texte}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 space-y-4">
+            {AVANTAGES.map(([titre, texte]) => (
+              <div key={titre} className="flex gap-3">
+                <span className="text-gold mt-0.5">✓</span>
+                <p className="text-sm text-ivory/70 leading-relaxed">
+                  <span className="text-ivory font-medium">{titre}.</span> {texte}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12">
+            <p className="text-sm uppercase tracking-wide text-ivory/50 mb-5">Comment ça marche</p>
+            <ol className="space-y-5">
+              {ETAPES.map(([titre, texte], i) => (
+                <li key={titre} className="flex gap-4">
+                  <span className="w-9 h-9 shrink-0 rounded-full border border-gold/40 text-gold flex items-center justify-center font-semibold font-[family-name:var(--font-fraunces)]">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="text-ivory font-medium">{titre}</p>
+                    <p className="text-sm text-ivory/55">{texte}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
 
-        <label className="block text-sm text-ivory/70 mb-2 mt-4">Votre besoin</label>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          rows={3}
-          placeholder="Décrivez votre besoin (occasion, budget, délai...)"
-          className="w-full bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm resize-none"
-        />
+        {/* Formulaire */}
+        <form id="devis" onSubmit={handleSubmit} className="scroll-mt-24 border border-gold/25 bg-ivory/[0.02] rounded-2xl p-6 sm:p-8 lg:sticky lg:top-28">
+          <h2 className="text-2xl font-semibold text-ivory">Demandez votre devis</h2>
+          <p className="text-sm text-ivory/55 mt-1 mb-6">Gratuit, sans engagement, réponse sous 48 h.</p>
 
-        <button
-          type="submit"
-          disabled={envoi}
-          className="mt-6 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors disabled:opacity-40"
-        >
-          {envoi ? "Envoi..." : "Envoyer ma demande"}
-        </button>
-      </form>
+          {/* Champ piège anti-robots : invisible pour les humains */}
+          <input type="text" name="site" value={form.site} onChange={maj("site")} tabIndex={-1} autoComplete="off"
+            className="hidden" aria-hidden />
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-ivory/70 mb-2">Entreprise *</label>
+              <input type="text" value={form.entreprise} onChange={maj("entreprise")} required maxLength={120} className={champ} />
+            </div>
+            <div>
+              <label className="block text-sm text-ivory/70 mb-2">Votre nom *</label>
+              <input type="text" value={form.contact} onChange={maj("contact")} required maxLength={120} className={champ} />
+            </div>
+            <div>
+              <label className="block text-sm text-ivory/70 mb-2">Email professionnel *</label>
+              <input type="email" value={form.email} onChange={maj("email")} required maxLength={200} className={champ} />
+            </div>
+            <div>
+              <label className="block text-sm text-ivory/70 mb-2">Téléphone</label>
+              <input type="tel" value={form.telephone} onChange={maj("telephone")} maxLength={30} className={champ} />
+            </div>
+            <div>
+              <label className="block text-sm text-ivory/70 mb-2">Occasion</label>
+              <select value={form.occasion} onChange={maj("occasion")} className={`${champ} bg-ink [color-scheme:dark]`}>
+                <option value="" className="bg-ink text-ivory">Choisir…</option>
+                {OCCASIONS.map((o) => <option key={o} value={o} className="bg-ink text-ivory">{o}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-ivory/70 mb-2">Nombre de bénéficiaires</label>
+              <select value={form.volume} onChange={maj("volume")} className={`${champ} bg-ink [color-scheme:dark]`}>
+                <option value="" className="bg-ink text-ivory">Choisir…</option>
+                {VOLUMES.map((v) => <option key={v} value={v} className="bg-ink text-ivory">{v}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <label className="block text-sm text-ivory/70 mb-2 mt-4">Votre besoin</label>
+          <textarea value={form.message} onChange={maj("message")} rows={4} maxLength={2000}
+            placeholder="Budget par personne, date souhaitée, enseignes préférées…"
+            className={`${champ} resize-none`} />
+
+          <button type="submit" disabled={envoi}
+            className="mt-6 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-3.5 hover:bg-gold/90 transition-colors disabled:opacity-40">
+            {envoi ? "Envoi…" : "Recevoir mon devis gratuit"}
+          </button>
+          {erreur && <p className="mt-3 text-sm text-corail">{erreur}</p>}
+          <p className="mt-4 text-xs text-ivory/35 leading-relaxed">
+            Vos informations servent uniquement à vous répondre. Voir notre{" "}
+            <a href="/fr/confidentialite" className="underline hover:text-ivory/60">politique de confidentialité</a>.
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

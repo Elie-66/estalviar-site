@@ -43,7 +43,13 @@
     "pour": "Für",
     "messageSteam": "GG gut gespielt!",
     "messageFnac": "Alles Gute zum Geburtstag!",
-    "messageAmazon": "Nur für dich"
+    "messageAmazon": "Nur für dich",
+    "atout1": "In 2 Minuten fertig",
+    "atout2": "Per E-Mail, wann Sie wollen",
+    "atout3": "Über 200 Marken",
+    "nbEnseignes": "{n, plural, one {# Marke} other {# Marken}}",
+    "voirTout": "Alle Marken ansehen",
+    "des": "ab {montant} €"
   },
   "boutiqueVitrine": {
     "titre": "Alle Marken",
@@ -217,5 +223,17 @@
     "dansJours": "in {jours} Tagen",
     "demain": "morgen",
     "aujourdhui": "heute"
+  },
+  "carteVivante": {
+    "pour": "Für {prenom}",
+    "prenomVide": "…",
+    "prenomLabel": "Für wen?",
+    "messageLabel": "Nachricht",
+    "enseigneLabel": "Marke",
+    "montantLabel": "Betrag",
+    "message1": "Alles Gute zum Geburtstag!",
+    "message2": "Danke für alles",
+    "message3": "Herzlichen Glückwunsch!",
+    "offrir": "Diese {marque}-Karte schenken"
   }
 }
