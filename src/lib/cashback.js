@@ -16,6 +16,9 @@ export const PALIERS = [
   { nom: "Platine", seuil: 700, taux: 0.3, notorietes: ["peu", "moyen", "tres"] },
 ];
 
+/** Une marque donne-t-elle droit au cashback ? (assez de marge pour couvrir les frais) */
+export const margeEligible = (marge) => (Number(marge) || 0) >= REGLES_CASHBACK.margeMinimum;
+
 export function palierPourPoints(points) {
   return [...PALIERS].reverse().find((p) => (points || 0) >= p.seuil) || PALIERS[0];
 }
@@ -38,7 +41,7 @@ export function calculerCashbackGagne(articles, infos, points, partPayee = 1) {
     const info = infos[a.slug];
     if (!info) continue;
     const marge = Number(info.marge) || 0;
-    if (marge < REGLES_CASHBACK.margeMinimum) continue;
+    if (!margeEligible(marge)) continue;
     if (!palier.notorietes.includes(info.notoriete || "peu")) continue;
     const margeNette = (marge - REGLES_CASHBACK.fraisPaiementEstimes) / 100;
     total += Number(a.montant) * partPayee * margeNette * palier.taux;
