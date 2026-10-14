@@ -22,7 +22,7 @@ export function aujourdhuiParis(maintenant = new Date()) {
 }
 
 // Dimanche de Pâques (algorithme grégorien anonyme)
-function paques(annee) {
+export function paques(annee) {
   const a = annee % 19, b = Math.floor(annee / 100), c = annee % 100;
   const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
   const g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;

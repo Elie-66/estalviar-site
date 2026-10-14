@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import LogoEstalviar from "./LogoEstalviar";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { usePanier } from "../context/PanierContext";
@@ -84,9 +85,10 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 h-[74px] bg-ink/80 backdrop-blur-md border-b border-ivory/10 z-50">
       <div className="max-w-[1240px] mx-auto h-full px-6 flex items-center justify-between">
 
-        <a href={`/${segments[1]}`} className="text-xl font-semibold uppercase tracking-wide text-ivory font-[family-name:var(--font-fraunces)]">
-          Estalviar<span className="text-gold">.</span>
-        </a>
+        <LogoEstalviar
+          href={`/${segments[1]}`}
+          className="text-xl font-semibold uppercase tracking-wide text-ivory font-[family-name:var(--font-fraunces)]"
+        />
 
         <nav className="hidden md:flex items-center gap-8 text-ivory/80">
           {liensNav.map((lien) => (
