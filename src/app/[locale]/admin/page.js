@@ -89,6 +89,10 @@ export default function Admin() {
           <p className="text-ivory font-medium text-lg">Cagnottes</p>
           <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Suivre les cagnottes en cours</p>
         </a>
+        <a href="/fr/admin/influenceuses" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Influenceuses</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Codes partenaires, ventes et commissions</p>
+        </a>
         <a href="/fr/admin/catalogue" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
           <p className="text-ivory font-medium text-lg">Catalogue</p>
           <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Ajouter, modifier, désactiver des enseignes</p>

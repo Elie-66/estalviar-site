@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { trouverDesign } from '../../../lib/designs';
 import { utilisateurConnecte } from '../../../lib/utilisateurServeur';
 import { calculerCashbackUtilisable } from '../../../lib/cashback';
+import { evaluerCode } from '../../../lib/codeInfluence';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const supabase = createClient(
@@ -17,7 +18,7 @@ const texteCourt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) :
 
 export async function POST(req) {
   try {
-    const { articles, emailAcheteur, emailsBeneficiaires, locale, utiliserCashback } = await req.json();
+    const { articles, emailAcheteur, emailsBeneficiaires, locale, utiliserCashback, codeInfluence } = await req.json();
     const client = await utilisateurConnecte(req);
     const langue = ['fr', 'en', 'de', 'es', 'it'].includes(locale) ? locale : 'fr';
 
@@ -77,6 +78,20 @@ export async function POST(req) {
 
     const montantTotal = articlesValides.reduce((s, a) => s + Math.round(a.montant * 100), 0) / 100;
 
+    // CODE INFLUENCEUSE : revérifié par le serveur (compte, déjà utilisé, marques éligibles)
+    let codeInfluenceId = null;
+    if (codeInfluence) {
+      if (utiliserCashback) {
+        return NextResponse.json(
+          { error: 'Un code partenaire ne peut pas être combiné avec l\'utilisation de votre cashback.' },
+          { status: 400 }
+        );
+      }
+      const evaluation = await evaluerCode(codeInfluence, articlesValides, client?.id);
+      if (!evaluation.ok) return NextResponse.json({ error: evaluation.erreur }, { status: 400 });
+      codeInfluenceId = evaluation.code.id;
+    }
+
     // Le panier validé est enregistré côté serveur : c'est LUI qui sera livré après le paiement
     const { data: panier, error: erreurPanier } = await supabase
       .from('paniers')
@@ -86,6 +101,7 @@ export async function POST(req) {
         montant_total: montantTotal,
         statut: 'en_attente',
         profil_id: client?.id || null,
+        code_influence_id: codeInfluenceId,
       })
       .select('id')
       .single();

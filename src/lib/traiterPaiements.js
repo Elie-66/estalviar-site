@@ -9,6 +9,7 @@ import { createClient } from "@supabase/supabase-js";
 import { chiffrerCode } from "./chiffrement";
 import { echapperHtml } from "./designs";
 import { calculerCashbackGagne, REGLES_CASHBACK } from "./cashback";
+import { calculerCode, filtreCartes } from "./codeInfluence";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -177,28 +178,78 @@ export async function traiterPaiementPanier(sessionOuId) {
     }
   }
 
-  // CASHBACK GAGNÉ : selon le palier, la notoriété et la marge de chaque marque.
+  // CASHBACK GAGNÉ
+  // • Avec un code influenceuse : le cashback du code REMPLACE le cashback fidélité.
+  // • Sinon : selon le palier, la notoriété et la marge de chaque marque.
   // Une commande payée (même en partie) avec du cashback ne rapporte PAS de nouveau cashback.
+  // Les points de fidélité (palier) sont ajoutés dans tous les cas, plus haut.
   if (profil && cashbackUtilise === 0) {
     try {
       const slugs = panier.articles.map((a) => a.slug).filter(Boolean);
       const [{ data: marges }, { data: fiches }] = await Promise.all([
         supabase.from("marges_marques").select("slug, marge").in("slug", slugs),
-        supabase.from("catalogue").select("slug, notoriete").in("slug", slugs),
+        supabase.from("catalogue").select("slug, notoriete, categorie").in("slug", slugs),
       ]);
       const infos = {};
-      (marges || []).forEach((m) => { infos[m.slug] = { marge: m.marge }; });
-      (fiches || []).forEach((f) => { infos[f.slug] = { ...(infos[f.slug] || {}), notoriete: f.notoriete }; });
+      const margesParSlug = {};
+      const categoriesParSlug = {};
+      (marges || []).forEach((m) => {
+        infos[m.slug] = { marge: m.marge };
+        margesParSlug[m.slug] = Number(m.marge);
+      });
+      (fiches || []).forEach((f) => {
+        infos[f.slug] = { ...(infos[f.slug] || {}), notoriete: f.notoriete };
+        categoriesParSlug[f.slug] = f.categorie;
+      });
+      const dateCommande = new Date().toLocaleDateString("fr-FR");
 
-      const gain = calculerCashbackGagne(panier.articles, infos, pointsAvant);
-      if (gain.montant > 0) {
-        await supabase.rpc("cashback_crediter", {
-          p_profil: profil.id,
-          p_montant: gain.montant,
-          p_panier: panier.id,
-          p_jours_attente: REGLES_CASHBACK.joursAttente,
-          p_description: `Commande du ${new Date().toLocaleDateString("fr-FR")} (palier ${gain.palier})`,
-        });
+      let codeApplique = false;
+      if (panier.code_influence_id) {
+        const { data: fiche } = await supabase
+          .from("codes_influence")
+          .select("id, code, categories, marques")
+          .eq("id", panier.code_influence_id)
+          .maybeSingle();
+        const calcul = calculerCode(panier.articles, margesParSlug, filtreCartes(fiche, categoriesParSlug));
+        if (fiche && calcul.cashbackAbonne > 0) {
+          // La base revérifie TOUTES les conditions du code (période, quantité, limite par client)
+          // en le verrouillant : deux paiements simultanés ne peuvent pas dépasser les limites.
+          // La période est jugée à la date où le client a lancé sa commande.
+          const { data: resultatCode, error: erreurCode } = await supabase.rpc("code_enregistrer_utilisation", {
+            p_code: fiche.id,
+            p_panier: panier.id,
+            p_profil: profil.id,
+            p_montant: panier.montant_total,
+            p_cashback: calcul.cashbackAbonne,
+            p_commission: calcul.commission,
+            p_date: panier.created_at || new Date().toISOString(),
+          });
+          if (erreurCode || resultatCode !== "ok") {
+            console.error("Code partenaire non appliqué", panier.id, erreurCode?.message || resultatCode);
+          } else {
+            await supabase.rpc("cashback_crediter", {
+              p_profil: profil.id,
+              p_montant: calcul.cashbackAbonne,
+              p_panier: panier.id,
+              p_jours_attente: REGLES_CASHBACK.joursAttente,
+              p_description: `Commande du ${dateCommande} (code ${fiche.code})`,
+            });
+            codeApplique = true;
+          }
+        }
+      }
+
+      if (!codeApplique) {
+        const gain = calculerCashbackGagne(panier.articles, infos, pointsAvant);
+        if (gain.montant > 0) {
+          await supabase.rpc("cashback_crediter", {
+            p_profil: profil.id,
+            p_montant: gain.montant,
+            p_panier: panier.id,
+            p_jours_attente: REGLES_CASHBACK.joursAttente,
+            p_description: `Commande du ${dateCommande} (palier ${gain.palier})`,
+          });
+        }
       }
     } catch (e) {
       console.error("Cashback non crédité", panier.id, e);

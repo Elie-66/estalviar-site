@@ -16,6 +16,10 @@ export default function Paiement() {
   const [erreur, setErreur] = useState("");
   const [cashback, setCashback] = useState(null);
   const [utiliserCashback, setUtiliserCashback] = useState(false);
+  const [codeSaisi, setCodeSaisi] = useState("");
+  const [codeApplique, setCodeApplique] = useState(null);
+  const [erreurCode, setErreurCode] = useState("");
+  const [verificationCode, setVerificationCode] = useState(false);
 
   const [utilisateurConnecte, setUtilisateurConnecte] = useState(null);
   const [modeAuth, setModeAuth] = useState("invite"); // "invite" | "creer" | "connexion"
@@ -44,9 +48,46 @@ export default function Paiement() {
   }, [utilisateurConnecte, total]);
 
   const cashbackAffiche = utilisateurConnecte && total ? cashback : null;
-  const reductionCashback = utiliserCashback && cashbackAffiche ? cashbackAffiche.utilisable : 0;
+  // Le code reste appliqué tant que le panier ne change pas (sinon il faut le revalider)
+  const codeAffiche = codeApplique && utilisateurConnecte && codeApplique.total === total ? codeApplique : null;
+  const reductionCashback = !codeAffiche && utiliserCashback && cashbackAffiche ? cashbackAffiche.utilisable : 0;
   const totalAPayer = Math.round((total - reductionCashback) * 100) / 100;
   const euros = (n) => `${Number(n).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+
+  const handleAppliquerCode = async (e) => {
+    e.preventDefault();
+    if (!codeSaisi.trim()) return;
+    setVerificationCode(true);
+    setErreurCode("");
+    try {
+      const res = await fetchSession("/api/code-influence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: codeSaisi,
+          articles: articles.map((a) => ({ marque: a.marque, montant: a.montant })),
+        }),
+      });
+      const data = await res.json();
+      if (data.valide) {
+        setCodeApplique({ ...data, total });
+        setUtiliserCashback(false);
+      } else {
+        setCodeApplique(null);
+        setErreurCode(data.error || "Code invalide.");
+      }
+    } catch {
+      setErreurCode("Erreur réseau, réessayez.");
+    } finally {
+      setVerificationCode(false);
+    }
+  };
+
+  const handleRetirerCode = () => {
+    setCodeApplique(null);
+    setCodeSaisi("");
+    setErreurCode("");
+  };
 
   const handleCreerCompte = async (e) => {
     e.preventDefault();
@@ -104,7 +145,8 @@ export default function Paiement() {
           articles,
           emailAcheteur,
           emailsBeneficiaires,
-          utiliserCashback: utiliserCashback && reductionCashback > 0,
+          utiliserCashback: reductionCashback > 0,
+          codeInfluence: codeAffiche ? codeAffiche.code : null,
           locale: "fr",
         }),
       });
@@ -234,7 +276,7 @@ export default function Paiement() {
           </form>
         )}
 
-        {cashbackAffiche && (cashbackAffiche.disponible > 0 || cashbackAffiche.enAttente > 0) && (
+        {!codeAffiche && cashbackAffiche && (cashbackAffiche.disponible > 0 || cashbackAffiche.enAttente > 0) && (
           <div className="mt-8 border border-gold/30 rounded-lg p-4">
             {cashbackAffiche.utilisable > 0 ? (
               <label className="flex items-start gap-3 text-sm text-ivory cursor-pointer">
@@ -263,6 +305,56 @@ export default function Paiement() {
             )}
           </div>
         )}
+
+        <div className="mt-8">
+          {codeAffiche ? (
+            <div className="border border-gold/30 bg-gold/5 rounded-lg p-4">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-sm text-ivory">
+                  Code <span className="text-gold font-semibold">{codeAffiche.code}</span> appliqué
+                  {codeAffiche.influenceuse ? ` (${codeAffiche.influenceuse})` : ""} : vous recevrez{" "}
+                  <span className="text-gold font-semibold">{euros(codeAffiche.cashbackAbonne)}</span> de cashback sur votre compte
+                  {codeAffiche.cartesConcernees ? ` (sur ${codeAffiche.cartesConcernees.join(", ")})` : ""}.
+                </p>
+                <button onClick={handleRetirerCode} className="text-xs text-ivory/50 hover:text-ivory underline shrink-0">
+                  Retirer
+                </button>
+              </div>
+              <p className="text-xs text-ivory/50 mt-2">
+                Ce cashback remplace le cashback fidélité sur cette commande. La commande compte bien pour votre palier.
+                Il sera utilisable {cashbackAffiche?.regles?.joursAttente || 14} jours après l&apos;achat.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleAppliquerCode}>
+              <label className="block text-sm text-ivory/70 mb-2">Code partenaire</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={codeSaisi}
+                  onChange={(e) => setCodeSaisi(e.target.value.toUpperCase())}
+                  placeholder="Ex. : JULIE10"
+                  maxLength={20}
+                  className="flex-1 min-w-0 bg-transparent border border-ivory/20 rounded-lg px-4 py-2.5 text-ivory text-sm uppercase"
+                />
+                <button
+                  type="submit"
+                  disabled={!codeSaisi.trim() || verificationCode}
+                  className="border border-gold text-gold text-sm font-medium rounded-lg px-4 py-2.5 hover:bg-gold/10 transition-colors disabled:opacity-40"
+                >
+                  {verificationCode ? "..." : "Appliquer"}
+                </button>
+              </div>
+              {erreurCode && <p className="mt-2 text-xs text-corail">{erreurCode}</p>}
+              {codeApplique && !codeAffiche && utilisateurConnecte && (
+                <p className="mt-2 text-xs text-ivory/50">Votre panier a changé : appliquez à nouveau votre code.</p>
+              )}
+              {!utilisateurConnecte && (
+                <p className="mt-1 text-xs text-ivory/40">Un compte est nécessaire : le cashback du code est crédité sur votre compte.</p>
+              )}
+            </form>
+          )}
+        </div>
 
         <button
           onClick={handlePaiement}
