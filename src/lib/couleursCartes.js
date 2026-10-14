@@ -35,3 +35,10 @@ export const couleurCategorie = (categorie) => COULEURS_CATEGORIES[categorie] ||
 // Fond « carte cadeau » : couleur vive en haut à gauche, qui fonce vers le bas à droite
 export const fondCarte = (couleur) =>
   `linear-gradient(140deg, ${couleur} 0%, color-mix(in srgb, ${couleur} 55%, #0d1022) 100%)`;
+
+// Logo posé directement sur une carte de couleur (sans cadre blanc) :
+// les logos dessinés (SVG) passent en blanc, comme un marquage sur une vraie carte cadeau.
+// Exceptions : les logos qui ont déjà leur propre pavé de couleur, qui deviendraient méconnaissables.
+const LOGOS_AVEC_PAVE = ["fnac", "darty", "steam"];
+export const logoEnBlanc = (carte) =>
+  !!carte?.image && carte.image.toLowerCase().endsWith(".svg") && !LOGOS_AVEC_PAVE.includes(carte.slug);

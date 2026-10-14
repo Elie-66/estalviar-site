@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { couleurCarte, fondCarte } from "../../../lib/couleursCartes";
+import { couleurCarte, fondCarte, logoEnBlanc } from "../../../lib/couleursCartes";
 
 const MONTANTS = [20, 30, 50, 100];
 
@@ -43,10 +43,12 @@ export default function CarteVivante({ marques }) {
           <div aria-hidden className="absolute inset-0 rounded-2xl opacity-[0.14]"
             style={{ background: "linear-gradient(115deg, transparent 35%, #fff 50%, transparent 65%)" }} />
           <div className="relative flex items-start justify-between">
-            <div className="bg-white rounded-lg h-11 w-28 flex items-center justify-center px-3">
+            {/* Logo posé sur la carte, sans cadre */}
+            <div className="h-10 sm:h-11 w-32 flex items-center">
               {marque.image
-                ? <img src={marque.image} alt={marque.nom} className="h-[75%] w-full object-contain" />
-                : <span className="text-ink text-xs font-semibold">{marque.nom}</span>}
+                ? <img src={marque.image} alt={marque.nom}
+                    className={`max-h-full max-w-full object-contain object-left drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] ${logoEnBlanc(marque) ? "brightness-0 invert" : "rounded-md"}`} />
+                : <span className="text-white text-lg font-semibold font-[family-name:var(--font-fraunces)]">{marque.nom}</span>}
             </div>
             <span className="text-white/70 text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
           </div>
