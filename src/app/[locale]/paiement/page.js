@@ -86,6 +86,7 @@ export default function Paiement() {
         body: JSON.stringify({
           articles,
           emailAcheteur,
+          emailsBeneficiaires,
           locale: "fr",
         }),
       });

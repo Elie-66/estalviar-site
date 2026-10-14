@@ -17,13 +17,11 @@ export default function Confirmation() {
 
     const enregistrerCommande = async () => {
       try {
-        const emailsBeneficiaires = JSON.parse(
-          localStorage.getItem("estalviar-emails-beneficiaires") || "{}"
-        );
+        // Le serveur retrouve lui-même le panier payé : on n'envoie que l'identifiant Stripe
         const res = await fetch("/api/enregistrer-commande", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId, articles, emailsBeneficiaires }),
+          body: JSON.stringify({ sessionId }),
         });
         localStorage.removeItem("estalviar-emails-beneficiaires");
         if (res.ok) {
