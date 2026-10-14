@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
+import { adminLire, adminModifier } from "../../../../lib/adminDb";
 
 export default function AdminDemandesPro() {
   const [chargement, setChargement] = useState(true);
@@ -19,10 +20,7 @@ export default function AdminDemandesPro() {
       }
       setAutorise(true);
 
-      const { data } = await supabase
-        .from("demandes_pro")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data } = await adminLire("demandes_pro", "created_at", false);
 
       setDemandes(data || []);
       setChargement(false);

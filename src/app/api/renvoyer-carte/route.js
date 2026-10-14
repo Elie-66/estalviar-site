@@ -18,7 +18,9 @@ const cartesConnues = {
 
 export async function POST(req) {
   try {
-    const { commandeId, destinataireOverride } = await req.json();
+    const corps = await req.json();
+    const { commandeId, cible } = corps;
+    let destinataireOverride = null;
     // On ne fait plus confiance à l'adresse du site envoyée par le navigateur
     const origin = req.headers.get('origin') || 'https://estalviar.com';
 
@@ -56,6 +58,25 @@ export async function POST(req) {
       if (cagnotte) adressesAutorisees.push(cagnotte.email_createur, cagnotte.email_beneficiaire);
     }
     const autorisees = adressesAutorisees.filter(Boolean).map((a) => a.toLowerCase());
+
+    // Boutons de la page cagnotte : on choisit une cible, jamais une adresse libre
+    if (cible === 'createur' || cible === 'beneficiaire') {
+      if (!commande.cagnotte_id) {
+        return NextResponse.json({ error: 'Cible invalide' }, { status: 400 });
+      }
+      const { data: cagnotteCible } = await supabase
+        .from('cagnottes')
+        .select('email_createur, email_beneficiaire')
+        .eq('id', commande.cagnotte_id)
+        .single();
+      destinataireOverride = cible === 'createur' ? cagnotteCible?.email_createur : cagnotteCible?.email_beneficiaire;
+      if (!destinataireOverride) {
+        return NextResponse.json({ error: 'Destinataire introuvable' }, { status: 404 });
+      }
+    }
+
+    // L'admin peut toujours indiquer une adresse précise
+    if (estAdmin && corps.destinataireOverride) destinataireOverride = corps.destinataireOverride;
 
     if (destinataireOverride && !estAdmin && !autorisees.includes(String(destinataireOverride).toLowerCase())) {
       return NextResponse.json({ error: 'Destinataire non autorisé' }, { status: 403 });

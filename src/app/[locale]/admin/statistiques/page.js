@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
+import { adminLire, adminModifier } from "../../../../lib/adminDb";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -23,11 +24,7 @@ export default function AdminStatistiques() {
       }
       setAutorise(true);
 
-      const { data } = await supabase
-        .from("commandes")
-        .select("*")
-        .eq("statut", "payee")
-        .order("created_at", { ascending: true });
+      const { data } = await adminLire("commandes", "created_at", true, { statut: "payee" });
 
       setCommandes(data || []);
       const toutesMarques = new Set((data || []).map((c) => c.marque));

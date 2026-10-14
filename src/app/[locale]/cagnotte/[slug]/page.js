@@ -48,13 +48,14 @@ export default function PageCagnotte({ params }) {
         });
       }
 
-      const { data: cagnotteData } = await supabase
-        .from("cagnottes")
-        .select("*")
-        .eq("slug", slug)
-        .single();
+      // Infos publiques de la cagnotte (sans emails) via le serveur
+      const lirePublique = async () => {
+        const res = await fetch(`/api/cagnotte-publique?slug=${encodeURIComponent(slug)}`);
+        return res.ok ? res.json() : { cagnotte: null, contributions: [], commandes: [] };
+      };
 
-      setCagnotte(cagnotteData);
+      let infos = await lirePublique();
+      const cagnotteData = infos.cagnotte;
 
       if (
         cagnotteData &&
@@ -67,34 +68,12 @@ export default function PageCagnotte({ params }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cagnotteId: cagnotteData.id, origin: window.location.origin }),
         });
-
-        const { data: cagnotteMaj } = await supabase
-          .from("cagnottes")
-          .select("*")
-          .eq("slug", slug)
-          .single();
-
-        setCagnotte(cagnotteMaj);
+        infos = await lirePublique();
       }
 
-      if (cagnotteData) {
-        const { data: contribs } = await supabase
-          .from("contributions_cagnotte")
-          .select("*")
-          .eq("cagnotte_id", cagnotteData.id)
-          .eq("statut", "payee")
-          .order("created_at", { ascending: false });
-
-        setContributions(contribs || []);
-      }
-
-      if (cagnotteData && cagnotteData.statut === "cloturee") {
-        const { data: commandesData } = await supabase
-          .from("commandes")
-          .select("*")
-          .eq("cagnotte_id", cagnotteData.id);
-        setCommandesCagnotte(commandesData || []);
-      }
+      setCagnotte(infos.cagnotte);
+      setContributions(infos.contributions || []);
+      setCommandesCagnotte(infos.commandes || []);
 
       setChargement(false);
     };
@@ -125,16 +104,13 @@ export default function PageCagnotte({ params }) {
     }
   };
 
-  const handleRenvoyer = async (commandeId, destinataireOverride) => {
+  // cible : "createur" ou "beneficiaire" (le serveur retrouve l'adresse lui-même)
+  const handleRenvoyer = async (commandeId, cible) => {
     setMessageRenvoi((prev) => ({ ...prev, [commandeId]: "Envoi..." }));
     const res = await fetch("/api/renvoyer-carte", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        commandeId,
-        origin: window.location.origin,
-        destinataireOverride,
-      }),
+      body: JSON.stringify({ commandeId, cible }),
     });
     setMessageRenvoi((prev) => ({
       ...prev,
@@ -237,14 +213,14 @@ export default function PageCagnotte({ params }) {
                   <p className="text-ivory font-medium">{cmd.marque} — {cmd.montant} €</p>
                   <div className="flex flex-wrap gap-3 mt-3">
                     <button
-                      onClick={() => handleRenvoyer(cmd.id, cagnotte.email_createur)}
+                      onClick={() => handleRenvoyer(cmd.id, "createur")}
                       className="text-xs text-gold border border-gold/30 rounded-lg px-3 py-1.5 hover:bg-gold/10 transition-colors"
                     >
                       Renvoyer à moi-même
                     </button>
-                    {cagnotte.email_beneficiaire && (
+                    {cagnotte.a_email_beneficiaire && (
                       <button
-                        onClick={() => handleRenvoyer(cmd.id, cagnotte.email_beneficiaire)}
+                        onClick={() => handleRenvoyer(cmd.id, "beneficiaire")}
                         className="text-xs text-gold border border-gold/30 rounded-lg px-3 py-1.5 hover:bg-gold/10 transition-colors"
                       >
                         Renvoyer au bénéficiaire

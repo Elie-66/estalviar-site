@@ -43,8 +43,9 @@ export default function ChoisirCarte({ params }) {
       const premierSlug = catalogueData && catalogueData.length > 0 ? catalogueData[0].slug : "";
       setSelections([{ slugCarte: premierSlug, designId: "marque", montant: "" }]);
 
-      const { data } = await supabase.from("cagnottes").select("*").eq("slug", slug).single();
-      setCagnotte(data);
+      const res = await fetch(`/api/cagnotte-publique?slug=${encodeURIComponent(slug)}`);
+      const infos = res.ok ? await res.json() : { cagnotte: null };
+      setCagnotte(infos.cagnotte);
       setChargement(false);
     };
     charger();

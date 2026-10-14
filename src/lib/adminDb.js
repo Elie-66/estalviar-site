@@ -18,9 +18,11 @@ async function appeler(options) {
   }
 }
 
-export async function adminLire(table, tri, croissant = true) {
+// filtres : { statut: "payee" } → seulement les lignes où statut = "payee"
+export async function adminLire(table, tri, croissant = true, filtres = {}) {
   try {
     const params = new URLSearchParams({ table });
+    Object.entries(filtres).forEach(([col, val]) => params.set(`egal_${col}`, val));
     if (tri) {
       params.set("tri", tri);
       params.set("croissant", String(croissant));

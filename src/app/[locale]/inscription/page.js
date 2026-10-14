@@ -28,22 +28,17 @@ export default function Inscription() {
     setChargement(true);
     setErreur("");
 
-    const { data, error } = await supabase.auth.signUp({
+    // Le profil est créé automatiquement par la base de données à l'inscription,
+    // avec le pseudo et le choix marketing transmis ici.
+    const { error } = await supabase.auth.signUp({
       email,
       password: motDePasse,
+      options: { data: { pseudo, accepte_marketing: accepteMarketing } },
     });
 
     if (error) {
       setErreur(error.message);
     } else {
-      if (data.user) {
-        await supabase.from("profils").insert({
-          id: data.user.id,
-          email,
-          pseudo,
-          accepte_marketing: accepteMarketing,
-        });
-      }
       setSucces(true);
     }
     setChargement(false);

@@ -36,7 +36,8 @@ export default function Paiement() {
     setChargementAuth(true);
     setErreurAuth("");
 
-    const { data, error } = await supabase.auth.signUp({
+    // Le profil est créé automatiquement par la base de données à l'inscription.
+    const { error } = await supabase.auth.signUp({
       email: emailAcheteur,
       password: motDePasse,
     });
@@ -44,9 +45,6 @@ export default function Paiement() {
     if (error) {
       setErreurAuth(error.message);
     } else {
-      if (data.user) {
-        await supabase.from("profils").insert({ id: data.user.id, email: emailAcheteur });
-      }
       setErreurAuth("Compte créé ! Vérifiez votre email pour le confirmer, puis continuez votre commande.");
     }
     setChargementAuth(false);

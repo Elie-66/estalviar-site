@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
-     import { fetchAdmin } from "../../../../lib/fetchAdmin";
+import { adminLire, adminModifier } from "../../../../lib/adminDb";
+import { fetchAdmin } from "../../../../lib/fetchAdmin";
 
 export default function AdminCommandes() {
   const [chargement, setChargement] = useState(true);
@@ -24,10 +25,7 @@ export default function AdminCommandes() {
       }
       setAutorise(true);
 
-      const { data } = await supabase
-        .from("commandes")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data } = await adminLire("commandes", "created_at", false);
 
       setCommandes(data || []);
 
@@ -36,7 +34,7 @@ export default function AdminCommandes() {
         .map((c) => ({ id: c.id, code: c.code }));
 
       if (items.length > 0) {
-           const res = await fetchAdmin("/api/dechiffrer-commandes", {
+        const res = await fetchAdmin("/api/dechiffrer-commandes", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ items }),
@@ -54,10 +52,7 @@ export default function AdminCommandes() {
 
   const changerStatut = async (commandeId, nouveauStatut) => {
     setModificationEnCours(commandeId);
-    const { error } = await supabase
-      .from("commandes")
-      .update({ statut: nouveauStatut })
-      .eq("id", commandeId);
+    const { error } = await adminModifier("commandes", commandeId, { statut: nouveauStatut });
 
     if (!error) {
       setCommandes((prev) =>

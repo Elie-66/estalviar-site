@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
+import { adminLire, adminModifier } from "../../../../lib/adminDb";
 
 export default function AdminCagnottes() {
   const [chargement, setChargement] = useState(true);
@@ -20,10 +21,7 @@ export default function AdminCagnottes() {
       }
       setAutorise(true);
 
-      const { data } = await supabase
-        .from("cagnottes")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data } = await adminLire("cagnottes", "created_at", false);
 
       setCagnottes(data || []);
       setChargement(false);

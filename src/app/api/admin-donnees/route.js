@@ -7,13 +7,20 @@ const AUTORISATIONS = {
   catalogue: ["lire", "ajouter", "modifier"],
   articles_blog: ["lire", "ajouter", "modifier", "supprimer"],
   occasions: ["lire", "ajouter", "modifier", "supprimer"],
+  commandes: ["lire", "modifier"],
+  profils: ["lire"],
+  cagnottes: ["lire"],
+  contributions_cagnotte: ["lire"],
+  demandes_pro: ["lire"],
+  demandes_contact: ["lire"],
 };
 
 function autorise(table, action) {
   return AUTORISATIONS[table]?.includes(action);
 }
 
-// GET /api/admin-donnees?table=articles_blog&tri=created_at&croissant=false
+// GET /api/admin-donnees?table=articles_blog&tri=created_at&croissant=false&egal_statut=payee
+// (les paramètres "egal_<colonne>" filtrent sur une valeur exacte)
 export async function GET(req) {
   if (!(await verifierAdmin(req))) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
@@ -26,6 +33,10 @@ export async function GET(req) {
   }
 
   let requete = supabaseAdmin.from(table).select("*");
+  for (const [cle, valeur] of params.entries()) {
+    const colonne = cle.startsWith("egal_") ? cle.slice(5) : null;
+    if (colonne && /^[a-z_]+$/.test(colonne)) requete = requete.eq(colonne, valeur);
+  }
   const tri = params.get("tri");
   if (tri && /^[a-z_]+$/.test(tri)) {
     requete = requete.order(tri, { ascending: params.get("croissant") !== "false" });

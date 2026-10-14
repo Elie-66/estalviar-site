@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { estAdmin } from "../../../../lib/admin";
-     import { fetchAdmin } from "../../../../lib/fetchAdmin";
+import { adminLire, adminModifier } from "../../../../lib/adminDb";
+import { fetchAdmin } from "../../../../lib/fetchAdmin";
 
 export default function AdminClients() {
   const [chargement, setChargement] = useState(true);
@@ -23,10 +24,7 @@ export default function AdminClients() {
       }
       setAutorise(true);
 
-      const { data } = await supabase
-        .from("profils")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data } = await adminLire("profils", "created_at", false);
 
       setClients(data || []);
       setChargement(false);
@@ -41,11 +39,7 @@ export default function AdminClients() {
     }
     setClientOuvert(client.id);
 
-    const { data } = await supabase
-      .from("commandes")
-      .select("*")
-      .eq("email_acheteur", client.email)
-      .order("created_at", { ascending: false });
+    const { data } = await adminLire("commandes", "created_at", false, { email_acheteur: client.email });
 
     setCommandesClient(data || []);
   };
@@ -63,7 +57,7 @@ export default function AdminClients() {
 
   const handleRenvoyerCarte = async (commande) => {
     setMessageAction((prev) => ({ ...prev, [commande.id]: "Envoi..." }));
-       const res = await fetchAdmin("/api/renvoyer-carte", {
+    const res = await fetchAdmin("/api/renvoyer-carte", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ commandeId: commande.id, origin: window.location.origin }),

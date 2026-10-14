@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { estAdmin } from "../../../lib/admin";
+import { adminLire, adminModifier } from "../../../lib/adminDb";
 
 export default function Admin() {
   const [chargement, setChargement] = useState(true);
@@ -20,9 +21,9 @@ export default function Admin() {
 
       setAutorise(true);
 
-      const { data: commandes } = await supabase.from("commandes").select("montant");
-      const { count: demandesPro } = await supabase.from("demandes_pro").select("*", { count: "exact", head: true });
-      const { count: cagnottes } = await supabase.from("cagnottes").select("*", { count: "exact", head: true });
+      const { data: commandes } = await adminLire("commandes");
+      const demandesPro = (await adminLire("demandes_pro")).data?.length || 0;
+      const cagnottes = (await adminLire("cagnottes")).data?.length || 0;
 
       const ca = (commandes || []).reduce((s, c) => s + c.montant, 0);
 
