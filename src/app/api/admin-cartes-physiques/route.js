@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { chiffrerCode } from '../../../lib/chiffrement';
+import { verifierAdmin } from '../../../lib/verifierAdmin';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -12,7 +13,15 @@ function genererCode() {
   return `${bloc()}-${bloc()}-${bloc()}-${bloc()}`;
 }
 
-export async function GET() {
+export async function GET(req) {
+  // Cartes physiques désactivées tant que la fonctionnalité n'est pas finalisée.
+  // Pour les réactiver : ajouter la variable CARTES_PHYSIQUES_ACTIVES=oui sur Netlify.
+  if (process.env.CARTES_PHYSIQUES_ACTIVES !== 'oui') {
+    return NextResponse.json({ error: 'Fonction indisponible' }, { status: 403 });
+  }
+  if (!(await verifierAdmin(req))) {
+    return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+  }
   const { data } = await supabase
     .from('cartes_physiques')
     .select('id, solde, statut, email_lie, created_at')
@@ -22,6 +31,14 @@ export async function GET() {
 }
 
 export async function POST(req) {
+  // Cartes physiques désactivées tant que la fonctionnalité n'est pas finalisée.
+  // Pour les réactiver : ajouter la variable CARTES_PHYSIQUES_ACTIVES=oui sur Netlify.
+  if (process.env.CARTES_PHYSIQUES_ACTIVES !== 'oui') {
+    return NextResponse.json({ error: 'Fonction indisponible' }, { status: 403 });
+  }
+  if (!(await verifierAdmin(req))) {
+    return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+  }
   try {
     const { nombre } = await req.json();
     const n = Math.min(Math.max(parseInt(nombre) || 1, 1), 100);

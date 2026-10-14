@@ -8,6 +8,11 @@ const supabase = createClient(
 );
 
 export async function POST(req) {
+  // Cartes physiques désactivées tant que la fonctionnalité n'est pas finalisée.
+  // Pour les réactiver : ajouter la variable CARTES_PHYSIQUES_ACTIVES=oui sur Netlify.
+  if (process.env.CARTES_PHYSIQUES_ACTIVES !== 'oui') {
+    return NextResponse.json({ error: 'Fonction indisponible' }, { status: 403 });
+  }
   try {
     const { code, email } = await req.json();
     const codeNormalise = code.trim().toUpperCase();

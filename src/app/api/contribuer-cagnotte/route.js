@@ -31,7 +31,7 @@ export async function POST(req) {
       .select('id, slug, statut')
       .eq('id', cagnotteId)
       .single();
-    if (!cagnotte || cagnotte.statut === 'cloturee' || cagnotte.statut === 'attente_choix') {
+    if (!cagnotte || !['ouverte', 'complete'].includes(cagnotte.statut)) {
       return NextResponse.json({ error: 'Cette cagnotte n\'accepte plus de contributions' }, { status: 400 });
     }
     const slug = cagnotte.slug;

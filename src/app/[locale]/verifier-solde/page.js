@@ -28,7 +28,8 @@ export default function VerifierSolde() {
     if (data.trouve) {
       setResultat(data);
     } else {
-      setErreur(true);
+      // Message précis si la limite de vérifications est atteinte, sinon « code introuvable »
+      setErreur(data.error || true);
     }
   };
 
@@ -71,7 +72,9 @@ export default function VerifierSolde() {
       )}
 
       {erreur && (
-        <p className="mt-6 text-sm text-corail text-center">{t("codeIntrouvable")}</p>
+        <p className="mt-6 text-sm text-corail text-center">
+          {typeof erreur === "string" ? erreur : t("codeIntrouvable")}
+        </p>
       )}
     </div>
   );

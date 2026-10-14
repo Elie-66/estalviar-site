@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "../../../../../lib/supabase";
 import SelecteurCarte from "../../../components/SelecteurCarte";
 
@@ -17,6 +18,7 @@ const designs = [
 
 export default function ChoisirCarte({ params }) {
   const { slug } = use(params);
+  const jeton = useSearchParams().get("jeton") || "";
   const [cagnotte, setCagnotte] = useState(null);
   const [cartes, setCartes] = useState({});
   const [chargement, setChargement] = useState(true);
@@ -79,25 +81,21 @@ export default function ChoisirCarte({ params }) {
 
     setEnvoi(true);
 
-    const cartesAEnvoyer = selections.map((sel) => {
-      const c = cartes[sel.slugCarte];
-      const design = designs.find((d) => d.id === sel.designId);
-      return {
-        marque: c.nom,
-        image: c.image,
-        background: design.background(c.couleur),
-        texteFonce: !!design.texteFonce,
-        montant: parseInt(sel.montant),
-      };
-    });
+    // Le serveur reconstruit les cartes à partir du catalogue : on n'envoie que les choix
+    const cartesAEnvoyer = selections.map((sel) => ({
+      slug: sel.slugCarte,
+      marque: cartes[sel.slugCarte]?.nom,
+      design: sel.designId,
+      montant: parseInt(sel.montant),
+    }));
 
     const res = await fetch("/api/finaliser-choix-cagnotte", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cagnotteId: cagnotte.id,
+        jeton,
         cartes: cartesAEnvoyer,
-        origin: window.location.origin,
       }),
     });
 
@@ -105,7 +103,8 @@ export default function ChoisirCarte({ params }) {
     if (res.ok) {
       setSucces(true);
     } else {
-      setErreur("Une erreur est survenue, réessayez.");
+      const data = await res.json().catch(() => ({}));
+      setErreur(data.error || "Une erreur est survenue, réessayez.");
     }
   };
 
@@ -117,7 +116,7 @@ export default function ChoisirCarte({ params }) {
     );
   }
 
-  if (!cagnotte || cagnotte.statut !== "attente_choix") {
+  if (!cagnotte || cagnotte.statut !== "attente_choix" || !jeton) {
     return (
       <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center">
         <h1 className="text-3xl font-semibold text-ivory">Cette page n'est plus disponible</h1>

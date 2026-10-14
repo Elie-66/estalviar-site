@@ -215,13 +215,14 @@ export async function traiterPaiementContribution(sessionOuId, contributionIdAtt
   const nouveauMontant = (Number(cagnotte.montant_collecte) || 0) + Number(contribution.montant);
   const complete = nouveauMontant >= cagnotte.montant_objectif;
 
-  await supabase
-    .from("cagnottes")
-    .update({
-      montant_collecte: nouveauMontant,
-      statut: complete ? "complete" : "ouverte",
-    })
-    .eq("id", cagnotte.id);
+  // Le statut ne change que si la cagnotte est encore ouverte (jamais de réouverture après clôture)
+  const majCagnotte = { montant_collecte: nouveauMontant };
+  if (["ouverte", "complete"].includes(cagnotte.statut)) {
+    majCagnotte.statut = complete ? "complete" : "ouverte";
+  } else {
+    console.error("Contribution payée après la clôture de la cagnotte", cagnotte.id, contribution.id);
+  }
+  await supabase.from("cagnottes").update(majCagnotte).eq("id", cagnotte.id);
 
   if (contribution.email_contributeur) {
     await supabase.from("commandes").insert({
