@@ -409,6 +409,10 @@ export default function CreerCagnotte() {
             >
               {envoi ? "Création..." : "Créer la cagnotte"}
             </button>
+            <p className="mt-3 text-xs text-ivory/45 leading-relaxed">
+              En créant la cagnotte, vous acceptez les{" "}
+              <a href="/fr/cgv#cagnottes" target="_blank" className="underline hover:text-ivory/70">conditions générales de vente</a>.
+            </p>
 
             {erreur && <p className="mt-3 text-sm text-corail">{erreur}</p>}
           </div>

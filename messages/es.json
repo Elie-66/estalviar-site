@@ -322,5 +322,28 @@
     "nlErreur": "Se ha producido un error, inténtelo de nuevo.",
     "nlMentions": "Baja en un clic desde cada email.",
     "nlCompte": "Suscripción con {email}"
+  },
+  "retractation": {
+    "titre": "Desistimiento",
+    "intro": "¿Ha cambiado de opinión? Rellene este formulario para ejercer su derecho de desistimiento sobre un pedido. Recibirá de inmediato un acuse de recibo por email.",
+    "exception": "El desistimiento es posible durante 14 días mientras la tarjeta no se haya enviado (por ejemplo, una tarjeta programada para más adelante). Una vez enviado el código, ya no es posible, tal como se aceptó al hacer el pedido.",
+    "voirCgv": "Ver las condiciones",
+    "nom": "Nombre y apellidos",
+    "email": "Email utilizado para el pedido",
+    "commande": "Pedido afectado",
+    "commandeExemple": "Ej.: tarjeta Fnac de 50 € para Léa, pedida el 12 de octubre",
+    "message": "Mensaje (opcional)",
+    "continuer": "Continuar",
+    "verifierTitre": "Revise su solicitud",
+    "verifierTexte": "Al confirmar, nos notifica su desistimiento del pedido indicado.",
+    "confirmer": "Confirmar mi desistimiento",
+    "envoi": "Enviando…",
+    "modifier": "Modificar",
+    "erreur": "Se ha producido un error. Escríbanos a info@estalviar.com.",
+    "merciTitre": "Desistimiento registrado",
+    "merciTexte": "Su solicitud (referencia {reference}) se recibió el {date}.",
+    "merciEmail": "Acabamos de enviarle un acuse de recibo por email. Le responderemos en breve.",
+    "merciSansEmail": "Anote esta referencia: el email de acuse de recibo no pudo enviarse, pero su solicitud está registrada.",
+    "lienFooter": "Desistimiento"
   }
 }

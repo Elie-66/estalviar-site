@@ -16,6 +16,7 @@ const AUTORISATIONS = {
   codes_influence: ["lire", "ajouter", "modifier"],
   utilisations_code: ["lire", "modifier"],
   evenements: ["lire", "ajouter", "modifier", "supprimer"],
+  demandes_retractation: ["lire", "modifier"],
 };
 
 function autorise(table, action) {

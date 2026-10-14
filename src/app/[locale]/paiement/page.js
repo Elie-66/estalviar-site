@@ -14,6 +14,8 @@ export default function Paiement() {
   const [emailsBeneficiaires, setEmailsBeneficiaires] = useState({});
   const [chargement, setChargement] = useState(false);
   const [erreur, setErreur] = useState("");
+  // Case obligatoire : CGV + envoi immédiat de la carte (perte du droit de rétractation à l'envoi)
+  const [accepteCgv, setAccepteCgv] = useState(false);
   const [cashback, setCashback] = useState(null);
   const [utiliserCashback, setUtiliserCashback] = useState(false);
   const [codeSaisi, setCodeSaisi] = useState("");
@@ -147,6 +149,7 @@ export default function Paiement() {
           emailsBeneficiaires,
           utiliserCashback: reductionCashback > 0,
           codeInfluence: codeAffiche ? codeAffiche.code : null,
+          accepteCgv,
           locale: "fr",
         }),
       });
@@ -356,10 +359,25 @@ export default function Paiement() {
           )}
         </div>
 
+        <label className="mt-8 flex items-start gap-3 text-sm text-ivory/70 leading-relaxed cursor-pointer">
+          <input
+            type="checkbox"
+            checked={accepteCgv}
+            onChange={(e) => setAccepteCgv(e.target.checked)}
+            className="mt-1 w-4 h-4 shrink-0 accent-[#C9A227]"
+          />
+          <span>
+            J&apos;accepte les{" "}
+            <a href="/fr/cgv" target="_blank" className="text-gold underline underline-offset-2">conditions générales de vente</a>{" "}
+            et je demande l&apos;envoi de mes cartes dès le paiement ou à la date choisie. Je reconnais perdre mon droit de
+            rétractation pour chaque carte dès que son code est envoyé.
+          </span>
+        </label>
+
         <button
           onClick={handlePaiement}
-          disabled={!emailAcheteur || chargement}
-          className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled={!emailAcheteur || !accepteCgv || chargement}
+          className="mt-5 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {chargement ? "Redirection..." : `Payer ${euros(totalAPayer)}`}
         </button>

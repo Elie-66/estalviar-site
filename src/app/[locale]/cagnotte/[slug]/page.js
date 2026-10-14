@@ -325,6 +325,11 @@ export default function PageCagnotte({ params }) {
           >
             {envoiContribution ? "Redirection..." : `Contribuer ${montant ? `${montant} €` : ""}`}
           </button>
+          <p className="mt-3 text-xs text-ivory/45 leading-relaxed">
+            En participant, vous acceptez les{" "}
+            <a href="/fr/cgv#cagnottes" target="_blank" className="underline hover:text-ivory/70">conditions générales de vente</a>.
+            Le montant collecté sera converti en carte cadeau à la date de fin, même si l&apos;objectif n&apos;est pas atteint.
+          </p>
         </div>
       )}
 

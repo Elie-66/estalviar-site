@@ -322,5 +322,28 @@
     "nlErreur": "Une erreur est survenue, réessayez.",
     "nlMentions": "Désinscription en un clic depuis chaque email.",
     "nlCompte": "Inscription avec {email}"
+  },
+  "retractation": {
+    "titre": "Se rétracter",
+    "intro": "Vous avez changé d'avis ? Remplissez ce formulaire pour exercer votre droit de rétractation sur une commande. Vous recevrez aussitôt un accusé de réception par email.",
+    "exception": "La rétractation est possible pendant 14 jours tant que la carte n'a pas été envoyée (une carte programmée pour plus tard, par exemple). Une fois le code envoyé, elle n'est plus possible, comme accepté lors de la commande.",
+    "voirCgv": "Voir les conditions",
+    "nom": "Nom et prénom",
+    "email": "Adresse email utilisée pour la commande",
+    "commande": "Commande concernée",
+    "commandeExemple": "Ex. : carte Fnac de 50 € pour Léa, commandée le 12 octobre",
+    "message": "Message (facultatif)",
+    "continuer": "Continuer",
+    "verifierTitre": "Vérifiez votre demande",
+    "verifierTexte": "En confirmant, vous nous notifiez votre rétractation pour la commande ci-dessus.",
+    "confirmer": "Confirmer ma rétractation",
+    "envoi": "Envoi…",
+    "modifier": "Modifier",
+    "erreur": "Une erreur est survenue. Écrivez-nous à info@estalviar.com.",
+    "merciTitre": "Rétractation enregistrée",
+    "merciTexte": "Votre demande (référence {reference}) a été reçue le {date}.",
+    "merciEmail": "Un accusé de réception vient de vous être envoyé par email. Nous revenons vers vous rapidement.",
+    "merciSansEmail": "Notez bien cette référence : l'email d'accusé de réception n'a pas pu partir, mais votre demande est bien enregistrée.",
+    "lienFooter": "Se rétracter"
   }
 }

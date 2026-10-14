@@ -322,5 +322,28 @@
     "nlErreur": "Ein Fehler ist aufgetreten, bitte erneut versuchen.",
     "nlMentions": "Abmeldung mit einem Klick in jeder E-Mail.",
     "nlCompte": "Anmeldung mit {email}"
+  },
+  "retractation": {
+    "titre": "Widerruf",
+    "intro": "Sie haben es sich anders überlegt? Füllen Sie dieses Formular aus, um Ihr Widerrufsrecht für eine Bestellung auszuüben. Sie erhalten sofort eine Eingangsbestätigung per E-Mail.",
+    "exception": "Ein Widerruf ist 14 Tage lang möglich, solange die Karte noch nicht versendet wurde (z. B. eine für später geplante Karte). Nach dem Versand des Codes ist er nicht mehr möglich, wie bei der Bestellung akzeptiert.",
+    "voirCgv": "Bedingungen ansehen",
+    "nom": "Vor- und Nachname",
+    "email": "Bei der Bestellung verwendete E-Mail-Adresse",
+    "commande": "Betroffene Bestellung",
+    "commandeExemple": "z. B. Fnac-Karte über 50 € für Léa, bestellt am 12. Oktober",
+    "message": "Nachricht (optional)",
+    "continuer": "Weiter",
+    "verifierTitre": "Prüfen Sie Ihre Anfrage",
+    "verifierTexte": "Mit der Bestätigung erklären Sie uns den Widerruf der oben genannten Bestellung.",
+    "confirmer": "Widerruf bestätigen",
+    "envoi": "Wird gesendet…",
+    "modifier": "Ändern",
+    "erreur": "Ein Fehler ist aufgetreten. Schreiben Sie uns an info@estalviar.com.",
+    "merciTitre": "Widerruf erfasst",
+    "merciTexte": "Ihre Anfrage (Referenz {reference}) ist am {date} eingegangen.",
+    "merciEmail": "Eine Eingangsbestätigung wurde Ihnen gerade per E-Mail gesendet. Wir melden uns in Kürze.",
+    "merciSansEmail": "Notieren Sie diese Referenz: Die Bestätigungs-E-Mail konnte nicht gesendet werden, Ihre Anfrage ist aber erfasst.",
+    "lienFooter": "Widerruf"
   }
 }

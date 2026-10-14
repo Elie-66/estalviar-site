@@ -322,5 +322,28 @@
     "nlErreur": "Si è verificato un errore, riprova.",
     "nlMentions": "Disiscrizione in un clic da ogni email.",
     "nlCompte": "Iscrizione con {email}"
+  },
+  "retractation": {
+    "titre": "Recesso",
+    "intro": "Hai cambiato idea? Compila questo modulo per esercitare il diritto di recesso su un ordine. Riceverai subito una conferma di ricezione via email.",
+    "exception": "Il recesso è possibile per 14 giorni finché la carta non è stata inviata (ad esempio una carta programmata per più avanti). Una volta inviato il codice non è più possibile, come accettato al momento dell'ordine.",
+    "voirCgv": "Vedi le condizioni",
+    "nom": "Nome e cognome",
+    "email": "Email usata per l'ordine",
+    "commande": "Ordine interessato",
+    "commandeExemple": "Es.: carta Fnac da 50 € per Léa, ordinata il 12 ottobre",
+    "message": "Messaggio (facoltativo)",
+    "continuer": "Continua",
+    "verifierTitre": "Controlla la richiesta",
+    "verifierTexte": "Confermando, ci comunichi il recesso dall'ordine indicato.",
+    "confirmer": "Conferma il recesso",
+    "envoi": "Invio…",
+    "modifier": "Modifica",
+    "erreur": "Si è verificato un errore. Scrivici a info@estalviar.com.",
+    "merciTitre": "Recesso registrato",
+    "merciTexte": "La tua richiesta (riferimento {reference}) è stata ricevuta il {date}.",
+    "merciEmail": "Ti abbiamo appena inviato una conferma di ricezione via email. Ti risponderemo a breve.",
+    "merciSansEmail": "Annota questo riferimento: l'email di conferma non è stata inviata, ma la richiesta è registrata.",
+    "lienFooter": "Recesso"
   }
 }

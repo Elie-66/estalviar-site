@@ -5,6 +5,7 @@ import { trouverDesign } from '../../../lib/designs';
 import { utilisateurConnecte } from '../../../lib/utilisateurServeur';
 import { calculerCashbackUtilisable } from '../../../lib/cashback';
 import { evaluerCode } from '../../../lib/codeInfluence';
+import { VERSION_CGV } from '../../../lib/infosLegales';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const supabase = createClient(
@@ -18,7 +19,7 @@ const texteCourt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) :
 
 export async function POST(req) {
   try {
-    const { articles, emailAcheteur, emailsBeneficiaires, locale, utiliserCashback, codeInfluence } = await req.json();
+    const { articles, emailAcheteur, emailsBeneficiaires, locale, utiliserCashback, codeInfluence, accepteCgv } = await req.json();
     const client = await utilisateurConnecte(req);
     const langue = ['fr', 'en', 'de', 'es', 'it'].includes(locale) ? locale : 'fr';
 
@@ -30,6 +31,10 @@ export async function POST(req) {
     }
     if (!EMAIL_VALIDE.test(emailAcheteur || '')) {
       return NextResponse.json({ error: 'Email acheteur invalide' }, { status: 400 });
+    }
+    // Obligatoire : acceptation des CGV et demande d'envoi immédiat (enregistrées avec la commande)
+    if (accepteCgv !== true) {
+      return NextResponse.json({ error: 'Merci d’accepter les conditions générales de vente.' }, { status: 400 });
     }
 
     const { data: catalogue } = await supabase
@@ -102,6 +107,8 @@ export async function POST(req) {
         statut: 'en_attente',
         profil_id: client?.id || null,
         code_influence_id: codeInfluenceId,
+        cgv_version: VERSION_CGV,
+        cgv_acceptees_le: new Date().toISOString(),
       })
       .select('id')
       .single();

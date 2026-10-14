@@ -55,8 +55,8 @@ h1, h2, h3, h4 {
   animation: defilement 30s linear infinite;
 }
 :root {
-  --font-fraunces: 'Fraunces', serif;
-  --font-inter: 'Inter', sans-serif;
+  --font-fraunces: 'Fraunces Variable', 'Fraunces', serif;
+  --font-inter: 'Inter Variable', 'Inter', sans-serif;
   --font-space-mono: 'Space Mono', monospace;
 }
 /* Motifs du bandeau d'événement : flottent doucement (désactivé si l'utilisateur limite les animations) */

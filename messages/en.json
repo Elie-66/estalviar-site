@@ -322,5 +322,28 @@
     "nlErreur": "Something went wrong, please try again.",
     "nlMentions": "Unsubscribe in one click from any email.",
     "nlCompte": "Signing up with {email}"
+  },
+  "retractation": {
+    "titre": "Withdraw from an order",
+    "intro": "Changed your mind? Fill in this form to exercise your right of withdrawal on an order. You will immediately receive an acknowledgement of receipt by email.",
+    "exception": "Withdrawal is possible for 14 days as long as the card has not been sent (a card scheduled for later, for example). Once the code has been sent, it is no longer possible, as accepted when ordering.",
+    "voirCgv": "See the terms",
+    "nom": "Full name",
+    "email": "Email address used for the order",
+    "commande": "Order concerned",
+    "commandeExemple": "E.g. €50 Fnac card for Léa, ordered on 12 October",
+    "message": "Message (optional)",
+    "continuer": "Continue",
+    "verifierTitre": "Check your request",
+    "verifierTexte": "By confirming, you notify us that you withdraw from the order above.",
+    "confirmer": "Confirm my withdrawal",
+    "envoi": "Sending…",
+    "modifier": "Edit",
+    "erreur": "Something went wrong. Write to us at info@estalviar.com.",
+    "merciTitre": "Withdrawal recorded",
+    "merciTexte": "Your request (reference {reference}) was received on {date}.",
+    "merciEmail": "An acknowledgement of receipt has just been sent to you by email. We will get back to you shortly.",
+    "merciSansEmail": "Please note this reference: the acknowledgement email could not be sent, but your request has been recorded.",
+    "lienFooter": "Withdrawal"
   }
 }

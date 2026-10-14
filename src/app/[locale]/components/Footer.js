@@ -8,6 +8,7 @@ export default function Footer() {
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
   const t = useTranslations("footer");
+  const tRetractation = useTranslations("retractation");
   const [ouvert, setOuvert] = useState(null);
 
   const sections = [
@@ -46,6 +47,7 @@ export default function Footer() {
         { href: `/${locale}/cgv`, label: t("cgv") },
         { href: `/${locale}/confidentialite`, label: t("confidentialite") },
         { href: `/${locale}/cookies`, label: t("cookies") },
+        { href: `/${locale}/retractation`, label: tRetractation("lienFooter") },
       ],
     },
   ];
