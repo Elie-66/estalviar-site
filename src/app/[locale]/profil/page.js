@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
+import SoldeCashback from "../components/SoldeCashback";
 
 const couleursAvatar = [
   "#C9A227", "#E5604D", "#5B3A5C", "#2E7D6B", "#3A5A8C", "#B5563F", "#8C6A3A", "#4A4A6A",
@@ -344,6 +345,14 @@ export default function Profil() {
           Commandes
         </button>
         <button
+          onClick={() => setOnglet("cashback")}
+          className={`flex-1 text-sm py-2 rounded-md transition-colors ${
+            onglet === "cashback" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
+          }`}
+        >
+          Cashback
+        </button>
+        <button
           onClick={() => setOnglet("beneficiaires")}
           className={`flex-1 text-sm py-2 rounded-md transition-colors ${
             onglet === "beneficiaires" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
@@ -505,6 +514,8 @@ export default function Profil() {
           {erreurSecurite && <p className="mt-3 text-sm text-corail">{erreurSecurite}</p>}
         </form>
       )}
+
+      {onglet === "cashback" && <SoldeCashback />}
 
       {onglet === "commandes" && (
         <div>

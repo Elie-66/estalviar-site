@@ -5,9 +5,9 @@ import { supabase } from "../../../lib/supabase";
 
 const paliers = [
   { nom: "Bronze", seuil: 0, couleur: "#B08D57", avantage: "Accès au programme dès votre première commande" },
-  { nom: "Argent", seuil: 100, couleur: "#C0C0C0", avantage: "Avantages exclusifs à venir" },
-  { nom: "Or", seuil: 300, couleur: "#C9A227", avantage: "Avantages exclusifs à venir" },
-  { nom: "Platine", seuil: 700, couleur: "#E5E4E2", avantage: "Avantages exclusifs à venir" },
+  { nom: "Argent", seuil: 100, couleur: "#C0C0C0", avantage: "Cashback sur nos marques coups de cœur" },
+  { nom: "Or", seuil: 300, couleur: "#C9A227", avantage: "Cashback plus généreux, sur encore plus de marques" },
+  { nom: "Platine", seuil: 700, couleur: "#E5E4E2", avantage: "Le meilleur cashback, y compris sur les grandes marques" },
 ];
 
 export default function Fidelite() {

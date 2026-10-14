@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePanier } from "../context/PanierContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { supabase } from "../../../lib/supabase";
+import { fetchSession } from "../../../lib/fetchSession";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
@@ -13,6 +14,8 @@ export default function Paiement() {
   const [emailsBeneficiaires, setEmailsBeneficiaires] = useState({});
   const [chargement, setChargement] = useState(false);
   const [erreur, setErreur] = useState("");
+  const [cashback, setCashback] = useState(null);
+  const [utiliserCashback, setUtiliserCashback] = useState(false);
 
   const [utilisateurConnecte, setUtilisateurConnecte] = useState(null);
   const [modeAuth, setModeAuth] = useState("invite"); // "invite" | "creer" | "connexion"
@@ -30,6 +33,20 @@ export default function Paiement() {
     };
     charger();
   }, []);
+
+  // Cashback disponible pour ce panier (calculé par le serveur)
+  useEffect(() => {
+    if (!utilisateurConnecte || !total) return;
+    fetchSession(`/api/cashback?total=${total}`)
+      .then((r) => r.json())
+      .then((data) => setCashback(data.connecte ? data : null))
+      .catch(() => setCashback(null));
+  }, [utilisateurConnecte, total]);
+
+  const cashbackAffiche = utilisateurConnecte && total ? cashback : null;
+  const reductionCashback = utiliserCashback && cashbackAffiche ? cashbackAffiche.utilisable : 0;
+  const totalAPayer = Math.round((total - reductionCashback) * 100) / 100;
+  const euros = (n) => `${Number(n).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 
   const handleCreerCompte = async (e) => {
     e.preventDefault();
@@ -80,13 +97,14 @@ export default function Paiement() {
     setErreur("");
     try {
       localStorage.setItem("estalviar-emails-beneficiaires", JSON.stringify(emailsBeneficiaires));
-      const res = await fetch("/api/checkout", {
+      const res = await fetchSession("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           articles,
           emailAcheteur,
           emailsBeneficiaires,
+          utiliserCashback: utiliserCashback && reductionCashback > 0,
           locale: "fr",
         }),
       });
@@ -216,12 +234,42 @@ export default function Paiement() {
           </form>
         )}
 
+        {cashbackAffiche && (cashbackAffiche.disponible > 0 || cashbackAffiche.enAttente > 0) && (
+          <div className="mt-8 border border-gold/30 rounded-lg p-4">
+            {cashbackAffiche.utilisable > 0 ? (
+              <label className="flex items-start gap-3 text-sm text-ivory cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={utiliserCashback}
+                  onChange={(e) => setUtiliserCashback(e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span>
+                  Utiliser mon cashback : <span className="text-gold font-semibold">−{euros(cashbackAffiche.utilisable)}</span>
+                  <span className="block text-xs text-ivory/50 mt-0.5">
+                    {euros(cashbackAffiche.disponible)} disponibles · jusqu&apos;à {cashbackAffiche.regles.plafondPourcent} % de la commande
+                  </span>
+                  <span className="block text-xs text-ivory/40 mt-0.5">
+                    Une commande réglée avec du cashback ne rapporte pas de nouveau cashback.
+                  </span>
+                </span>
+              </label>
+            ) : (
+              <p className="text-sm text-ivory/60">
+                {cashbackAffiche.disponible > 0
+                  ? `Vous avez ${euros(cashbackAffiche.disponible)} de cashback, utilisable dès ${cashbackAffiche.regles.commandeMinimum} € de commande.`
+                  : `${euros(cashbackAffiche.enAttente)} de cashback en attente, bientôt utilisable.`}
+              </p>
+            )}
+          </div>
+        )}
+
         <button
           onClick={handlePaiement}
           disabled={!emailAcheteur || chargement}
           className="mt-8 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {chargement ? "Redirection..." : `Payer ${total} €`}
+          {chargement ? "Redirection..." : `Payer ${euros(totalAPayer)}`}
         </button>
 
         {erreur && (
@@ -260,9 +308,15 @@ export default function Paiement() {
         <p className="mt-3 text-xs text-ivory/40">
           Si un email est renseigné, cette carte est envoyée directement au destinataire. Sinon, vous la recevrez pour la transmettre vous-même.
         </p>
+        {reductionCashback > 0 && (
+          <div className="mt-4 flex justify-between text-gold text-sm">
+            <span>Cashback utilisé</span>
+            <span>−{euros(reductionCashback)}</span>
+          </div>
+        )}
         <div className="mt-4 flex justify-between text-ivory font-semibold text-lg">
           <span>Total</span>
-          <span>{total} €</span>
+          <span>{euros(totalAPayer)}</span>
         </div>
       </div>
 

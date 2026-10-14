@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
-import { traiterPaiementPanier, traiterPaiementContribution } from '../../../lib/traiterPaiements';
+import { traiterPaiementPanier, traiterPaiementContribution, libererPanierAbandonne } from '../../../lib/traiterPaiements';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -29,6 +29,9 @@ export async function POST(req) {
       const session = evenement.data.object;
       if (session.metadata?.type === 'panier') await traiterPaiementPanier(session);
       if (session.metadata?.type === 'contribution') await traiterPaiementContribution(session);
+    }
+    if (evenement.type === 'checkout.session.expired') {
+      await libererPanierAbandonne(evenement.data.object);
     }
     return NextResponse.json({ recu: true });
   } catch (e) {

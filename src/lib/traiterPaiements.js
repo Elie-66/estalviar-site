@@ -8,6 +8,7 @@ import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { chiffrerCode } from "./chiffrement";
 import { echapperHtml } from "./designs";
+import { calculerCashbackGagne, REGLES_CASHBACK } from "./cashback";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -102,8 +103,10 @@ export async function traiterPaiementPanier(sessionOuId) {
     return { ok: true, dejaTraite: true };
   }
 
-  // 2) Le montant payé doit correspondre EXACTEMENT au panier enregistré
-  if (session.amount_total !== centimes(panier.montant_total) || session.currency !== "eur") {
+  // 2) Le montant payé doit correspondre EXACTEMENT au panier enregistré (moins le cashback utilisé)
+  const cashbackUtilise = Number(panier.cashback_utilise) || 0;
+  const attendu = centimes(panier.montant_total) - centimes(cashbackUtilise);
+  if (session.amount_total !== attendu || session.currency !== "eur") {
     await supabase.from("paniers").update({ statut: "anomalie" }).eq("id", panier.id);
     console.error("Montant Stripe différent du panier", panier.id, session.amount_total, panier.montant_total);
     return { ok: false, code: 400, erreur: "Montant incohérent, commande bloquée pour vérification" };
@@ -111,6 +114,21 @@ export async function traiterPaiementPanier(sessionOuId) {
 
   const emailAcheteur = panier.email_acheteur;
   const maintenant = new Date();
+
+  // Le cashback réservé pour cette commande est définitivement utilisé
+  if (cashbackUtilise > 0) {
+    await supabase.rpc("cashback_confirmer", { p_panier: panier.id });
+  }
+
+  // Profil du client (pour les points et le cashback) — lu AVANT d'ajouter les points de cette commande
+  let profil = null;
+  if (panier.profil_id) {
+    ({ data: profil } = await supabase.from("profils").select("id, points").eq("id", panier.profil_id).maybeSingle());
+  }
+  if (!profil) {
+    ({ data: profil } = await supabase.from("profils").select("id, points").ilike("email", emailAcheteur).maybeSingle());
+  }
+  const pointsAvant = profil?.points || 0;
 
   for (const article of panier.articles) {
     const code = genererCode();
@@ -159,12 +177,54 @@ export async function traiterPaiementPanier(sessionOuId) {
     }
   }
 
+  // CASHBACK GAGNÉ : selon le palier, la notoriété et la marge de chaque marque.
+  // Une commande payée (même en partie) avec du cashback ne rapporte PAS de nouveau cashback.
+  if (profil && cashbackUtilise === 0) {
+    try {
+      const slugs = panier.articles.map((a) => a.slug).filter(Boolean);
+      const [{ data: marges }, { data: fiches }] = await Promise.all([
+        supabase.from("marges_marques").select("slug, marge").in("slug", slugs),
+        supabase.from("catalogue").select("slug, notoriete").in("slug", slugs),
+      ]);
+      const infos = {};
+      (marges || []).forEach((m) => { infos[m.slug] = { marge: m.marge }; });
+      (fiches || []).forEach((f) => { infos[f.slug] = { ...(infos[f.slug] || {}), notoriete: f.notoriete }; });
+
+      const gain = calculerCashbackGagne(panier.articles, infos, pointsAvant);
+      if (gain.montant > 0) {
+        await supabase.rpc("cashback_crediter", {
+          p_profil: profil.id,
+          p_montant: gain.montant,
+          p_panier: panier.id,
+          p_jours_attente: REGLES_CASHBACK.joursAttente,
+          p_description: `Commande du ${new Date().toLocaleDateString("fr-FR")} (palier ${gain.palier})`,
+        });
+      }
+    } catch (e) {
+      console.error("Cashback non crédité", panier.id, e);
+    }
+  }
+
   await supabase
     .from("paniers")
     .update({ statut: "traite", traite_le: new Date().toISOString() })
     .eq("id", panier.id);
 
   return { ok: true };
+}
+
+// Paiement abandonné ou expiré : on rend le cashback réservé
+export async function libererPanierAbandonne(session) {
+  const panierId = session?.metadata?.panier_id;
+  if (session?.metadata?.type !== "panier" || !panierId) return;
+  const { data: panier } = await supabase
+    .from("paniers")
+    .update({ statut: "abandonne" })
+    .eq("id", panierId)
+    .eq("statut", "en_attente")
+    .select("id")
+    .maybeSingle();
+  if (panier) await supabase.rpc("cashback_liberer", { p_panier: panier.id });
 }
 
 // ---------------------------------------------------------------------------

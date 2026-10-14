@@ -2,6 +2,8 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { trouverDesign } from '../../../lib/designs';
+import { utilisateurConnecte } from '../../../lib/utilisateurServeur';
+import { calculerCashbackUtilisable } from '../../../lib/cashback';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const supabase = createClient(
@@ -15,7 +17,8 @@ const texteCourt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) :
 
 export async function POST(req) {
   try {
-    const { articles, emailAcheteur, emailsBeneficiaires, locale } = await req.json();
+    const { articles, emailAcheteur, emailsBeneficiaires, locale, utiliserCashback } = await req.json();
+    const client = await utilisateurConnecte(req);
     const langue = ['fr', 'en', 'de', 'es', 'it'].includes(locale) ? locale : 'fr';
 
     if (!Array.isArray(articles) || articles.length === 0) {
@@ -82,6 +85,7 @@ export async function POST(req) {
         articles: articlesValides,
         montant_total: montantTotal,
         statut: 'en_attente',
+        profil_id: client?.id || null,
       })
       .select('id')
       .single();
@@ -89,6 +93,27 @@ export async function POST(req) {
     if (erreurPanier) {
       console.error(erreurPanier);
       return NextResponse.json({ error: 'Impossible de préparer la commande' }, { status: 500 });
+    }
+
+    // CASHBACK : calculé et réservé par le serveur (le client ne choisit que « oui / non »)
+    let cashbackUtilise = 0;
+    if (utiliserCashback && client) {
+      const { data: solde } = await supabase.rpc('cashback_solde', { p_profil: client.id });
+      const disponible = Number(solde?.[0]?.disponible) || 0;
+      const utilisable = calculerCashbackUtilisable(montantTotal, disponible);
+      if (utilisable > 0) {
+        const { error: erreurReserve } = await supabase.rpc('cashback_reserver', {
+          p_profil: client.id,
+          p_montant: utilisable,
+          p_panier: panier.id,
+        });
+        if (erreurReserve) {
+          console.error(erreurReserve);
+          return NextResponse.json({ error: 'Votre cashback n\'a pas pu être appliqué, réessayez.' }, { status: 409 });
+        }
+        cashbackUtilise = utilisable;
+        await supabase.from('paniers').update({ cashback_utilise: cashbackUtilise }).eq('id', panier.id);
+      }
     }
 
     const line_items = articlesValides.map((a) => ({
@@ -104,7 +129,7 @@ export async function POST(req) {
     }));
 
     const origin = req.headers.get('origin') || 'https://estalviar.com';
-    const session = await stripe.checkout.sessions.create({
+    const parametres = {
       line_items,
       mode: 'payment',
       customer_email: emailAcheteur.trim(),
@@ -113,7 +138,28 @@ export async function POST(req) {
       success_url: `${origin}/${langue}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/${langue}/panier`,
       managed_payments: { enabled: false },
-    });
+    };
+
+    let session;
+    try {
+      if (cashbackUtilise > 0) {
+        // Réduction à usage unique du montant exact du cashback
+        const coupon = await stripe.coupons.create({
+          amount_off: Math.round(cashbackUtilise * 100),
+          currency: 'eur',
+          duration: 'once',
+          max_redemptions: 1,
+          name: 'Cashback Estalviar',
+        });
+        parametres.discounts = [{ coupon: coupon.id }];
+        // Session courte : si le client abandonne, son cashback lui est rendu rapidement
+        parametres.expires_at = Math.floor(Date.now() / 1000) + 35 * 60;
+      }
+      session = await stripe.checkout.sessions.create(parametres);
+    } catch (e) {
+      if (cashbackUtilise > 0) await supabase.rpc('cashback_liberer', { p_panier: panier.id });
+      throw e;
+    }
 
     await supabase.from('paniers').update({ stripe_session_id: session.id }).eq('id', panier.id);
 
