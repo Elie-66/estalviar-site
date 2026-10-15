@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { SITE_URL, alternates } from '../../lib/seo';
+import { RESEAUX } from '../../lib/reseaux';
 // Polices hébergées par le site lui-même (aucune requête vers Google Fonts : RGPD)
 import "@fontsource-variable/fraunces/opsz.css";
 import "@fontsource-variable/inter";
@@ -37,6 +38,16 @@ export default async function RootLayout({ children, params }) {
   return (
     <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col">
+        {/* Pour Google : qui est Estalviar et où le trouver */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Estalviar",
+          url: SITE_URL,
+          logo: `${SITE_URL}/apple-icon.png`,
+          email: "info@estalviar.com",
+          sameAs: RESEAUX.map((r) => r.url),
+        }) }} />
         <NextIntlClientProvider messages={messages}>
           <PanierProvider>
             <Header />

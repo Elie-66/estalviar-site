@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { RESEAUX } from "../../../lib/reseaux";
+import IconeReseau from "../components/IconeReseau";
 
 const champ = "w-full bg-ivory/[0.04] border border-ivory/20 rounded-lg px-4 py-3 text-ivory outline-none focus:border-gold/60 transition-colors";
 
@@ -89,6 +91,16 @@ export default function Contact() {
           <a href="mailto:info@estalviar.com" className="mt-1 block text-gold">info@estalviar.com</a>
           <p className="mt-1 text-ivory/55">{t("delai")}</p>
         </div>
+        {RESEAUX.map((r) => (
+          <a key={r.cle} href={r.url} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-3 rounded-xl border border-ivory/10 p-5 hover:border-ivory/30 transition-colors">
+            <IconeReseau cle={r.cle} className="w-6 h-6 text-gold shrink-0" />
+            <span>
+              <span className="block text-ivory font-medium">{r.nom}</span>
+              <span className="block text-ivory/55">{r.compte}</span>
+            </span>
+          </a>
+        ))}
         <a href={`/${locale}/aide`} className="block rounded-xl border border-ivory/10 p-5 hover:border-ivory/30 transition-colors">
           <p className="text-ivory font-medium">{t("aideTitre")}</p>
           <p className="mt-1 text-ivory/55">{t("aideTexte")}</p>

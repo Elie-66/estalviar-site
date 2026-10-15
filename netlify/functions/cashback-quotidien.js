@@ -4,6 +4,8 @@
 //  3. rend le cashback réservé sur les paiements abandonnés
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from '../../src/lib/emailTemplate.js';
+import { EXPEDITEUR, SITE } from '../../src/lib/emailCarte.js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -18,43 +20,16 @@ function emailRappel(lignes, total) {
   const liste = lignes
     .map((l) => `<li style="margin:4px 0;"><strong>${euros(l.restant)}</strong> le ${date(l.expire_le)}</li>`)
     .join('');
-  return `
-<!DOCTYPE html>
-<html>
-<body style="margin:0; padding:0; background-color:#F6F2E9; font-family: Georgia, serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F6F2E9; padding: 40px 0;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 520px; background-color:#ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e5ded0;">
-        <tr><td style="padding: 32px; text-align: center; background-color:#12172B;">
-          <span style="font-family: Georgia, serif; font-size: 22px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; color: #F6F2E9;">
-            Estalviar<span style="color:#C9A227;">.</span>
-          </span>
-        </td></tr>
-        <tr><td style="padding: 32px; background-color:#ffffff;">
-          <h1 style="margin: 0 0 20px 0; font-size: 24px; color: #12172B; text-align: center;">Votre cashback expire bientôt</h1>
-          <p style="margin: 0 0 12px 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333;">
-            Vous avez <strong>${euros(total)}</strong> de cashback qui arrive à expiration dans les 30 prochains jours :
-          </p>
-          <ul style="font-family: Arial, sans-serif; font-size: 14px; color: #333; padding-left: 20px;">${liste}</ul>
-          <p style="margin: 12px 0 0 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333;">
-            Utilisez-le sur votre prochaine carte cadeau avant qu'il ne soit perdu.
-          </p>
-          <div style="text-align: center; margin: 28px 0 8px;">
-            <a href="https://estalviar.com/fr/boutique" style="display: inline-block; background-color: #C9A227; color: #12172B; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 8px;">
-              Utiliser mon cashback
-            </a>
-          </div>
-        </td></tr>
-        <tr><td style="padding: 20px 32px; border-top: 1px solid #eee6d4; background-color:#ffffff;">
-          <p style="margin:0; font-family: Arial, sans-serif; font-size: 11px; color: #999; text-align: center;">
-            Estalviar — La carte cadeau, offerte simplement.
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
+  return enveloppeEmail({
+    titre: 'Votre cashback expire bientôt',
+    siteUrl: SITE,
+    contenuHtml:
+      titreEmail('Votre cashback expire bientôt') +
+      texteEmail(`Vous avez <strong>${euros(total)}</strong> de cashback qui arrive à expiration dans les 30 prochains jours :`) +
+      `<ul style="font-family: Arial, sans-serif; font-size: 14px; color: #333; padding-left: 20px; margin: 0 0 16px 0;">${liste}</ul>` +
+      texteEmail('Utilisez-le sur votre prochaine carte cadeau avant qu’il ne soit perdu.') +
+      boutonEmail({ texte: 'Utiliser mon cashback', lien: `${SITE}/fr/boutique` }),
+  });
 }
 
 export default async function handler() {
@@ -90,7 +65,7 @@ export default async function handler() {
     const total = lignes.reduce((s, l) => s + Number(l.restant), 0);
     try {
       await resend.emails.send({
-        from: 'Estalviar <onboarding@resend.dev>',
+        from: EXPEDITEUR,
         to: profil.email,
         subject: `${euros(total)} de cashback expirent bientôt`,
         html: emailRappel(lignes, total),

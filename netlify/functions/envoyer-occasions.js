@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { enveloppeEmail } from '../../src/lib/emailTemplate.js';
 import { EXPEDITEUR, SITE } from '../../src/lib/emailCarte.js';
 import { piedDesinscription } from '../../src/lib/newsletter.js';
 
@@ -9,32 +10,6 @@ const supabase = createClient(
 );
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-function enveloppeEmail({ titre, contenuHtml }) {
-  return `
-<!DOCTYPE html>
-<html>
-<body style="margin:0; padding:0; background-color:#F6F2E9; font-family: Georgia, serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F6F2E9; padding: 40px 0;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 520px; background-color:#ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e5ded0;">
-        <tr><td style="padding: 32px; text-align: center; background-color:#12172B;">
-          <span style="font-family: Georgia, serif; font-size: 22px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; color: #F6F2E9;">
-            Estalviar<span style="color:#C9A227;">.</span>
-          </span>
-        </td></tr>
-        <tr><td style="padding: 32px; background-color:#ffffff;">${contenuHtml}</td></tr>
-        <tr><td style="padding: 20px 32px; border-top: 1px solid #eee6d4; background-color:#ffffff;">
-          <p style="margin:0; font-family: Arial, sans-serif; font-size: 11px; color: #999; text-align: center;">
-            Estalviar — La carte cadeau, offerte simplement.
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>
-  `;
-}
 
 export default async function handler() {
   const maintenant = new Date();

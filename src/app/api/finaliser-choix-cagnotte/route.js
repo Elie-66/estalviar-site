@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { EXPEDITEUR } from '../../../lib/emailCarte';
 import { chiffrerCode } from '../../../lib/chiffrement';
 import { trouverDesign, echapperHtml } from '../../../lib/designs';
 
@@ -162,7 +163,7 @@ export async function POST(req) {
     htmlComplet += `</div>`;
 
     await resend.emails.send({
-      from: 'Estalviar <onboarding@resend.dev>',
+      from: EXPEDITEUR,
       to: destinataire,
       subject: `Vos cartes cadeaux (${nomsMarques.join(', ')})`,
       html: htmlComplet,

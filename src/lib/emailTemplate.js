@@ -1,3 +1,5 @@
+import { RESEAUX } from "./reseaux";
+
 export function enveloppeEmail({ titre, contenuHtml, siteUrl = "https://estalviar.com" }) {
   return `
 <!DOCTYPE html>
@@ -32,8 +34,9 @@ export function enveloppeEmail({ titre, contenuHtml, siteUrl = "https://estalvia
           <tr>
             <td style="padding: 24px 32px; border-top: 1px solid #eee6d4; background-color:#ffffff;">
               <p style="margin:0; font-family: Arial, sans-serif; font-size: 11px; color: #999; text-align: center; line-height: 1.6;">
-                Estalviar — La carte cadeau, offerte simplement.<br/>
+                Estalviar, la carte cadeau offerte simplement.<br/>
                 <a href="${siteUrl}" style="color: #C9A227; text-decoration: none;">${siteUrl.replace('https://', '')}</a>
+                ${RESEAUX.map((r) => ` &nbsp;|&nbsp; <a href="${r.url}" style="color: #C9A227; text-decoration: none;">${r.nom}</a>`).join('')}
               </p>
             </td>
           </tr>

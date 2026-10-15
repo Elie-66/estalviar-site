@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { EXPEDITEUR } from '../../../lib/emailCarte';
 import { enveloppeEmail, titreEmail, texteEmail } from '../../../lib/emailTemplate';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -36,7 +37,7 @@ export async function POST(req) {
     `;
 
     await resend.emails.send({
-      from: 'Estalviar <onboarding@resend.dev>',
+      from: EXPEDITEUR,
       to: 'info@estalviar.com',
       subject: `Contact : ${sujet}`,
       html: enveloppeEmail({ titre: `Contact : ${sujet}`, contenuHtml: contenu }),

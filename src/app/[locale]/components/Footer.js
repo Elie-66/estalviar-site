@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { RESEAUX } from "../../../lib/reseaux";
+import IconeReseau from "./IconeReseau";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -68,6 +70,16 @@ export default function Footer() {
           <p className="mt-3 text-sm text-ivory/60 max-w-[16rem]">
             {t("accroche")}
           </p>
+          <ul className="mt-5 flex items-center gap-2.5">
+            {RESEAUX.map((r) => (
+              <li key={r.cle}>
+                <a href={r.url} target="_blank" rel="noopener noreferrer" aria-label={`${r.nom} ${r.compte}`} title={r.nom}
+                  className="flex items-center justify-center w-10 h-10 rounded-full border border-ivory/15 text-ivory/70 hover:text-gold hover:border-gold/50 transition-colors">
+                  <IconeReseau cle={r.cle} />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Version mobile : accordéon */}
