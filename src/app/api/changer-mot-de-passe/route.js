@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import { enveloppeEmail, titreEmail, texteEmail } from '../../../lib/emailTemplate';
-import { EXPEDITEUR, SITE } from '../../../lib/emailCarte';
+import { EXPEDITEUR, REPONDRE_A, SITE } from '../../../lib/emailCarte';
 import { utilisateurConnecte } from '../../../lib/utilisateurServeur';
 
 const supabase = createClient(
@@ -50,6 +50,7 @@ export async function POST(req) {
 
     const { error: erreurEmail } = await resend.emails.send({
       from: EXPEDITEUR,
+      replyTo: REPONDRE_A,
       to: client.email,
       subject: 'Votre mot de passe Estalviar a été modifié',
       html: enveloppeEmail({

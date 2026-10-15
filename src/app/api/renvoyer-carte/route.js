@@ -5,7 +5,7 @@ import { dechiffrerCode } from '../../../lib/chiffrement';
 import { verifierAcces, journaliser } from '../../../lib/verifierAdmin';
 import { noterEnvoi, idEmail } from '../../../lib/suiviEnvoi';
 import {
-  EXPEDITEUR, articleDepuisCommande, construireEmailCarte, dateHeureParis,
+  EXPEDITEUR, REPONDRE_A, articleDepuisCommande, construireEmailCarte, dateHeureParis,
 } from '../../../lib/emailCarte';
 
 const supabase = createClient(
@@ -93,6 +93,7 @@ export async function POST(req) {
     const article = await articleDepuisCommande(supabase, commande);
     const reponse = await resend.emails.send({
       from: EXPEDITEUR,
+      replyTo: REPONDRE_A,
       to: destinataire,
       subject: `Votre carte cadeau ${article.marque} (renvoi)`,
       html: construireEmailCarte({ article, code: codeClair, jeton: commande.jeton_carte, mention: 'Ceci est un renvoi de votre carte cadeau.' }),

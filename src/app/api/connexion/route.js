@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { EXPEDITEUR } from '../../../lib/emailCarte';
+import { EXPEDITEUR, REPONDRE_A } from '../../../lib/emailCarte';
 import { Resend } from 'resend';
 import { enveloppeEmail, titreEmail, texteEmail } from '../../../lib/emailTemplate';
 
@@ -32,6 +32,7 @@ export async function POST(req) {
 
         await resend.emails.send({
           from: EXPEDITEUR,
+          replyTo: REPONDRE_A,
           to: emailNormalise,
           subject: '🔒 Tentatives de connexion suspectes sur votre compte',
           html: enveloppeEmail({ titre: 'Tentatives de connexion suspectes', contenuHtml: contenu }),

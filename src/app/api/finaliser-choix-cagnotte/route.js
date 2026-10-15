@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import { EXPEDITEUR, boutonVoirCarte } from '../../../lib/emailCarte';
+import { EXPEDITEUR, REPONDRE_A, boutonVoirCarte } from '../../../lib/emailCarte';
 import { chiffrerCode } from '../../../lib/chiffrement';
 import { trouverDesign, echapperHtml } from '../../../lib/designs';
 import { noterEnvoi, idEmail } from '../../../lib/suiviEnvoi';
@@ -167,6 +167,7 @@ export async function POST(req) {
 
     const reponse = await resend.emails.send({
       from: EXPEDITEUR,
+      replyTo: REPONDRE_A,
       to: destinataire,
       subject: `Vos cartes cadeaux (${nomsMarques.join(', ')})`,
       html: htmlComplet,

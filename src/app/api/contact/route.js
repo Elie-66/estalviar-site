@@ -38,6 +38,7 @@ export async function POST(req) {
 
     await resend.emails.send({
       from: EXPEDITEUR,
+      replyTo: email,
       to: 'info@estalviar.com',
       subject: `Contact : ${sujet}`,
       html: enveloppeEmail({ titre: `Contact : ${sujet}`, contenuHtml: contenu }),

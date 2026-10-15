@@ -8,7 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { dechiffrerCode } from '../../src/lib/chiffrement.js';
 import {
-  EXPEDITEUR, articleDepuisCommande, construireEmailCarte, dateHeureParis,
+  EXPEDITEUR, REPONDRE_A, articleDepuisCommande, construireEmailCarte, dateHeureParis,
 } from '../../src/lib/emailCarte.js';
 import { noterEnvoi, idEmail } from '../../src/lib/suiviEnvoi.js';
 
@@ -59,6 +59,7 @@ export async function envoyerCartesProgrammees(maintenant = new Date()) {
       const article = { ...articles.get(cle), montant: commande.montant, beneficiaire: commande.beneficiaire, message: commande.message };
       const options = {
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: commande.email_destinataire || commande.email_acheteur,
         subject: `Votre carte cadeau ${article.marque}`,
         html: construireEmailCarte({ article, code, jeton: commande.jeton_carte }),

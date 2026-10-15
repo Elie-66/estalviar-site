@@ -7,7 +7,7 @@ import Stripe from "stripe";
 import { Resend } from "resend";
 import { supabaseAdmin, journaliser } from "./verifierAdmin";
 import { creerAvoir, donneesAvoir, pdfFacture, nomFichierFacture, euros } from "./factures";
-import { EXPEDITEUR, SITE, articleDepuisCommande, construireEmailCarte, dateHeureParis } from "./emailCarte";
+import { EXPEDITEUR, REPONDRE_A, SITE, articleDepuisCommande, construireEmailCarte, dateHeureParis } from "./emailCarte";
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from "./emailTemplate";
 import { echapperHtml } from "./designs";
 import { dechiffrerCode } from "./chiffrement";
@@ -128,6 +128,7 @@ export async function executerRemboursement({ commande, viaStripe, malgreEnvoi, 
           texteEmail(`Une question ? Répondez simplement à cet email ou écrivez-nous à <a href="mailto:info@estalviar.com" style="color:#C9A227;">info@estalviar.com</a>.`);
         await resend.emails.send({
           from: EXPEDITEUR,
+          replyTo: REPONDRE_A,
           to: avoir.email_client,
           subject: `Votre remboursement (avoir ${avoir.numero})`,
           html: enveloppeEmail({ titre: "Votre remboursement", contenuHtml: contenu, siteUrl: SITE }),
@@ -220,6 +221,7 @@ export async function demanderRemboursement({ commande, viaStripe, malgreEnvoi, 
     try {
       await resend.emails.send({
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: proprietaire,
         subject: `À valider : remboursement de ${euros(montant)} (${nomMarque(commande)})`,
         html: enveloppeEmail({ titre: "Remboursement à valider", contenuHtml: contenu, siteUrl: SITE }),
@@ -294,6 +296,7 @@ export async function refuserDemande({ demande, acces }) {
       const quand = dateHeureParis(commande.date_envoi, commande.heure_envoi);
       const options = {
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: commande.email_destinataire || commande.email_acheteur,
         subject: `Votre carte cadeau ${article.marque}`,
         html: construireEmailCarte({ article, code: dechiffrerCode(commande.code), jeton: commande.jeton_carte }),

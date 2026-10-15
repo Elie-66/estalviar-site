@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import { EXPEDITEUR, boutonVoirCarte } from '../../../lib/emailCarte';
+import { EXPEDITEUR, REPONDRE_A, boutonVoirCarte } from '../../../lib/emailCarte';
 import { chiffrerCode } from '../../../lib/chiffrement';
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from '../../../lib/emailTemplate';
 import { echapperHtml } from '../../../lib/designs';
@@ -130,6 +130,7 @@ export async function POST(req) {
 
       const reponse = await resend.emails.send({
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: destinataire,
         subject: `Votre carte cadeau ${cagnotte.marque}`,
         html,
@@ -148,6 +149,7 @@ export async function POST(req) {
 
       await resend.emails.send({
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: destinataire,
         subject: `Cagnotte clôturée — choisissez votre carte`,
         html: enveloppeEmail({ titre: `Cagnotte clôturée — choisissez votre carte`, contenuHtml: contenuChoix }),

@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
-import { EXPEDITEUR, SITE } from "../../../lib/emailCarte";
+import { EXPEDITEUR, REPONDRE_A, SITE } from "../../../lib/emailCarte";
 import { enveloppeEmail, titreEmail, texteEmail } from "../../../lib/emailTemplate";
 import { echapperHtml } from "../../../lib/designs";
 import { RANG_STATUT, STATUTS_PROBLEME } from "../../../lib/suiviEnvoi";
@@ -67,6 +67,7 @@ async function prevenirRejet(cartes, detail) {
       }
       await resend.emails.send({
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: EMAIL_ALERTE,
         subject: `Carte non livrée : ${String(c.marque || "")} à ${c.email_destinataire}`,
         html: enveloppeEmail({

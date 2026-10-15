@@ -5,7 +5,10 @@ import crypto from "node:crypto";
 import { echapperHtml, trouverDesign } from "./designs";
 
 export const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://estalviar.com";
-export const EXPEDITEUR = "Estalviar <onboarding@resend.dev>";
+// Adresse d'expédition de tous les emails du site (domaine vérifié chez Resend)
+export const EXPEDITEUR = "Estalviar <commandes@estalviar.com>";
+// Quand un client clique sur « Répondre », sa réponse arrive ici
+export const REPONDRE_A = "info@estalviar.com";
 
 // Resend accepte les envois programmés jusqu'à 30 jours à l'avance.
 // Au-delà, la carte est mise « à programmer » et la tâche quotidienne l'envoie le moment venu.

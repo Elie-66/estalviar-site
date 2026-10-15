@@ -5,7 +5,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from '../../src/lib/emailTemplate.js';
-import { EXPEDITEUR, SITE } from '../../src/lib/emailCarte.js';
+import { EXPEDITEUR, REPONDRE_A, SITE } from '../../src/lib/emailCarte.js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -66,6 +66,7 @@ export default async function handler() {
     try {
       await resend.emails.send({
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: profil.email,
         subject: `${euros(total)} de cashback expirent bientôt`,
         html: emailRappel(lignes, total),

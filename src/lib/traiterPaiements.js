@@ -9,7 +9,7 @@ import { createClient } from "@supabase/supabase-js";
 import { chiffrerCode } from "./chiffrement";
 import { echapperHtml } from "./designs";
 import {
-  SITE, EXPEDITEUR, JOURS_MAX_PROGRAMMATION, genererCode, construireEmailCarte, dateHeureParis,
+  SITE, EXPEDITEUR, REPONDRE_A, JOURS_MAX_PROGRAMMATION, genererCode, construireEmailCarte, dateHeureParis,
 } from "./emailCarte";
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from "./emailTemplate";
 import { calculerCashbackGagne, REGLES_CASHBACK } from "./cashback";
@@ -259,6 +259,7 @@ export async function traiterPaiementPanier(sessionOuId) {
   const aEnvoyer = cartesAEnvoyer
     .map((c) => ({
       from: EXPEDITEUR,
+      replyTo: REPONDRE_A,
       to: c.emailDestinataire,
       subject: `Votre carte cadeau ${c.article.marque}`,
       html: construireEmailCarte({ article: c.article, code: c.code, jeton: c.jeton }),
@@ -288,6 +289,7 @@ export async function traiterPaiementPanier(sessionOuId) {
   try {
     const { error: erreurConfirmation } = await resend.emails.send({
       from: EXPEDITEUR,
+      replyTo: REPONDRE_A,
       to: emailAcheteur,
       subject: facture ? `Commande confirmée (${facture.numero})` : "Commande confirmée",
       html: construireEmailConfirmation({ panier, facture, compteExiste: !!profil }),
@@ -484,6 +486,7 @@ export async function traiterPaiementContribution(sessionOuId, contributionIdAtt
     try {
       await resend.emails.send({
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: contribution.email_contributeur,
         subject: `Merci pour votre participation à la cagnotte pour ${cagnotte.beneficiaire}`,
         html: construireEmailMerciContribution({ contribution, cagnotte, compteExiste, avecFacture: !!pieceJointe }),

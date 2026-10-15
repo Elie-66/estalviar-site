@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { enveloppeEmail } from '../../src/lib/emailTemplate.js';
-import { EXPEDITEUR, SITE } from '../../src/lib/emailCarte.js';
+import { EXPEDITEUR, REPONDRE_A, SITE } from '../../src/lib/emailCarte.js';
 import { piedDesinscription } from '../../src/lib/newsletter.js';
 
 const supabase = createClient(
@@ -71,6 +71,7 @@ export default async function handler() {
     for (const abonne of abonnes) {
       await resend.emails.send({
         from: EXPEDITEUR,
+        replyTo: REPONDRE_A,
         to: abonne.email,
         subject: occasion.sujet,
         html: enveloppeEmail({ titre: occasion.titre, contenuHtml: contenu + piedDesinscription(abonne.lienDesinscription) }),
