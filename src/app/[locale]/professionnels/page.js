@@ -74,6 +74,11 @@ export default function Professionnels() {
           <h1 className="text-4xl md:text-5xl font-semibold text-ivory leading-[1.08] tracking-tight">{t("titre")}</h1>
           <p className="mt-6 text-ivory/75 text-lg leading-relaxed max-w-[560px]">{t("intro")}</p>
           <p className="mt-3 text-ivory/50 leading-relaxed max-w-[560px]">{t("pour")}</p>
+          <p className="mt-5 max-w-[560px] border-l-2 border-gold pl-4 text-ivory/80 leading-relaxed">
+            {t.rich("commandeEnLigne", {
+              lien: (m) => <a href={`/${locale}/professionnels/commande-groupee`} className="text-gold underline underline-offset-4 decoration-gold/50 hover:decoration-gold">{m}</a>,
+            })}
+          </p>
           <a href="#devis"
             className="lg:hidden inline-block mt-6 bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors">
             {t("ctaMobile")}

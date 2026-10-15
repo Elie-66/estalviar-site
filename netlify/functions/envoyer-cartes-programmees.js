@@ -10,6 +10,7 @@ import { dechiffrerCode } from '../../src/lib/chiffrement.js';
 import {
   EXPEDITEUR, articleDepuisCommande, construireEmailCarte, dateHeureParis,
 } from '../../src/lib/emailCarte.js';
+import { noterEnvoi, idEmail } from '../../src/lib/suiviEnvoi.js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -29,26 +30,33 @@ export async function envoyerCartesProgrammees(maintenant = new Date()) {
 
   const bilan = { envoyees: 0, erreurs: 0, enAttente: 0 };
 
+  // 1) Cartes à confier à Resend maintenant, réservées toutes ensemble (une seule exécution les traite)
+  const dues = [];
   for (const commande of commandes || []) {
     const quand = dateHeureParis(commande.date_envoi, commande.heure_envoi);
-    if (quand && quand > limite) {
-      bilan.enAttente += 1;
-      continue;
-    }
+    if (quand && quand > limite) bilan.enAttente += 1;
+    else dues.push({ commande, quand });
+  }
+  const { data: reservees } = dues.length
+    ? await supabase
+        .from('commandes')
+        .update({ statut: 'envoi_en_cours' })
+        .in('id', dues.map((d) => d.commande.id))
+        .eq('statut', 'a_programmer')
+        .select('id')
+    : { data: [] };
+  const idsReserves = new Set((reservees || []).map((r) => r.id));
 
-    // Réservation : une seule exécution peut traiter cette carte
-    const { data: reservee } = await supabase
-      .from('commandes')
-      .update({ statut: 'envoi_en_cours' })
-      .eq('id', commande.id)
-      .eq('statut', 'a_programmer')
-      .select('id')
-      .maybeSingle();
-    if (!reservee) continue;
-
+  // Le logo et le fond d'une enseigne ne sont cherchés qu'une fois (commande groupée = souvent la même carte)
+  const articles = new Map();
+  const pretes = [];
+  for (const { commande, quand } of dues) {
+    if (!idsReserves.has(commande.id)) continue;
     try {
       const code = dechiffrerCode(commande.code);
-      const article = await articleDepuisCommande(supabase, commande);
+      const cle = `${commande.marque}|${commande.design}`;
+      if (!articles.has(cle)) articles.set(cle, await articleDepuisCommande(supabase, commande));
+      const article = { ...articles.get(cle), montant: commande.montant, beneficiaire: commande.beneficiaire, message: commande.message };
       const options = {
         from: EXPEDITEUR,
         to: commande.email_destinataire || commande.email_acheteur,
@@ -56,17 +64,33 @@ export async function envoyerCartesProgrammees(maintenant = new Date()) {
         html: construireEmailCarte({ article, code, jeton: commande.jeton_carte }),
       };
       if (quand && quand > maintenant) options.scheduledAt = quand.toISOString();
-
-      const { error: erreurEnvoi } = await resend.emails.send(options);
-      if (erreurEnvoi) throw new Error(erreurEnvoi.message || 'Envoi refusé par Resend');
-
-      await supabase.from('commandes').update({ statut: 'payee' }).eq('id', commande.id);
-      bilan.envoyees += 1;
+      pretes.push({ commande, options });
     } catch (e) {
-      // On remet la carte en file : elle sera retentée demain
-      console.error('Carte programmée non envoyée', commande.id, e);
+      console.error('Carte programmée non préparée', commande.id, e);
       await supabase.from('commandes').update({ statut: 'a_programmer' }).eq('id', commande.id);
       bilan.erreurs += 1;
+    }
+  }
+
+  // 2) Envoi par paquets de 100 (une commande groupée de 100 cartes = un seul appel à Resend)
+  for (let i = 0; i < pretes.length; i += 100) {
+    const paquet = pretes.slice(i, i + 100);
+    const ids = paquet.map((p) => p.commande.id);
+    try {
+      const reponse = paquet.length === 1
+        ? await resend.emails.send(paquet[0].options)
+        : await resend.batch.send(paquet.map((p) => p.options));
+      if (reponse.error) throw new Error(reponse.error.message || 'Envoi refusé par Resend');
+
+      await supabase.from('commandes').update({ statut: 'payee' }).in('id', ids);
+      const idsEmails = paquet.length === 1 ? [idEmail(reponse)] : (reponse.data?.data || []).map((e) => e.id);
+      await Promise.all(paquet.map((p, k) => noterEnvoi(supabase, p.commande.id, idsEmails[k], { programme: !!p.options.scheduledAt })));
+      bilan.envoyees += paquet.length;
+    } catch (e) {
+      // On remet les cartes en file : elles seront retentées demain
+      console.error('Cartes programmées non envoyées', ids, e);
+      await supabase.from('commandes').update({ statut: 'a_programmer' }).in('id', ids);
+      bilan.erreurs += paquet.length;
     }
   }
   return bilan;

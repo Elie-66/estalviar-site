@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { estAdmin } from "../../../../lib/admin";
+import { peutVoir } from "../../../../lib/accesAdmin";
 import { fetchAdmin } from "../../../../lib/fetchAdmin";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -117,8 +117,8 @@ export default function AdminAudience() {
   const [erreur, setErreur] = useState("");
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user || !estAdmin(user.email)) window.location.href = "/fr";
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user || !(await peutVoir("audience"))) window.location.href = user ? "/fr/admin" : "/fr";
       else setPret(true);
     });
   }, []);

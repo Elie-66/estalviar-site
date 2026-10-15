@@ -6,6 +6,7 @@ import { EXPEDITEUR, boutonVoirCarte } from '../../../lib/emailCarte';
 import { chiffrerCode } from '../../../lib/chiffrement';
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from '../../../lib/emailTemplate';
 import { echapperHtml } from '../../../lib/designs';
+import { noterEnvoi, idEmail } from '../../../lib/suiviEnvoi';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://estalviar.com';
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -127,12 +128,13 @@ export async function POST(req) {
         `;
       }
 
-      await resend.emails.send({
+      const reponse = await resend.emails.send({
         from: EXPEDITEUR,
         to: destinataire,
         subject: `Votre carte cadeau ${cagnotte.marque}`,
         html,
       });
+      await noterEnvoi(supabase, carteEnregistree?.id, idEmail(reponse));
 
       await supabase.from('cagnottes').update({ statut: 'cloturee', code }).eq('id', cagnotteId);
     } else {

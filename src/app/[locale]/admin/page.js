@@ -2,45 +2,43 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
-import { estAdmin } from "../../../lib/admin";
-import { adminLire, adminModifier } from "../../../lib/adminDb";
+import { SECTIONS, aLeDroit } from "../../../lib/admin";
+import { lireAccesAdmin } from "../../../lib/accesAdmin";
+import { adminLire } from "../../../lib/adminDb";
 
 export default function Admin() {
   const [chargement, setChargement] = useState(true);
-  const [autorise, setAutorise] = useState(false);
-  const [stats, setStats] = useState({ commandes: 0, ca: 0, demandesPro: 0, cagnottes: 0 });
+  const [acces, setAcces] = useState(null);
+  const [stats, setStats] = useState({ commandes: null, ca: null, demandesPro: null, cagnottes: null });
 
   useEffect(() => {
     const verifier = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user || !estAdmin(user.email)) {
+      const monAcces = user ? await lireAccesAdmin() : null;
+      if (!monAcces) {
         window.location.href = "/fr";
         return;
       }
+      setAcces(monAcces);
 
-      setAutorise(true);
-
-      const { data: commandes } = await adminLire("commandes");
-      const demandesPro = (await adminLire("demandes_pro")).data?.length || 0;
-      const cagnottes = (await adminLire("cagnottes")).data?.length || 0;
-
-      const ca = (commandes || []).reduce((s, c) => s + c.montant, 0);
-
+      // Chaque chiffre n'est chargé que si la personne a accès à la section correspondante
+      const [commandes, demandesPro, cagnottes] = await Promise.all([
+        aLeDroit(monAcces, ["commandes", "statistiques"]) ? adminLire("commandes") : { data: null },
+        aLeDroit(monAcces, "demandes-pro") ? adminLire("demandes_pro") : { data: null },
+        aLeDroit(monAcces, "cagnottes") ? adminLire("cagnottes") : { data: null },
+      ]);
       setStats({
-        commandes: commandes?.length || 0,
-        ca,
-        demandesPro: demandesPro || 0,
-        cagnottes: cagnottes || 0,
+        commandes: commandes.data ? commandes.data.length : null,
+        ca: commandes.data ? commandes.data.reduce((s, c) => s + Number(c.montant || 0), 0) : null,
+        demandesPro: demandesPro.data ? demandesPro.data.length : null,
+        cagnottes: cagnottes.data ? cagnottes.data.length : null,
       });
-
       setChargement(false);
     };
-
     verifier();
   }, []);
 
-  if (chargement || !autorise) {
+  if (chargement || !acces) {
     return (
       <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
         Chargement...
@@ -48,87 +46,51 @@ export default function Admin() {
     );
   }
 
+  const chiffres = [
+    { nom: "Commandes", valeur: stats.commandes },
+    { nom: "Chiffre d'affaires", valeur: stats.ca === null ? null : `${new Intl.NumberFormat("fr-FR").format(stats.ca)} €` },
+    { nom: "Demandes pro", valeur: stats.demandesPro },
+    { nom: "Cagnottes", valeur: stats.cagnottes },
+  ].filter((c) => c.valeur !== null);
+  const sections = SECTIONS.filter((s) => !s.sansPage && aLeDroit(acces, s.cle));
+
   return (
     <div className="max-w-[1100px] mx-auto px-6 pt-32 pb-20">
-      <p className="text-sm uppercase tracking-wide text-gold mb-2">Back-office</p>
-      <h1 className="text-3xl font-semibold text-ivory mb-10">Tableau de bord</h1>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-        <div className="border border-ivory/10 rounded-xl p-5">
-          <p className="text-xs text-ivory/50 uppercase tracking-wide">Commandes</p>
-          <p className="text-2xl font-semibold text-ivory mt-1">{stats.commandes}</p>
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+        <div>
+          <h1 className="text-3xl font-semibold text-ivory">Tableau de bord</h1>
+          <p className="mt-1 text-sm text-ivory/50">
+            Connecté en tant que {acces.email}{acces.proprietaire ? " (propriétaire)" : ""}
+          </p>
         </div>
-        <div className="border border-ivory/10 rounded-xl p-5">
-          <p className="text-xs text-ivory/50 uppercase tracking-wide">Chiffre d'affaires</p>
-          <p className="text-2xl font-semibold text-gold mt-1">{stats.ca} €</p>
-        </div>
-        <div className="border border-ivory/10 rounded-xl p-5">
-          <p className="text-xs text-ivory/50 uppercase tracking-wide">Demandes pro</p>
-          <p className="text-2xl font-semibold text-ivory mt-1">{stats.demandesPro}</p>
-        </div>
-        <div className="border border-ivory/10 rounded-xl p-5">
-          <p className="text-xs text-ivory/50 uppercase tracking-wide">Cagnottes</p>
-          <p className="text-2xl font-semibold text-ivory mt-1">{stats.cagnottes}</p>
-        </div>
+        {acces.proprietaire && (
+          <a href="/fr/admin/equipe" className="text-sm text-gold underline decoration-gold/40 underline-offset-4 hover:decoration-gold">
+            Équipe et accès
+          </a>
+        )}
       </div>
 
+      {chiffres.length > 0 && (
+        <dl className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          {chiffres.map((c) => (
+            <div key={c.nom} className="border border-ivory/10 rounded-xl p-5">
+              <dt className="text-sm text-ivory/55">{c.nom}</dt>
+              <dd className="text-2xl font-semibold text-ivory mt-1">{c.valeur}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        <a href="/fr/admin/commandes" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Commandes</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Voir et gérer toutes les commandes</p>
-        </a>
-        <a href="/fr/admin/clients" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Clients</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Comptes, fidélité et historique</p>
-        </a>
-        <a href="/fr/admin/demandes-pro" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Demandes pro</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Suivre les demandes de devis</p>
-        </a>
-        <a href="/fr/admin/factures" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Factures</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Toutes les factures et le livre des recettes</p>
-        </a>
-        <a href="/fr/admin/retractations" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Rétractations</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Demandes à rembourser sous 14 jours</p>
-        </a>
-        <a href="/fr/admin/cagnottes" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Cagnottes</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Suivre les cagnottes en cours</p>
-        </a>
-        <a href="/fr/admin/influenceuses" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Influenceuses</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Codes partenaires, ventes et commissions</p>
-        </a>
-        <a href="/fr/admin/catalogue" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Catalogue</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Ajouter, modifier, désactiver des enseignes</p>
-        </a>
-        <a href="/fr/admin/audience" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Audience</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Visiteurs, provenance, pages vues et conversion</p>
-        </a>
-        <a href="/fr/admin/statistiques" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Statistiques</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Ventes, top enseignes, top bénéficiaires</p>
-        </a>
-        <a href="/fr/admin/evenements" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Événements</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Fête des mères, Noël, 14 juillet… : bandeau et sélection</p>
-        </a>
-        <a href="/fr/admin/occasions" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Occasions</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Emails automatiques pour les fêtes</p>
-        </a>
-        <a href="/fr/admin/blog" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Blog</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Rédiger et publier des articles</p>
-        </a>
-        <a href="/fr/admin/cartes-physiques" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
-          <p className="text-ivory font-medium text-lg">Cartes physiques</p>
-          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Générer et suivre les cartes rechargeables</p>
-        </a>
+        {sections.map((s) => (
+          <a key={s.cle} href={`/fr/admin/${s.cle}`} className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+            <p className="text-ivory font-medium text-lg">{s.nom}</p>
+            <p className="text-sm text-ivory/50 mt-2 leading-relaxed">{s.description}</p>
+            {!acces.proprietaire && acces.sections[s.cle] === "voir" && (
+              <p className="mt-3 text-xs text-ivory/40">Consultation seulement</p>
+            )}
+          </a>
+        ))}
       </div>
     </div>
   );

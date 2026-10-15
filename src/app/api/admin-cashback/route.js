@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin, verifierAdmin } from "../../../lib/verifierAdmin";
+import { supabaseAdmin, verifierAcces } from "../../../lib/verifierAdmin";
 
 const arrondi = (n) => Math.round(n * 100) / 100;
 
@@ -7,7 +7,7 @@ const arrondi = (n) => Math.round(n * 100) / 100;
 // GET /api/admin-cashback?profil=ID  → historique d'un client
 // Réservé à l'admin.
 export async function GET(req) {
-  if (!(await verifierAdmin(req))) {
+  if (!(await verifierAcces(req, "clients"))) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 

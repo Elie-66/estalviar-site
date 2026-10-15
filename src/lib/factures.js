@@ -1,4 +1,4 @@
-// Factures : création (numéro continu, côté base) et fichier PDF.
+// Factures et avoirs : création (numéro continu, côté base) et fichier PDF.
 // UNIQUEMENT côté serveur.
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
@@ -11,14 +11,16 @@ const OR = rgb(0.79, 0.64, 0.15);          // #C9A227
 
 /** 1234.5 → « 1 234,50 € » (espaces simples : le PDF n'accepte pas les espaces fines) */
 export function euros(n) {
-  const [ent, dec] = (Math.round(Number(n || 0) * 100) / 100).toFixed(2).split(".");
-  return `${ent.replace(/\B(?=(\d{3})+(?!\d))/g, " ")},${dec} €`;
+  const negatif = Number(n) < 0;
+  const [ent, dec] = (Math.round(Math.abs(Number(n || 0)) * 100) / 100).toFixed(2).split(".");
+  return `${negatif ? "- " : ""}${ent.replace(/\B(?=(\d{3})+(?!\d))/g, " ")},${dec} €`;
 }
 
 /** Date au format 15/10/2026, à l'heure de Paris */
 export const dateFr = (d) => new Date(d).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" });
 
 const texteCourt = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "") || null;
+const arrondi = (n) => Math.round(Number(n) * 100) / 100;
 
 /**
  * Coordonnées de société saisies au paiement, nettoyées.
@@ -47,14 +49,41 @@ export async function creerFacture(supabase, donnees) {
   return data;
 }
 
+/** Crée l'avoir d'une carte remboursée (ou renvoie celui qui existe déjà) */
+export async function creerAvoir(supabase, donnees) {
+  const { data, error } = await supabase.rpc("avoir_creer", { p: donnees });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+/**
+ * Lignes de facture d'un panier.
+ * Les cartes identiques (même enseigne, même montant) sont regroupées quand la commande est grande
+ * (commande en lot) : « Carte cadeau Nike de 50 € » × 30.
+ */
+function lignesPanier(articles, regrouper) {
+  if (!regrouper) {
+    return articles.map((a) => ({
+      libelle: `Carte cadeau ${a.marque}${a.beneficiaire ? ` (pour ${a.beneficiaire})` : ""}`,
+      quantite: 1,
+      prix_unitaire: Number(a.montant),
+      total: Number(a.montant),
+    }));
+  }
+  const groupes = new Map();
+  for (const a of articles) {
+    const cle = `${a.marque}|${Number(a.montant)}`;
+    const g = groupes.get(cle) || { libelle: `Carte cadeau ${a.marque} de ${euros(a.montant).replace(",00", "")}`, quantite: 0, prix_unitaire: Number(a.montant), total: 0 };
+    g.quantite += 1;
+    g.total = arrondi(g.total + Number(a.montant));
+    groupes.set(cle, g);
+  }
+  return [...groupes.values()];
+}
+
 /** Lignes et montants de la facture d'un panier payé */
 export function donneesFacturePanier(panier, sessionId) {
-  const lignes = (panier.articles || []).map((a) => ({
-    libelle: `Carte cadeau ${a.marque}${a.beneficiaire ? ` (pour ${a.beneficiaire})` : ""}`,
-    quantite: 1,
-    prix_unitaire: Number(a.montant),
-    total: Number(a.montant),
-  }));
+  const articles = panier.articles || [];
   const total = Number(panier.montant_total);
   const cashback = Number(panier.cashback_utilise) || 0;
   return {
@@ -62,10 +91,10 @@ export function donneesFacturePanier(panier, sessionId) {
     panier_id: String(panier.id),
     email_client: panier.email_acheteur,
     client: panier.facturation || null,
-    lignes,
+    lignes: lignesPanier(articles, !!panier.lot || articles.length > 12),
     total,
     paye_cashback: cashback,
-    paye_carte: Math.round((total - cashback) * 100) / 100,
+    paye_carte: arrondi(total - cashback),
     stripe_session_id: sessionId || null,
   };
 }
@@ -88,6 +117,29 @@ export function donneesFactureContribution(contribution, cagnotte, sessionId) {
     paye_cashback: 0,
     paye_carte: montant,
     stripe_session_id: sessionId || null,
+  };
+}
+
+/**
+ * Avoir d'une carte remboursée.
+ * rembourseCarte : montant rendu sur la carte bancaire ; rembourseCashback : montant rendu en cashback.
+ */
+export function donneesAvoir({ commande, facture, rembourseCarte, rembourseCashback }) {
+  const montant = Number(commande.montant);
+  return {
+    commande_id: String(commande.id),
+    facture_origine: facture?.numero || null,
+    email_client: facture?.email_client || commande.email_acheteur,
+    client: facture?.client || null,
+    lignes: [{
+      libelle: `Remboursement : carte cadeau ${String(commande.marque || "").replace(/^Cagnotte\s*/i, "")}${commande.beneficiaire ? ` (pour ${commande.beneficiaire})` : ""}`,
+      quantite: 1,
+      prix_unitaire: montant,
+      total: montant,
+    }],
+    total: montant,
+    paye_cashback: arrondi(rembourseCashback || 0),
+    paye_carte: arrondi(rembourseCarte ?? montant),
   };
 }
 
@@ -136,21 +188,27 @@ function couper(police, texte, taille, largeur) {
   return lignes;
 }
 
-/** Fichier PDF d'une facture (Uint8Array) */
+const LARGEUR = 595.28;
+const HAUTEUR = 841.89;   // A4
+const G = 56;             // marge gauche
+const D = LARGEUR - 56;   // bord droit
+const BAS = 130;          // en dessous : mentions de bas de page
+
+/** Fichier PDF d'une facture ou d'un avoir (Uint8Array) */
 export async function pdfFacture(facture) {
+  const avoir = facture.type === "avoir";
   const doc = await PDFDocument.create();
-  doc.setTitle(`Facture ${facture.numero}`);
+  doc.setTitle(`${avoir ? "Avoir" : "Facture"} ${facture.numero}`);
   doc.setAuthor("Estalviar");
-  const page = doc.addPage([595.28, 841.89]); // A4
   const normal = await doc.embedFont(StandardFonts.Helvetica);
   const gras = await doc.embedFont(StandardFonts.HelveticaBold);
   const titre = await doc.embedFont(StandardFonts.TimesRoman);
   const titreGras = await doc.embedFont(StandardFonts.TimesRomanBold);
+  const I = INFOS_LEGALES;
+  const signe = (n) => (avoir ? -Number(n) : Number(n));
 
-  const G = 56;            // marge gauche
-  const D = 595.28 - 56;   // bord droit
-  let y = 841.89 - 64;
-
+  let page;
+  let y;
   const ecrire = (texte, x, yy, { police = normal, taille = 9.5, couleur = ENCRE, aDroite = false } = {}) => {
     const t = rendreEcrivable(police, texte);
     const xx = aDroite ? x - police.widthOfTextAtSize(t, taille) : x;
@@ -159,17 +217,71 @@ export async function pdfFacture(facture) {
   const filet = (yy, epaisseur = 0.6, couleur = FILET) =>
     page.drawLine({ start: { x: G, y: yy }, end: { x: D, y: yy }, thickness: epaisseur, color: couleur });
 
-  // --- En-tête : la marque à gauche, la facture à droite
+  // Bas de chaque page : mentions légales et numéro de page
+  const piedDePage = (numeroPage) => {
+    const mentions = avoir
+      ? ["Cet avoir annule et remplace, à hauteur du montant indiqué, la facture d'origine. Le remboursement est effectué sur le moyen de paiement utilisé lors de la commande."]
+      : [
+          "Les cartes cadeaux sont utilisables selon les conditions de chaque enseigne. Une carte dont le code a été envoyé ne peut être ni reprise ni remboursée (voir nos CGV).",
+          "Clients professionnels : en cas de retard de paiement, pénalités au taux de 3 fois l'intérêt légal et indemnité forfaitaire pour frais de recouvrement de 40 €. Pas d'escompte pour paiement anticipé.",
+        ];
+    let yb = 92;
+    filet(yb + 18);
+    for (const m of mentions) {
+      for (const l of couper(normal, m, 7.5, D - G)) {
+        ecrire(l, G, yb, { taille: 7.5, couleur: GRIS });
+        yb -= 10;
+      }
+      yb -= 4;
+    }
+    const pied = ["Estalviar", I.nom ? `${I.nom} EI` : null, I.siret ? `SIRET ${I.siret}` : null, "estalviar.com", I.email]
+      .filter(Boolean).join("  |  ");
+    ecrire(pied, G, 40, { taille: 7.5, couleur: GRIS });
+    ecrire(`${facture.numero}  page ${numeroPage}`, D, 40, { taille: 7.5, couleur: GRIS, aDroite: true });
+  };
+
+  const colQte = 380, colPu = 460, colTotal = D;
+  const enteteTableau = () => {
+    filet(y + 14, 0.8, ENCRE);
+    ecrire("Désignation", G, y, { police: gras, taille: 9 });
+    ecrire("Qté", colQte, y, { police: gras, taille: 9, aDroite: true });
+    ecrire("Prix unitaire", colPu, y, { police: gras, taille: 9, aDroite: true });
+    ecrire("Montant", colTotal, y, { police: gras, taille: 9, aDroite: true });
+    y -= 10;
+    filet(y);
+    y -= 16;
+  };
+
+  let numeroPage = 1;
+  const nouvellePage = () => {
+    page = doc.addPage([LARGEUR, HAUTEUR]);
+    y = HAUTEUR - 64;
+  };
+  const pageSuivante = () => {
+    piedDePage(numeroPage);
+    numeroPage += 1;
+    nouvellePage();
+    ecrire(`${avoir ? "Avoir" : "Facture"} n° ${facture.numero} (suite)`, G, y, { police: gras, taille: 10 });
+    y -= 34;
+    enteteTableau();
+  };
+
+  // --- En-tête : la marque à gauche, le document à droite
+  nouvellePage();
   ecrire("ESTALVIAR", G, y, { police: titreGras, taille: 22 });
-  page.drawRectangle({ x: G + titreGras.widthOfTextAtSize("ESTALVIAR", 22) + 3, y: y, width: 4, height: 4, color: OR });
-  ecrire("Facture", D, y + 2, { police: titre, taille: 22, aDroite: true });
+  page.drawRectangle({ x: G + titreGras.widthOfTextAtSize("ESTALVIAR", 22) + 3, y, width: 4, height: 4, color: OR });
+  ecrire(avoir ? "Avoir" : "Facture", D, y + 2, { police: titre, taille: 22, aDroite: true });
   y -= 22;
   ecrire(`N° ${facture.numero}`, D, y, { police: gras, taille: 10, aDroite: true });
-  ecrire(`Émise le ${dateFr(facture.emise_le)}`, D, y - 14, { aDroite: true, couleur: GRIS });
-  ecrire(`Date de la vente : ${dateFr(facture.emise_le)}`, D, y - 28, { aDroite: true, couleur: GRIS });
+  ecrire(`Émis${avoir ? "" : "e"} le ${dateFr(facture.emise_le)}`, D, y - 14, { aDroite: true, couleur: GRIS });
+  ecrire(
+    avoir
+      ? (facture.facture_origine ? `Se rapporte à la facture ${facture.facture_origine}` : "Remboursement")
+      : `Date de la vente : ${dateFr(facture.emise_le)}`,
+    D, y - 28, { aDroite: true, couleur: GRIS }
+  );
 
   // Vendeur
-  const I = INFOS_LEGALES;
   const vendeur = [
     I.nom ? `${I.nom} EI` : null,
     "Estalviar",
@@ -182,7 +294,7 @@ export async function pdfFacture(facture) {
   y -= Math.max(vendeur.length, 3) * 14 + 26;
 
   // --- Client
-  ecrire("Facturé à", G, y, { police: gras, taille: 9, couleur: GRIS });
+  ecrire(avoir ? "Client" : "Facturé à", G, y, { police: gras, taille: 9, couleur: GRIS });
   y -= 15;
   const c = facture.client || {};
   const client = [
@@ -195,72 +307,50 @@ export async function pdfFacture(facture) {
   client.forEach((l, i) => ecrire(l, G, y - i * 14, { taille: 10, police: i === 0 && c.societe ? gras : normal }));
   y -= client.length * 14 + 26;
 
-  // --- Tableau
-  const colQte = 380, colPu = 460, colTotal = D;
-  filet(y + 14, 0.8, ENCRE);
-  ecrire("Désignation", G, y, { police: gras, taille: 9 });
-  ecrire("Qté", colQte, y, { police: gras, taille: 9, aDroite: true });
-  ecrire("Prix unitaire", colPu, y, { police: gras, taille: 9, aDroite: true });
-  ecrire("Montant", colTotal, y, { police: gras, taille: 9, aDroite: true });
-  y -= 10;
-  filet(y);
-  y -= 16;
-
+  // --- Tableau (sur plusieurs pages si besoin)
+  enteteTableau();
   for (const l of facture.lignes || []) {
     const morceaux = couper(normal, rendreEcrivable(normal, l.libelle), 10, colQte - G - 50);
+    if (y - morceaux.length * 13 - 22 < BAS) pageSuivante();
     morceaux.forEach((m, i) => ecrire(m, G, y - i * 13, { taille: 10 }));
     ecrire(String(l.quantite), colQte, y, { taille: 10, aDroite: true });
     ecrire(euros(l.prix_unitaire), colPu, y, { taille: 10, aDroite: true });
-    ecrire(euros(l.total), colTotal, y, { taille: 10, aDroite: true });
+    ecrire(euros(signe(l.total)), colTotal, y, { taille: 10, aDroite: true });
     y -= morceaux.length * 13 + 8;
     filet(y + 2);
     y -= 14;
-    // Très grosse commande : nouvelle page (20 cartes au maximum, donc rare)
-    if (y < 220) break;
   }
 
-  // --- Totaux
+  // --- Totaux (sur la page suivante s'il n'y a plus la place)
+  if (y - 120 < BAS) pageSuivante();
   y -= 4;
   const ligneTotal = (libelle, montant, { fort = false } = {}) => {
     ecrire(libelle, colPu - 20, y, { aDroite: true, taille: fort ? 11 : 10, police: fort ? gras : normal, couleur: fort ? ENCRE : GRIS });
     ecrire(montant, colTotal, y, { aDroite: true, taille: fort ? 11 : 10, police: fort ? gras : normal });
     y -= fort ? 20 : 16;
   };
-  ligneTotal("Total", euros(facture.total), { fort: true });
-  if (Number(facture.paye_cashback) > 0) {
-    ligneTotal("Réglé avec le cashback Estalviar", `- ${euros(facture.paye_cashback)}`);
-  }
-  ligneTotal("Réglé par carte bancaire", euros(facture.paye_carte));
-  ligneTotal("Reste à payer", euros(0));
-
-  y -= 8;
-  ecrire(`Facture acquittée le ${dateFr(facture.emise_le)} par carte bancaire (paiement en ligne Stripe).`, G, y, { taille: 9.5 });
-  y -= 15;
-  if (I.tva) {
-    ecrire(I.tva, G, y, { taille: 9.5 });
+  if (avoir) {
+    ligneTotal("Total de l'avoir", euros(-facture.total), { fort: true });
+    if (Number(facture.paye_carte) > 0) ligneTotal("Remboursé sur la carte bancaire", euros(facture.paye_carte));
+    if (Number(facture.paye_cashback) > 0) ligneTotal("Rendu en cashback Estalviar", euros(facture.paye_cashback));
+    y -= 8;
+    ecrire(`Remboursement enregistré le ${dateFr(facture.emise_le)}.`, G, y, { taille: 9.5 });
+    y -= 15;
+  } else {
+    ligneTotal("Total", euros(facture.total), { fort: true });
+    if (Number(facture.paye_cashback) > 0) ligneTotal("Réglé avec le cashback Estalviar", euros(-facture.paye_cashback));
+    ligneTotal("Réglé par carte bancaire", euros(facture.paye_carte));
+    ligneTotal("Reste à payer", euros(0));
+    y -= 8;
+    ecrire(`Facture acquittée le ${dateFr(facture.emise_le)} par carte bancaire (paiement en ligne Stripe).`, G, y, { taille: 9.5 });
     y -= 15;
   }
+  if (I.tva) ecrire(I.tva, G, y, { taille: 9.5 });
 
-  // --- Mentions de bas de page
-  const mentions = [
-    "Les cartes cadeaux sont utilisables selon les conditions de chaque enseigne. Une carte dont le code a été envoyé ne peut être ni reprise ni remboursée (voir nos CGV).",
-    "Clients professionnels : en cas de retard de paiement, pénalités au taux de 3 fois l'intérêt légal et indemnité forfaitaire pour frais de recouvrement de 40 €. Pas d'escompte pour paiement anticipé.",
-  ];
-  let yb = 92;
-  filet(yb + 18);
-  for (const m of mentions) {
-    for (const l of couper(normal, m, 7.5, D - G)) {
-      ecrire(l, G, yb, { taille: 7.5, couleur: GRIS });
-      yb -= 10;
-    }
-    yb -= 4;
-  }
-  const pied = ["Estalviar", I.nom ? `${I.nom} EI` : null, I.siret ? `SIRET ${I.siret}` : null, "estalviar.com", I.email]
-    .filter(Boolean).join("  |  ");
-  ecrire(pied, G, 40, { taille: 7.5, couleur: GRIS });
-
+  piedDePage(numeroPage);
   return doc.save();
 }
 
-/** Nom du fichier PDF : Facture-Estalviar-F2026-00001.pdf */
-export const nomFichierFacture = (facture) => `Facture-Estalviar-${facture.numero}.pdf`;
+/** Nom du fichier PDF : Facture-Estalviar-F2026-00001.pdf ou Avoir-Estalviar-A2026-00001.pdf */
+export const nomFichierFacture = (facture) =>
+  `${facture.type === "avoir" ? "Avoir" : "Facture"}-Estalviar-${facture.numero}.pdf`;

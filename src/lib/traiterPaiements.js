@@ -2,6 +2,7 @@
 // Utilisé par la page de confirmation ET par le webhook Stripe.
 // Chaque paiement n'est traité qu'une seule fois, même si on l'appelle plusieurs fois.
 
+import crypto from "node:crypto";
 import Stripe from "stripe";
 import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
@@ -13,6 +14,7 @@ import {
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from "./emailTemplate";
 import { calculerCashbackGagne, REGLES_CASHBACK } from "./cashback";
 import { calculerCode, filtreCartes } from "./codeInfluence";
+import { noterEnvoi } from "./suiviEnvoi";
 import {
   creerFacture, pdfFacture, nomFichierFacture, donneesFacturePanier, donneesFactureContribution, euros,
 } from "./factures";
@@ -93,7 +95,27 @@ function construireEmailConfirmation({ panier, facture, compteExiste }) {
     if (!date || date <= new Date()) return "Envoyée maintenant";
     return `Envoi prévu le ${date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "Europe/Paris" })} à ${a.heureEnvoi}`;
   };
-  const lignes = (panier.articles || []).map((a) => `
+  // Commande groupée : une ligne par enseigne et par montant (« 25 × Fnac »), le détail est dans la facture
+  const groupee = (panier.articles || []).length > 12;
+  let lignesGroupees = "";
+  if (groupee) {
+    const groupes = {};
+    for (const a of panier.articles) {
+      const cle = `${a.marque}|${a.montant}`;
+      groupes[cle] = groupes[cle] || { marque: a.marque, montant: Number(a.montant), n: 0 };
+      groupes[cle].n += 1;
+    }
+    const premier = panier.articles[0];
+    lignesGroupees = Object.values(groupes).map((g) => `
+    <tr>
+      <td style="padding:12px 0; border-bottom:1px solid #eee; font-family:Arial, sans-serif; font-size:14px; color:#12172B;">
+        <strong>${g.n} × ${echapperHtml(g.marque)}</strong> de ${euros(g.montant)}
+        <div style="font-size:12px; color:#777; margin-top:3px;">${quand(premier)}, chacune à son destinataire</div>
+      </td>
+      <td style="padding:12px 0; border-bottom:1px solid #eee; font-family:Arial, sans-serif; font-size:14px; color:#12172B; text-align:right; white-space:nowrap; vertical-align:top;">${euros(g.n * g.montant)}</td>
+    </tr>`).join("");
+  }
+  const lignes = groupee ? lignesGroupees : (panier.articles || []).map((a) => `
     <tr>
       <td style="padding:12px 0; border-bottom:1px solid #eee; font-family:Arial, sans-serif; font-size:14px; color:#12172B;">
         <strong>${echapperHtml(a.marque)}</strong>${a.beneficiaire ? ` pour ${echapperHtml(a.beneficiaire)}` : ""}
@@ -185,10 +207,10 @@ export async function traiterPaiementPanier(sessionOuId) {
   }
   const pointsAvant = profil?.points || 0;
 
-  for (const article of panier.articles) {
+  // 3) Toutes les cartes sont enregistrées en une seule fois (rapide, même pour une commande groupée de 100 cartes)
+  const cartes = panier.articles.map((article) => {
     const code = genererCode();
     const emailDestinataire = article.emailBeneficiaire || emailAcheteur;
-
     // Date et heure choisies par le client = heure de Paris
     const dateHeureEnvoi = dateHeureParis(article.dateEnvoi, article.heureEnvoi);
     const joursAvant = dateHeureEnvoi
@@ -196,8 +218,15 @@ export async function traiterPaiementPanier(sessionOuId) {
       : 0;
     // Trop loin pour Resend : la tâche quotidienne « envoyer-cartes-programmees » l'enverra plus tard
     const statut = dateHeureEnvoi && joursAvant > JOURS_MAX_PROGRAMMATION ? "a_programmer" : "payee";
+    return {
+      article, code, emailDestinataire, statut,
+      programmeeLe: dateHeureEnvoi && joursAvant > 0 ? dateHeureEnvoi.toISOString() : null,
+      jeton: crypto.randomUUID(),
+    };
+  });
 
-    const { data: carteEnregistree } = await supabase.from("commandes").insert({
+  const { data: cartesEnregistrees, error: erreurCartes } = await supabase.from("commandes").insert(
+    cartes.map(({ article, code, emailDestinataire, statut, jeton }) => ({
       panier_id: panier.id, // lien vers le panier : sert à annuler le cashback si la carte est remboursée
       email_acheteur: emailAcheteur,
       email_beneficiaire: article.emailBeneficiaire || null,
@@ -211,27 +240,46 @@ export async function traiterPaiementPanier(sessionOuId) {
       date_envoi: article.dateEnvoi,
       heure_envoi: article.heureEnvoi,
       statut,
-    }).select().single();
+      jeton_carte: jeton,
+    }))
+  ).select("id, jeton_carte");
+  if (erreurCartes) {
+    // Rien n'est livré : le panier passe en anomalie pour être traité à la main (le paiement est bien reçu)
+    await supabase.from("paniers").update({ statut: "anomalie" }).eq("id", panier.id);
+    console.error("Cartes NON enregistrées", panier.id, erreurCartes);
+    return { ok: false, code: 500, erreur: "Enregistrement des cartes impossible, commande bloquée pour vérification" };
+  }
 
-    // La carte est payée : les points comptent tout de suite, même si l'envoi est programmé plus tard
-    await ajouterPoints(emailAcheteur, article.montant);
-    if (statut === "a_programmer") continue;
+  // Les cartes sont payées : les points comptent tout de suite, même si l'envoi est programmé plus tard
+  await ajouterPoints(emailAcheteur, panier.articles.reduce((s, a) => s + Math.floor(Number(a.montant) || 0), 0));
 
-    const optionsEnvoi = {
+  // 4) Emails des cartes, par paquets de 100 (envoi groupé Resend, programmation comprise)
+  const idParJeton = Object.fromEntries((cartesEnregistrees || []).map((c) => [c.jeton_carte, c.id]));
+  const cartesAEnvoyer = cartes.filter((c) => c.statut !== "a_programmer");
+  const aEnvoyer = cartesAEnvoyer
+    .map((c) => ({
       from: EXPEDITEUR,
-      to: emailDestinataire,
-      subject: `Votre carte cadeau ${article.marque}`,
-      html: construireEmailCarte({ article, code, jeton: carteEnregistree?.jeton_carte }),
-    };
-    if (dateHeureEnvoi && joursAvant > 0) {
-      optionsEnvoi.scheduledAt = dateHeureEnvoi.toISOString();
-    }
+      to: c.emailDestinataire,
+      subject: `Votre carte cadeau ${c.article.marque}`,
+      html: construireEmailCarte({ article: c.article, code: c.code, jeton: c.jeton }),
+      ...(c.programmeeLe ? { scheduledAt: c.programmeeLe } : {}),
+    }));
+  for (let i = 0; i < aEnvoyer.length; i += 100) {
+    const paquet = aEnvoyer.slice(i, i + 100);
     try {
       // Resend ne lève pas d'erreur : il la renvoie dans { error }
-      const { error: erreurEnvoi } = await resend.emails.send(optionsEnvoi);
-      if (erreurEnvoi) throw new Error(erreurEnvoi.message || JSON.stringify(erreurEnvoi));
+      const reponse = paquet.length === 1
+        ? await resend.emails.send(paquet[0])
+        : await resend.batch.send(paquet);
+      if (reponse.error) throw new Error(reponse.error.message || JSON.stringify(reponse.error));
+      // Suivi : chaque carte garde l'identifiant de son email (même ordre que l'envoi)
+      const ids = paquet.length === 1 ? [reponse.data?.id] : (reponse.data?.data || []).map((e) => e.id);
+      await Promise.all(paquet.map((p, k) => {
+        const carte = cartesAEnvoyer[i + k];
+        return noterEnvoi(supabase, idParJeton[carte.jeton], ids[k], { programme: !!carte.programmeeLe });
+      }));
     } catch (e) {
-      console.error("Email de carte NON envoyé (la carte reste renvoyable depuis l'admin)", panier.id, emailDestinataire, e);
+      console.error("Emails de cartes NON envoyés (renvoyables depuis l'admin)", panier.id, paquet.map((p) => p.to), e);
     }
   }
 

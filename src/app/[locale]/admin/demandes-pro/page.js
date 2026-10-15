@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { estAdmin } from "../../../../lib/admin";
+import { peutVoir } from "../../../../lib/accesAdmin";
 import { adminLire, adminModifier } from "../../../../lib/adminDb";
 
 export default function AdminDemandesPro() {
@@ -14,8 +14,8 @@ export default function AdminDemandesPro() {
   useEffect(() => {
     const verifier = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !estAdmin(user.email)) {
-        window.location.href = "/fr";
+      if (!user || !(await peutVoir("demandes-pro"))) {
+        window.location.href = user ? "/fr/admin" : "/fr";
         return;
       }
       setAutorise(true);

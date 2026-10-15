@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { dechiffrerCode } from '../../../lib/chiffrement';
-import { supabaseAdmin, verifierAdmin } from '../../../lib/verifierAdmin';
+import { supabaseAdmin, verifierAcces, journaliser } from '../../../lib/verifierAdmin';
 
 // Réservé à l'admin. On ne déchiffre plus les codes envoyés par le navigateur :
 // on relit les codes directement dans la base, à partir des numéros de commande.
 export async function POST(req) {
-  if (!(await verifierAdmin(req))) {
-    return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+  const acces = await verifierAcces(req, 'codes');
+  if (!acces) {
+    return NextResponse.json({ error: 'Vous n\'avez pas accès aux codes des cartes' }, { status: 403 });
   }
 
   try {
@@ -32,6 +33,7 @@ export async function POST(req) {
       return { id: c.id, code };
     });
 
+    await journaliser(acces, 'afficher codes', { commandes: ids.length });
     return NextResponse.json({ resultats });
   } catch (error) {
     console.error(error);

@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { chiffrerCode } from '../../../lib/chiffrement';
-import { verifierAdmin } from '../../../lib/verifierAdmin';
+import { verifierAcces, journaliser } from '../../../lib/verifierAdmin';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -19,7 +19,7 @@ export async function GET(req) {
   if (process.env.CARTES_PHYSIQUES_ACTIVES !== 'oui') {
     return NextResponse.json({ error: 'Fonction indisponible' }, { status: 403 });
   }
-  if (!(await verifierAdmin(req))) {
+  if (!(await verifierAcces(req, 'cartes-physiques'))) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
   }
   const { data } = await supabase
@@ -36,7 +36,8 @@ export async function POST(req) {
   if (process.env.CARTES_PHYSIQUES_ACTIVES !== 'oui') {
     return NextResponse.json({ error: 'Fonction indisponible' }, { status: 403 });
   }
-  if (!(await verifierAdmin(req))) {
+  const acces = await verifierAcces(req, 'cartes-physiques', 'modifier');
+  if (!acces) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
   }
   try {
@@ -58,6 +59,7 @@ export async function POST(req) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    await journaliser(acces, 'créer cartes physiques', { nombre: n });
     return NextResponse.json({ codes: codesClairs });
   } catch (error) {
     console.error(error);

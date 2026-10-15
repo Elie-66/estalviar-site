@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { EXPEDITEUR, boutonVoirCarte } from '../../../lib/emailCarte';
 import { chiffrerCode } from '../../../lib/chiffrement';
 import { trouverDesign, echapperHtml } from '../../../lib/designs';
+import { noterEnvoi, idEmail } from '../../../lib/suiviEnvoi';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://estalviar.com';
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -114,6 +115,7 @@ export async function POST(req) {
 
     let blocsHtml = '';
     const nomsMarques = [];
+    const idsCartes = [];
 
     for (const carte of cartes) {
       const code = genererCode();
@@ -131,6 +133,7 @@ export async function POST(req) {
         statut: 'payee',
         cagnotte_id: cagnotte.id,
       }).select().single();
+      if (carteEnregistree?.id) idsCartes.push(carteEnregistree.id);
 
       blocsHtml += blocCarte({
         marque: carte.marque,
@@ -162,12 +165,13 @@ export async function POST(req) {
 
     htmlComplet += `</div>`;
 
-    await resend.emails.send({
+    const reponse = await resend.emails.send({
       from: EXPEDITEUR,
       to: destinataire,
       subject: `Vos cartes cadeaux (${nomsMarques.join(', ')})`,
       html: htmlComplet,
     });
+    await noterEnvoi(supabase, idsCartes, idEmail(reponse));
 
     await supabase.from('cagnottes').update({ statut: 'cloturee', marque: nomsMarques.join(', ') }).eq('id', cagnotteId);
 

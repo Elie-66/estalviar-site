@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin, verifierAdmin } from "../../../lib/verifierAdmin";
+import { supabaseAdmin, verifierAcces, journaliser } from "../../../lib/verifierAdmin";
 
 // GET : toutes les marges (réservé à l'admin)
 export async function GET(req) {
-  if (!(await verifierAdmin(req))) {
+  if (!(await verifierAcces(req, ["catalogue", "influenceuses"]))) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
@@ -19,7 +19,8 @@ export async function GET(req) {
 
 // POST : créer ou modifier la marge d'une marque (réservé à l'admin)
 export async function POST(req) {
-  if (!(await verifierAdmin(req))) {
+  const acces = await verifierAcces(req, "catalogue", "modifier");
+  if (!acces) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
@@ -44,6 +45,7 @@ export async function POST(req) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+    await journaliser(acces, "modifier marge", { slug, marge: valeur });
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });

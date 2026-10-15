@@ -2,7 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import { dechiffrerCode } from '../../../lib/chiffrement';
-import { verifierAdmin } from '../../../lib/verifierAdmin';
+import { verifierAcces, journaliser } from '../../../lib/verifierAdmin';
+import { noterEnvoi, idEmail } from '../../../lib/suiviEnvoi';
 import {
   EXPEDITEUR, articleDepuisCommande, construireEmailCarte, dateHeureParis,
 } from '../../../lib/emailCarte';
@@ -32,7 +33,8 @@ export async function POST(req) {
     // SÉCURITÉ : la carte ne peut être renvoyée qu'à une adresse déjà liée à cette commande
     // (acheteur, destinataire, ou créateur / bénéficiaire de la cagnotte).
     // Seul l'admin peut choisir librement le destinataire.
-    const estAdmin = !!(await verifierAdmin(req));
+    const accesAdmin = await verifierAcces(req, ['commandes', 'clients'], 'modifier');
+    const estAdmin = !!accesAdmin;
 
     // Une carte programmée ne part pas avant sa date (sinon la surprise est gâchée) — sauf par l'admin
     const quand = dateHeureParis(commande.date_envoi, commande.heure_envoi);
@@ -89,17 +91,24 @@ export async function POST(req) {
     }
 
     const article = await articleDepuisCommande(supabase, commande);
-    const { error: erreurEnvoi } = await resend.emails.send({
+    const reponse = await resend.emails.send({
       from: EXPEDITEUR,
       to: destinataire,
       subject: `Votre carte cadeau ${article.marque} (renvoi)`,
       html: construireEmailCarte({ article, code: codeClair, jeton: commande.jeton_carte, mention: 'Ceci est un renvoi de votre carte cadeau.' }),
     });
+    const erreurEnvoi = reponse.error;
     if (erreurEnvoi) {
       console.error('Renvoi refusé par Resend', commande.id, erreurEnvoi);
       return NextResponse.json({ error: "L'email n'a pas pu être envoyé" }, { status: 502 });
     }
 
+    await noterEnvoi(supabase, commande.id, idEmail(reponse));
+    // L'admin a corrigé l'adresse : elle devient la nouvelle adresse de la carte
+    if (accesAdmin && destinataire !== commande.email_destinataire) {
+      await supabase.from('commandes').update({ email_destinataire: destinataire }).eq('id', commande.id);
+    }
+    if (accesAdmin) await journaliser(accesAdmin, 'renvoyer carte', { commande: commande.id, destinataire });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);

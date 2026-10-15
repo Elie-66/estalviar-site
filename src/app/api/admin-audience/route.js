@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin, verifierAdmin } from "../../../lib/verifierAdmin";
+import { supabaseAdmin, verifierAcces } from "../../../lib/verifierAdmin";
 import { dateHeureParis } from "../../../lib/emailCarte";
 
 const PERIODES = [1, 7, 30, 90, 365];
 
 // GET /api/admin-audience?jours=30 → statistiques de la période + celles de la période précédente (pour comparer)
 export async function GET(req) {
-  if (!(await verifierAdmin(req))) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  if (!(await verifierAcces(req, "audience"))) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const jours = Number(new URL(req.url).searchParams.get("jours"));
   const n = PERIODES.includes(jours) ? jours : 30;

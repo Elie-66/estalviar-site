@@ -2,12 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { estAdmin } from "../../../../lib/admin";
+import { peutVoir } from "../../../../lib/accesAdmin";
 import { fetchAdmin } from "../../../../lib/fetchAdmin";
 import { telechargerFacture } from "../../../../lib/telechargerFacture";
 
 const euros = (n) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(n) || 0);
 const dateFr = (d) => new Date(d).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" });
+// Un avoir (remboursement) compte en négatif dans les totaux et le livre des recettes
+const signe = (f) => (f.type === "avoir" ? -1 : 1);
 const moisDe = (d) => new Date(d).toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" }).slice(0, 7); // 2026-10
 
 /** Livre des recettes (obligatoire en micro-entreprise) au format CSV, lisible par Excel */
@@ -20,10 +22,10 @@ function exporterCsv(factures, mois) {
       dateFr(f.emise_le),
       f.numero,
       f.client?.societe || f.email_client,
-      f.type === "contribution" ? "Participation cagnotte" : `Cartes cadeaux (${(f.lignes || []).length})`,
-      Number(f.total).toFixed(2).replace(".", ","),
-      Number(f.paye_carte).toFixed(2).replace(".", ","),
-      Number(f.paye_cashback).toFixed(2).replace(".", ","),
+      f.type === "avoir" ? `Avoir (remboursement, facture ${f.facture_origine || "?"})` : f.type === "contribution" ? "Participation cagnotte" : `Cartes cadeaux (${(f.lignes || []).reduce((s, l) => s + (Number(l.quantite) || 1), 0)})`,
+      (signe(f) * Number(f.total)).toFixed(2).replace(".", ","),
+      (signe(f) * Number(f.paye_carte)).toFixed(2).replace(".", ","),
+      (signe(f) * Number(f.paye_cashback)).toFixed(2).replace(".", ","),
       "Carte bancaire (Stripe)",
     ]);
   const entete = ["Date", "Facture", "Client", "Nature", "Montant total", "Encaissé par carte", "Réglé en cashback", "Mode de règlement"];
@@ -48,8 +50,8 @@ export default function AdminFactures() {
   useEffect(() => {
     const charger = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !estAdmin(user.email)) {
-        window.location.href = "/fr";
+      if (!user || !(await peutVoir("factures"))) {
+        window.location.href = user ? "/fr/admin" : "/fr";
         return;
       }
       const res = await fetchAdmin("/api/factures?admin=1");
@@ -67,8 +69,8 @@ export default function AdminFactures() {
     const q = recherche.trim().toLowerCase();
     return !q || f.numero.toLowerCase().includes(q) || f.email_client.toLowerCase().includes(q) || (f.client?.societe || "").toLowerCase().includes(q);
   });
-  const encaisse = visibles.reduce((s, f) => s + Number(f.paye_carte), 0);
-  const total = visibles.reduce((s, f) => s + Number(f.total), 0);
+  const encaisse = visibles.reduce((s, f) => s + signe(f) * Number(f.paye_carte), 0);
+  const total = visibles.reduce((s, f) => s + signe(f) * Number(f.total), 0);
 
   if (chargement) {
     return <div className="max-w-[600px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">Chargement...</div>;
@@ -77,10 +79,10 @@ export default function AdminFactures() {
   return (
     <div className="max-w-[1000px] mx-auto px-6 pt-32 pb-20">
       <a href="/fr/admin" className="text-sm text-gold hover:underline">← Retour au tableau de bord</a>
-      <h1 className="text-3xl font-semibold text-ivory mt-2">Factures</h1>
+      <h1 className="text-3xl font-semibold text-ivory mt-2">Factures et avoirs</h1>
       <p className="mt-2 mb-8 text-sm text-ivory/55 max-w-[680px]">
         Une facture est créée et envoyée automatiquement à chaque paiement. Elle ne se modifie jamais : pour corriger
-        ou rembourser, fais un avoir. L&apos;export CSV sert de livre des recettes (à garder 10 ans).
+        ou rembourser, utilise « Rembourser » dans Commandes : l&apos;avoir est créé et envoyé tout seul. L&apos;export CSV sert de livre des recettes (à garder 10 ans).
       </p>
       {erreur && <p className="mb-4 text-sm text-corail">{erreur}</p>}
 
@@ -110,7 +112,7 @@ export default function AdminFactures() {
       </div>
 
       <p className="text-sm text-ivory/60 mb-3">
-        {visibles.length} facture{visibles.length > 1 ? "s" : ""}, {euros(total)} au total dont <span className="text-ivory">{euros(encaisse)} encaissés par carte</span>
+        {visibles.length} document{visibles.length > 1 ? "s" : ""}, {euros(total)} au total dont <span className="text-ivory">{euros(encaisse)} encaissés par carte</span>
       </p>
 
       <div className="overflow-x-auto border border-ivory/10 rounded-lg">
@@ -134,8 +136,9 @@ export default function AdminFactures() {
                   {f.client?.societe && <span className="block text-ivory">{f.client.societe}</span>}
                   <span className="break-all">{f.email_client}</span>
                   {f.type === "contribution" && <span className="block text-xs text-ivory/45">Participation cagnotte</span>}
+                  {f.type === "avoir" && <span className="block text-xs text-corail/80">Avoir sur {f.facture_origine || "une facture"}</span>}
                 </td>
-                <td className="px-4 py-3 text-right text-ivory whitespace-nowrap">{euros(f.total)}</td>
+                <td className={`px-4 py-3 text-right whitespace-nowrap ${f.type === "avoir" ? "text-corail" : "text-ivory"}`}>{euros(signe(f) * f.total)}</td>
                 <td className="px-4 py-3 text-right text-ivory/55 whitespace-nowrap">{Number(f.paye_cashback) > 0 ? `- ${euros(f.paye_cashback)}` : ""}</td>
                 <td className="px-4 py-3 text-right">
                   <button type="button" onClick={() => telechargerFacture(f.numero, fetchAdmin).catch(() => setErreur("Téléchargement impossible"))}

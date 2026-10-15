@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { estAdmin } from "../../../../lib/admin";
+import { peutVoir } from "../../../../lib/accesAdmin";
 
 export default function AdminCartesPhysiques() {
   const [chargement, setChargement] = useState(true);
@@ -15,8 +15,8 @@ export default function AdminCartesPhysiques() {
   useEffect(() => {
     const verifier = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !estAdmin(user.email)) {
-        window.location.href = "/fr";
+      if (!user || !(await peutVoir("cartes-physiques"))) {
+        window.location.href = user ? "/fr/admin" : "/fr";
         return;
       }
       setAutorise(true);

@@ -5,7 +5,7 @@ export async function telechargerFacture(numero, fetchAvecJeton) {
   const url = URL.createObjectURL(await res.blob());
   const lien = document.createElement("a");
   lien.href = url;
-  lien.download = `Facture-Estalviar-${numero}.pdf`;
+  lien.download = `${numero.startsWith("A") ? "Avoir" : "Facture"}-Estalviar-${numero}.pdf`;
   document.body.appendChild(lien);
   lien.click();
   lien.remove();

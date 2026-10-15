@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { estAdmin } from "../../../../lib/admin";
+import { peutVoir } from "../../../../lib/accesAdmin";
 import { adminLire, adminAjouter, adminModifier } from "../../../../lib/adminDb";
 import { fetchAdmin } from "../../../../lib/fetchAdmin";
 
@@ -108,8 +108,8 @@ export default function AdminInfluenceuses() {
   useEffect(() => {
     const verifier = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !estAdmin(user.email)) {
-        window.location.href = "/fr";
+      if (!user || !(await peutVoir("influenceuses"))) {
+        window.location.href = user ? "/fr/admin" : "/fr";
         return;
       }
       setAutorise(true);

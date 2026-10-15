@@ -485,6 +485,13 @@ export default function Profil() {
                           })
                         : t("envoyeeImmediatement")}
                     </p>
+                    {/* Suivi de l'email de la carte (délivrée, ouverte, non livrée) */}
+                    {["delivre", "signale"].includes(c.email_statut) && <p className="text-xs mt-0.5 text-ivory/55">{t("suiviDelivre")}</p>}
+                    {["ouvert", "clique"].includes(c.email_statut) && (
+                      <p className="text-xs mt-0.5 text-vert/85">{c.beneficiaire ? t("suiviOuvertPar", { prenom: c.beneficiaire }) : t("suiviOuvert")}</p>
+                    )}
+                    {c.email_statut === "retarde" && <p className="text-xs mt-0.5 text-gold/85">{t("suiviRetarde")}</p>}
+                    {c.email_statut === "rejete" && <p className="text-xs mt-0.5 text-corail">{t("suiviRejete")}</p>}
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-ivory font-semibold">{euros(c.montant)}</p>
@@ -512,11 +519,11 @@ export default function Profil() {
                 <div className="min-w-0">
                   <p className="text-sm text-ivory">{f.numero}</p>
                   <p className="text-xs text-ivory/45">
-                    {dateLongue(f.emise_le)}, {f.type === "contribution" ? t("factureCagnotte") : t("factureCartes", { n: (f.lignes || []).length })}
+                    {dateLongue(f.emise_le)}, {f.type === "avoir" ? t("factureAvoir") : f.type === "contribution" ? t("factureCagnotte") : t("factureCartes", { n: (f.lignes || []).reduce((s, l) => s + (Number(l.quantite) || 1), 0) })}
                   </p>
                 </div>
                 <div className="flex items-center gap-5">
-                  <span className="text-sm text-ivory">{euros(f.total)}</span>
+                  <span className={`text-sm ${f.type === "avoir" ? "text-corail" : "text-ivory"}`}>{euros(f.type === "avoir" ? -f.total : f.total)}</span>
                   <button type="button"
                     onClick={() => telechargerFacture(f.numero, fetchSession).then(() => setErreurFacture("")).catch(() => setErreurFacture(t("factureErreur")))}
                     className="text-sm text-gold underline decoration-gold/40 underline-offset-4 hover:decoration-gold">

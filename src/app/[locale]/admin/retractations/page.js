@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { estAdmin } from "../../../../lib/admin";
+import { peutVoir } from "../../../../lib/accesAdmin";
 import { adminLire, adminModifier } from "../../../../lib/adminDb";
 
 const STATUTS = {
@@ -22,8 +22,8 @@ export default function AdminRetractations() {
   useEffect(() => {
     const charger = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !estAdmin(user.email)) {
-        window.location.href = "/fr";
+      if (!user || !(await peutVoir("retractations"))) {
+        window.location.href = user ? "/fr/admin" : "/fr";
         return;
       }
       const { data, error } = await adminLire("demandes_retractation", "created_at", false);
@@ -52,8 +52,8 @@ export default function AdminRetractations() {
       <a href="/fr/admin" className="text-sm text-gold hover:underline">← Retour au tableau de bord</a>
       <h1 className="text-3xl font-semibold text-ivory mt-2">Rétractations</h1>
       <p className="mt-2 mb-8 text-sm text-ivory/55 max-w-[640px]">
-        Si la carte n&apos;a pas encore été envoyée (carte programmée), annule-la dans Commandes et rembourse le client
-        depuis Stripe <strong className="text-ivory">au plus tard 14 jours</strong> après la demande. Si le code a déjà été envoyé,
+        Si la carte n&apos;a pas encore été envoyée (carte programmée), choisis « Remboursée » sur la carte dans Commandes :
+        le client est remboursé sur Stripe et reçoit son avoir, <strong className="text-ivory">au plus tard 14 jours</strong> après la demande. Si le code a déjà été envoyé,
         la rétractation n&apos;est plus possible (case acceptée au paiement) : réponds au client en l&apos;expliquant.
       </p>
       {erreur && <p className="mb-4 text-sm text-corail">{erreur}</p>}

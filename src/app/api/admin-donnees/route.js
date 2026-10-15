@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin, verifierAdmin } from "../../../lib/verifierAdmin";
+import { supabaseAdmin, accesAdmin, journaliser } from "../../../lib/verifierAdmin";
+import { SECTIONS } from "../../../lib/admin";
 
 // Route unique pour les pages admin : lecture et écriture des tables protégées.
 // Seules les tables et actions listées ici sont autorisées.
@@ -23,17 +24,30 @@ function autorise(table, action) {
   return AUTORISATIONS[table]?.includes(action);
 }
 
+// La personne a-t-elle, dans au moins une de ses sections, le droit sur cette table ?
+function permis(acces, table, action) {
+  if (!acces) return false;
+  if (acces.proprietaire) return true;
+  const niveau = action === "lire" ? "voir" : "modifier";
+  return SECTIONS.some((s) => {
+    const n = acces.sections[s.cle];
+    if (!n || (niveau === "modifier" && n !== "modifier")) return false;
+    return s.tables[niveau].includes(table);
+  });
+}
+
 // GET /api/admin-donnees?table=articles_blog&tri=created_at&croissant=false&egal_statut=payee
 // (les paramètres "egal_<colonne>" filtrent sur une valeur exacte)
 export async function GET(req) {
-  if (!(await verifierAdmin(req))) {
+  const acces = await accesAdmin(req);
+  if (!acces) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
   const params = new URL(req.url).searchParams;
   const table = params.get("table");
-  if (!autorise(table, "lire")) {
-    return NextResponse.json({ error: "Table non autorisée" }, { status: 403 });
+  if (!autorise(table, "lire") || !permis(acces, table, "lire")) {
+    return NextResponse.json({ error: "Vous n'avez pas accès à ces données" }, { status: 403 });
   }
 
   let requete = supabaseAdmin.from(table).select("*");
@@ -53,7 +67,8 @@ export async function GET(req) {
 
 // POST { action: "ajouter" | "modifier" | "supprimer", table, id?, donnees? }
 export async function POST(req) {
-  if (!(await verifierAdmin(req))) {
+  const acces = await accesAdmin(req);
+  if (!acces) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
@@ -61,6 +76,12 @@ export async function POST(req) {
     const { action, table, id, donnees } = await req.json();
     if (!autorise(table, action)) {
       return NextResponse.json({ error: "Action non autorisée" }, { status: 403 });
+    }
+    if (!permis(acces, table, action)) {
+      const message = permis(acces, table, "lire")
+        ? "Vous pouvez consulter cette section, mais pas la modifier"
+        : "Vous n'avez pas accès à cette section";
+      return NextResponse.json({ error: message }, { status: 403 });
     }
 
     let resultat;
@@ -77,6 +98,7 @@ export async function POST(req) {
     if (resultat.error) {
       return NextResponse.json({ error: resultat.error.message }, { status: 500 });
     }
+    await journaliser(acces, `${action} ${table}`, { id: id ?? null, champs: donnees ? Object.keys(donnees) : [] });
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
