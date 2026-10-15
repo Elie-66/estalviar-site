@@ -17,6 +17,7 @@ const SUIVI = {
   rejete: ["Non livré", "text-corail"],
   signale: ["Signalé comme indésirable", "text-corail"],
   annule: ["Envoi annulé (remboursée)", "text-ivory/45"],
+  suspendu: ["Envoi suspendu (remboursement à valider)", "text-gold"],
 };
 const PROBLEMES = ["rejete", "signale", "retarde"];
 
@@ -77,7 +78,7 @@ export default function AdminCommandes() {
   const [message, setMessage] = useState(null);
 
   const ouvrirRemboursement = async (commandeId) => {
-    setRemboursement({ id: commandeId, infos: null, enCours: false, erreur: "", malgreEnvoi: false });
+    setRemboursement({ id: commandeId, infos: null, enCours: false, erreur: "", malgreEnvoi: false, motif: "" });
     const res = await fetchAdmin(`/api/admin-rembourser?commande=${encodeURIComponent(commandeId)}`);
     const json = await res.json().catch(() => ({}));
     setRemboursement((r) => (r?.id === commandeId ? { ...r, infos: res.ok ? json : null, erreur: res.ok ? "" : json.error || "Erreur" } : r));
@@ -89,11 +90,19 @@ export default function AdminCommandes() {
     const res = await fetchAdmin("/api/admin-rembourser", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ commandeId: id, viaStripe, malgreEnvoi: remboursement.malgreEnvoi }),
+      body: JSON.stringify({ commandeId: id, viaStripe, malgreEnvoi: remboursement.malgreEnvoi, motif: remboursement.motif }),
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
       setRemboursement((r) => ({ ...r, enCours: false, erreur: json.error || "Erreur" }));
+      return;
+    }
+    if (json.enAttente) {
+      setCommandes((prev) => prev.map((c) => (c.id === id && (c.statut === "a_programmer" || c.email_statut === "programme")
+        ? { ...c, statut: "litige", email_statut: c.email_statut === "programme" ? "suspendu" : c.email_statut }
+        : c)));
+      setRemboursement(null);
+      setMessage("Demande envoyée au propriétaire : le remboursement sera fait dès qu'il l'aura validé. Le code ne part pas en attendant.");
       return;
     }
     setCommandes((prev) => prev.map((c) => (c.id === id
@@ -118,6 +127,25 @@ export default function AdminCommandes() {
       : c)));
     setRenvoi(null);
     setMessage(`Carte renvoyée à ${email.trim()}.`);
+  };
+
+  // Le propriétaire valide ou refuse une demande faite par un membre de l'équipe
+  const deciderDemande = async (action) => {
+    const { id, infos } = remboursement;
+    if (action === "valider" && !window.confirm("Confirmer le remboursement ?")) return;
+    setRemboursement((r) => ({ ...r, enCours: true, erreur: "" }));
+    const res = await fetchAdmin("/api/valider-remboursement", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: infos.demandeEnAttente.id, action }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) return setRemboursement((r) => ({ ...r, enCours: false, erreur: json.error || "Erreur" }));
+    const { data } = await adminLire("commandes", "created_at", false);
+    if (data) setCommandes(data);
+    setRemboursement(null);
+    setMessage(action === "valider" ? `Remboursement validé${json.avoir ? `, avoir ${json.avoir} envoyé au client` : ""}.` : "Demande refusée : la carte reprend son cours.");
+    void id;
   };
 
   const changerStatut = async (commandeId, nouveauStatut) => {
@@ -149,7 +177,7 @@ export default function AdminCommandes() {
     envoi_en_cours: "Envoi en cours",
     annulee: "Annulée",
     remboursee: "Remboursée",
-    litige: "En litige",
+    litige: "En litige / en attente",
   };
 
   const statutCouleur = {
@@ -340,8 +368,36 @@ export default function AdminCommandes() {
               <div className="mt-4 border-t border-ivory/10 pt-4">
                 <p className="text-sm text-ivory font-medium">Rembourser cette carte</p>
                 {!remboursement.infos && !remboursement.erreur && <p className="mt-2 text-sm text-ivory/50">Calcul du montant…</p>}
-                {remboursement.infos && (
+                {remboursement.infos?.demandeEnAttente && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gold">
+                      Demande de {remboursement.infos.demandeEnAttente.demande_par} en attente de validation
+                      (le {new Date(remboursement.infos.demandeEnAttente.cree_le).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}).
+                    </p>
+                    {!remboursement.infos.validationRequise ? (
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        <button type="button" disabled={remboursement.enCours} onClick={() => deciderDemande("valider")}
+                          className="bg-gold text-ink text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gold/90 disabled:opacity-40">
+                          Valider ({remboursement.infos.montantCarte.toFixed(2).replace(".", ",")} €)
+                        </button>
+                        <button type="button" disabled={remboursement.enCours} onClick={() => deciderDemande("refuser")}
+                          className="text-sm text-ivory/80 border border-ivory/20 rounded-lg px-4 py-2 hover:border-ivory/40 disabled:opacity-40">
+                          Refuser
+                        </button>
+                        <button type="button" onClick={() => setRemboursement(null)} className="text-sm text-ivory/50 hover:text-ivory underline underline-offset-4">Fermer</button>
+                      </div>
+                    ) : (
+                      <button type="button" onClick={() => setRemboursement(null)} className="mt-2 text-sm text-ivory/50 hover:text-ivory underline underline-offset-4">Fermer</button>
+                    )}
+                  </div>
+                )}
+                {remboursement.infos && !remboursement.infos.demandeEnAttente && (
                   <>
+                    {remboursement.infos.validationRequise && (
+                      <p className="mt-1 text-sm text-ivory/60">
+                        Le remboursement sera fait après validation par le propriétaire (il reçoit un email).
+                      </p>
+                    )}
                     {remboursement.infos.etatEnvoi === "pas_encore" && (
                       <p className="mt-1 text-sm text-vert">Le code n&apos;a pas encore été envoyé : il ne partira pas.</p>
                     )}
@@ -369,16 +425,23 @@ export default function AdminCommandes() {
                       )}
                       . Le client reçoit un email avec l&apos;avoir en PDF.
                     </p>
+                    {remboursement.infos.validationRequise && (
+                      <input type="text" maxLength={300} value={remboursement.motif}
+                        onChange={(e) => setRemboursement((r) => ({ ...r, motif: e.target.value }))}
+                        placeholder="Motif (ex. : rétractation reçue le 14/10, erreur d'adresse…)"
+                        aria-label="Motif du remboursement"
+                        className="mt-3 w-full bg-transparent border border-ivory/20 rounded-lg px-3 py-2 text-ivory text-sm placeholder:text-ivory/35" />
+                    )}
                     <div className="mt-3 flex flex-wrap gap-3">
                       {remboursement.infos.stripePossible && (
                         <button type="button" disabled={remboursement.enCours || (remboursement.infos.etatEnvoi === "envoye" && !remboursement.malgreEnvoi)} onClick={() => rembourser(true)}
                           className="bg-gold text-ink text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gold/90 disabled:opacity-40">
-                          Rembourser {remboursement.infos.montantCarte.toFixed(2).replace(".", ",")} € via Stripe
+                          {remboursement.infos.validationRequise ? "Demander le remboursement de" : "Rembourser"} {remboursement.infos.montantCarte.toFixed(2).replace(".", ",")} € via Stripe
                         </button>
                       )}
                       <button type="button" disabled={remboursement.enCours || (remboursement.infos.etatEnvoi === "envoye" && !remboursement.malgreEnvoi)} onClick={() => rembourser(false)}
                         className="text-sm text-ivory/80 border border-ivory/20 rounded-lg px-4 py-2 hover:border-ivory/40 disabled:opacity-40">
-                        Déjà remboursé depuis Stripe : créer l&apos;avoir
+                        {remboursement.infos.validationRequise ? "Demander (déjà remboursé dans Stripe)" : "Déjà remboursé depuis Stripe : créer l'avoir"}
                       </button>
                       <button type="button" onClick={() => setRemboursement(null)} className="text-sm text-ivory/50 hover:text-ivory underline underline-offset-4">
                         Annuler

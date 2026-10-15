@@ -80,6 +80,10 @@ export async function POST(req) {
     if (!autorise(table, action)) {
       return NextResponse.json({ error: "Action non autorisée" }, { status: 403 });
     }
+    // Un remboursement passe toujours par « Rembourser » (Stripe, avoir, validation du propriétaire)
+    if (table === "commandes" && donnees?.statut === "remboursee") {
+      return NextResponse.json({ error: "Pour rembourser une carte, utilisez le bouton « Rembourser » dans Commandes." }, { status: 403 });
+    }
     if (!permis(acces, table, action)) {
       const message = permis(acces, table, "lire")
         ? "Vous pouvez consulter cette section, mais pas la modifier"
@@ -102,7 +106,7 @@ export async function POST(req) {
       return NextResponse.json({ error: resultat.error.message }, { status: 500 });
     }
     // Carte annulée : si son email est programmé chez Resend, on l'annule pour que le code ne parte pas
-    if (table === "commandes" && action === "modifier" && ["annulee", "remboursee"].includes(donnees?.statut)) {
+    if (table === "commandes" && action === "modifier" && donnees?.statut === "annulee") {
       const { data: carte } = await supabaseAdmin.from("commandes").select("email_id, email_statut").eq("id", id).maybeSingle();
       if (carte?.email_statut === "programme" && carte.email_id) {
         const { error: erreurAnnulation } = await resend.emails.cancel(carte.email_id);
