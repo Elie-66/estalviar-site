@@ -30,8 +30,8 @@ export const INFOS_LEGALES = {
 // Version des CGV : à changer à chaque modification des CGV
 // (elle est enregistrée avec chaque commande acceptée)
 export const VERSION_CGV = "2026-10-14";
-export const DATE_MISE_A_JOUR = "14 octobre 2026";
-export const DATE_MISE_A_JOUR_EN = "14 October 2026";
+export const DATE_MISE_A_JOUR = "15 octobre 2026";
+export const DATE_MISE_A_JOUR_EN = "15 October 2026";
 
 // Prestataires (infos publiques)
 export const PRESTATAIRES = {

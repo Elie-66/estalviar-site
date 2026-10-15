@@ -13,6 +13,7 @@ import Footer from "./components/Footer";
 import { PanierProvider } from "./context/PanierContext";
 import BanniereCookies from "./components/BanniereCookies";
 import GestionSession from "./components/GestionSession";
+import MesureAudience from "./components/MesureAudience";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -56,6 +57,7 @@ export default async function RootLayout({ children, params }) {
             <Footer />
             <BanniereCookies />
             <GestionSession />
+            <MesureAudience />
           </PanierProvider>
         </NextIntlClientProvider>
       </body>

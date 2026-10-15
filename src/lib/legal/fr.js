@@ -366,6 +366,7 @@ export const confidentialite = {
               ["Newsletter", "Email, date d'inscription et de confirmation", "Consentement"],
               ["Demandes de devis, contact, rétractation", "Nom, entreprise, email, téléphone, contenu de la demande", "Mesures précontractuelles, obligation légale (rétractation)"],
               ["Sécurité du site", "Adresse IP et tentatives de connexion ou d'envoi de formulaires", "Intérêt légitime (protéger le site et les comptes)"],
+              ["Statistiques de fréquentation (anonymes, sans cookie)", "Page consultée, site d'origine, pays, type d'appareil et navigateur. L'adresse IP n'est pas conservée : un identifiant anonyme, renouvelé chaque jour, sert seulement à compter les visiteurs", "Intérêt légitime (mesurer la fréquentation du site)"],
               ["Comptabilité", "Commandes et paiements", "Obligation légale"],
             ],
           },
@@ -419,6 +420,7 @@ export const confidentialite = {
               ["Demandes de contact et de devis", "3 ans après le dernier échange"],
               ["Demandes de rétractation", "5 ans (délai de prescription)"],
               ["Journaux de sécurité (tentatives de connexion)", "12 mois maximum"],
+              ["Statistiques de fréquentation", "13 mois"],
             ],
           },
         },
@@ -501,9 +503,11 @@ export const cookies = {
     },
     {
       id: "pas-de-pub",
-      titre: "Pas de publicité ni de mesure d'audience",
+      titre: "Pas de publicité, une mesure d'audience sans cookie",
       blocs: [
         "Nous n'utilisons **aucun cookie publicitaire, de réseau social ou de mesure d'audience**. Si nous en ajoutons un jour, ils ne seront déposés qu'après votre accord, via le bandeau cookies, et cette page sera mise à jour.",
+        "Pour savoir combien de personnes visitent le site et d'où elles viennent, nous comptons les pages vues **de façon anonyme, sans rien déposer sur votre appareil** : page consultée, site d'origine, pays, type d'appareil et navigateur. Votre adresse IP n'est pas conservée et l'identifiant anonyme utilisé change chaque jour : il est impossible de vous reconnaître d'une visite à l'autre. Ces statistiques ne sont partagées avec personne et sont effacées au bout de 13 mois.",
+        "Si votre navigateur envoie le signal « Do Not Track » ou « Global Privacy Control », vos visites ne sont pas comptées.",
       ],
     },
     {

@@ -363,6 +363,7 @@ export const confidentialite = {
               ["Newsletter", "Email, sign-up and confirmation dates", "Consent"],
               ["Quotation, contact and withdrawal requests", "Name, company, email, phone, content of the request", "Pre-contractual measures, legal obligation (withdrawal)"],
               ["Site security", "IP address and login or form submission attempts", "Legitimate interest (protecting the site and accounts)"],
+              ["Visit statistics (anonymous, cookie-free)", "Page viewed, referring site, country, device type and browser. Your IP address is not stored: an anonymous identifier, renewed every day, is only used to count visitors", "Legitimate interest (measuring site traffic)"],
               ["Accounting", "Orders and payments", "Legal obligation"],
             ],
           },
@@ -416,6 +417,7 @@ export const confidentialite = {
               ["Contact and quotation requests", "3 years after the last exchange"],
               ["Withdrawal requests", "5 years (limitation period)"],
               ["Security logs (login attempts)", "12 months maximum"],
+              ["Visit statistics", "13 months"],
             ],
           },
         },
@@ -498,9 +500,11 @@ export const cookies = {
     },
     {
       id: "pas-de-pub",
-      titre: "No advertising or audience measurement",
+      titre: "No advertising, cookie-free audience measurement",
       blocs: [
         "We use **no advertising, social network or audience measurement cookies**. If we ever add any, they will only be set after your consent, via the cookie banner, and this page will be updated.",
+        "To know how many people visit the site and where they come from, we count page views **anonymously, without storing anything on your device**: page viewed, referring site, country, device type and browser. Your IP address is not stored and the anonymous identifier we use changes every day, so you cannot be recognised from one visit to the next. These statistics are not shared with anyone and are deleted after 13 months.",
+        "If your browser sends a \"Do Not Track\" or \"Global Privacy Control\" signal, your visits are not counted.",
       ],
     },
     {

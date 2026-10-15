@@ -105,6 +105,10 @@ export default function Admin() {
           <p className="text-ivory font-medium text-lg">Catalogue</p>
           <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Ajouter, modifier, désactiver des enseignes</p>
         </a>
+        <a href="/fr/admin/audience" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Audience</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Visiteurs, provenance, pages vues et conversion</p>
+        </a>
         <a href="/fr/admin/statistiques" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
           <p className="text-ivory font-medium text-lg">Statistiques</p>
           <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Ventes, top enseignes, top bénéficiaires</p>
