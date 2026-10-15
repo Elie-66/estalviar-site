@@ -70,7 +70,13 @@
     "aucuneFrancaise": "Nessuna marca prodotta in Francia corrisponde alla tua ricerca.",
     "pourQui": "Per {prenom}",
     "filtreBudget": "Budget: {montant} €",
-    "montantChoisi": "{montant} €"
+    "montantChoisi": "{montant} €",
+    "trierPar": "Ordina per",
+    "nbResultats": "{n, plural, =0 {Nessun marchio} one {# marchio} other {# marchi}}",
+    "tri_selection": "La nostra selezione",
+    "tri_populaires": "I più regalati",
+    "tri_az": "Dalla A alla Z",
+    "tri_prix": "Prezzo più basso prima"
   },
   "categories": {
     "Shopping": "Shopping",

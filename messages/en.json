@@ -70,7 +70,13 @@
     "aucuneFrancaise": "No Made in France brand matches your search.",
     "pourQui": "For {prenom}",
     "filtreBudget": "Budget: €{montant}",
-    "montantChoisi": "€{montant}"
+    "montantChoisi": "€{montant}",
+    "trierPar": "Sort by",
+    "nbResultats": "{n, plural, =0 {No brands} one {# brand} other {# brands}}",
+    "tri_selection": "Our selection",
+    "tri_populaires": "Most gifted",
+    "tri_az": "A to Z",
+    "tri_prix": "Lowest price first"
   },
   "categories": {
     "Shopping": "Shopping",

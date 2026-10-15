@@ -11,6 +11,8 @@ import Tricolore from "../components/Tricolore";
 import { couleurCategorie } from "../../../lib/couleursCartes";
 import { pourOccasion, trouverOccasion } from "../../../lib/occasions";
 
+const TRIS = ["selection", "populaires", "az", "prix"];
+
 export default function Boutique() {
   const t = useTranslations("boutiqueVitrine");
   const tEvenement = useTranslations("evenement");
@@ -21,6 +23,16 @@ export default function Boutique() {
   const [cartes, setCartes] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [recherche, setRecherche] = useState("");
+  // Tri : notre sélection (ordre calculé par le serveur), les plus offertes, A à Z, petit prix d'abord
+  const [tri, setTri] = useState(() => (TRIS.includes(searchParams.get("tri")) ? searchParams.get("tri") : "selection"));
+  const [classementVentes, setClassementVentes] = useState(null);
+  const changerTri = (valeur) => {
+    setTri(valeur);
+    const url = new URL(window.location.href);
+    if (valeur === "selection") url.searchParams.delete("tri");
+    else url.searchParams.set("tri", valeur);
+    window.history.replaceState(null, "", url);
+  };
   const [categorie, setCategorie] = useState(searchParams.get("categorie") || "Toutes");
   // Venue d'une tuile « Une idée pour… » de l'accueil (?occasion=naissance)
   const [occasion, setOccasion] = useState(() => trouverOccasion(searchParams.get("occasion")));
@@ -133,12 +145,34 @@ export default function Boutique() {
 
   const categories = ["Toutes", ...Array.from(new Set(cartesOnglet.map((c) => c.categorie)))];
 
-  const cartesFiltrees = cartesOnglet.filter((c) => {
-    const correspondRecherche = c.nom.toLowerCase().includes(recherche.toLowerCase());
-    const correspondCategorie = categorie === "Toutes" || c.categorie === categorie;
-    return correspondRecherche && correspondCategorie;
-  });
+  const rang = (c) => {
+    const i = classementVentes ? classementVentes.indexOf(c.nom) : -1;
+    return i === -1 ? Infinity : i;
+  };
+  const cartesFiltrees = cartesOnglet
+    .filter((c) => {
+      const correspondRecherche = c.nom.toLowerCase().includes(recherche.toLowerCase());
+      const correspondCategorie = categorie === "Toutes" || c.categorie === categorie;
+      return correspondRecherche && correspondCategorie;
+    })
+    .map((c, ordre) => ({ c, ordre }))
+    .sort((a, b) => {
+      if (tri === "az") return a.c.nom.localeCompare(b.c.nom, locale, { sensitivity: "base" });
+      if (tri === "prix") return (a.c.montant_min - b.c.montant_min) || a.c.nom.localeCompare(b.c.nom, locale);
+      if (tri === "populaires") return (rang(a.c) - rang(b.c)) || (a.ordre - b.ordre);
+      return a.ordre - b.ordre;
+    })
+    .map(({ c }) => c);
   const nbFrancaises = cartes.filter((c) => c.made_in_france).length;
+
+  // Classement des ventes, chargé seulement si on trie par « les plus offertes »
+  useEffect(() => {
+    if (tri !== "populaires" || classementVentes) return;
+    fetch("/api/top-ventes")
+      .then((r) => r.json())
+      .then(({ classement = [] }) => setClassementVentes(classement))
+      .catch(() => setClassementVentes([]));
+  }, [tri, classementVentes]);
 
   // Sur téléphone, le rayon choisi doit être visible dans la ligne qui défile
   useEffect(() => {
@@ -239,7 +273,7 @@ export default function Boutique() {
       )}
 
       {/* Catégories (onglets soulignés de la couleur de la catégorie) et recherche */}
-      <div className="mt-8 mb-9 flex flex-col-reverse lg:flex-row lg:items-end gap-5 lg:gap-10 border-b border-ivory/10">
+      <div className="mt-8 flex flex-col-reverse lg:flex-row lg:items-end gap-5 lg:gap-10 border-b border-ivory/10">
         <div className="-mx-6 px-6 lg:mx-0 lg:px-0 overflow-x-auto [scrollbar-width:none] flex-1 min-w-0 lg:[mask-image:linear-gradient(to_right,black_calc(100%-40px),transparent)]">
           <div role="group" aria-label={t("toutes")} className="flex gap-6 w-max">
             {categories.map((cat) => {
@@ -281,6 +315,19 @@ export default function Boutique() {
             aria-label={t("recherchePlaceholder")}
             className="w-full bg-transparent border-0 border-b border-ivory/20 lg:border-transparent pl-7 pr-2 py-2 lg:pt-0 lg:pb-3 text-[15px] lg:text-sm leading-normal text-ivory text-sm placeholder:text-ivory/40 focus:border-gold/70 outline-none"
           />
+        </label>
+      </div>
+
+      {/* Nombre de résultats et tri */}
+      <div className="mt-4 mb-7 flex items-center justify-between gap-4 text-sm">
+        <p className="text-ivory/50">{t("nbResultats", { n: cartesFiltrees.length })}</p>
+        <label className="flex items-center gap-2 text-ivory/50">
+          <span className="hidden sm:inline">{t("trierPar")}</span>
+          <select value={tri} onChange={(e) => changerTri(e.target.value)} aria-label={t("trierPar")}
+            className="bg-transparent text-ivory font-medium border-0 border-b border-ivory/25 hover:border-ivory/50 focus:border-gold/70 outline-none py-1 pr-6 cursor-pointer appearance-none bg-no-repeat bg-[right_center] bg-[length:12px] [color-scheme:dark]"
+            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23C9A227' stroke-width='1.6'/%3E%3C/svg%3E\")" }}>
+            {TRIS.map((v) => <option key={v} value={v} className="bg-ink text-ivory">{t(`tri_${v}`)}</option>)}
+          </select>
         </label>
       </div>
 

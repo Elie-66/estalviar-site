@@ -70,7 +70,13 @@
     "aucuneFrancaise": "Aucune marque fabriquée en France ne correspond à votre recherche.",
     "pourQui": "Pour {prenom}",
     "filtreBudget": "Budget : {montant} €",
-    "montantChoisi": "{montant} €"
+    "montantChoisi": "{montant} €",
+    "trierPar": "Trier par",
+    "nbResultats": "{n, plural, =0 {Aucune enseigne} one {# enseigne} other {# enseignes}}",
+    "tri_selection": "Notre sélection",
+    "tri_populaires": "Les plus offertes",
+    "tri_az": "De A à Z",
+    "tri_prix": "Petit budget d'abord"
   },
   "categories": {
     "Shopping": "Shopping",
