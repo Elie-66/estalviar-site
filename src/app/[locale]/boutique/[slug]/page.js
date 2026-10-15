@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
+import Tricolore from "../../components/Tricolore";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { usePanier } from "../../context/PanierContext";
@@ -281,8 +282,8 @@ export default function FicheCarte({ params }) {
           <p className="mt-4 text-sm text-gold mb-1">{t("carteCadeau")}</p>
           <h1 className="text-4xl font-semibold text-ivory">{carte.nom}</h1>
           {carte.made_in_france && (
-            <p className="mt-3 inline-block text-xs rounded-full px-3 py-1 bg-ivory/10 text-ivory/80">
-              🇫🇷 {t("fabriqueEnFrance")}
+            <p className="mt-3 inline-flex items-center gap-2 text-sm text-ivory/80">
+              <Tricolore /> {t("fabriqueEnFrance")}
             </p>
           )}
           <p className="mt-4 text-ivory/70 leading-relaxed">

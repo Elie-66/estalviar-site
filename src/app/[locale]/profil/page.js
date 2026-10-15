@@ -351,13 +351,14 @@ export default function Profil() {
 
       {/* Onglets (défilent à l'horizontale sur téléphone) */}
       <div className="-mx-6 px-6 mt-8 mb-8 overflow-x-auto [scrollbar-width:none]">
-        <div role="tablist" className="flex gap-1 w-max border border-ivory/10 rounded-lg p-1">
+        <div role="tablist" className="flex gap-6 min-w-full w-max border-b border-ivory/10">
           {ONGLETS.map((o) => (
             <button key={o} role="tab" aria-selected={onglet === o} onClick={() => changerOnglet(o)}
-              className={`text-sm px-4 py-2 rounded-md whitespace-nowrap transition-colors ${
-                onglet === o ? "bg-gold text-ink font-medium" : "text-ivory/65 hover:text-ivory"
+              className={`relative pb-3 text-[15px] whitespace-nowrap transition-colors ${
+                onglet === o ? "text-ivory font-medium" : "text-ivory/50 hover:text-ivory/85"
               }`}>
               {t(`onglet_${o}`)}
+              <span aria-hidden className={`absolute left-0 right-0 -bottom-px h-[2px] bg-gold transition-opacity ${onglet === o ? "opacity-100" : "opacity-0"}`} />
             </button>
           ))}
         </div>
@@ -535,7 +536,7 @@ export default function Profil() {
                         b.anniversaire_mois ? (
                           <button type="button" onClick={() => setAnnivEnEdition({ id: b.id, jour: String(b.anniversaire_jour), mois: String(b.anniversaire_mois) })}
                             className="mt-1 text-xs text-gold/85 hover:text-gold">
-                            🎂 {t("annivLe", { date: jourMois(b.anniversaire_jour, b.anniversaire_mois) })} · {t("modifier")}
+                            {t("annivLe", { date: jourMois(b.anniversaire_jour, b.anniversaire_mois) })}<span className="ml-2 underline underline-offset-2">{t("modifier")}</span>
                           </button>
                         ) : (
                           <button type="button" onClick={() => setAnnivEnEdition({ id: b.id, jour: "", mois: "" })}

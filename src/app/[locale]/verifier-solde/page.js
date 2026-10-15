@@ -58,7 +58,7 @@ export default function VerifierSolde() {
 
       {resultat && (
         <div className="mt-8 border border-gold/30 bg-gold/5 rounded-xl p-6 text-center">
-          <p className="text-xs uppercase tracking-wide text-gold mb-1">{t("resultatTitre")}</p>
+          <p className="text-sm text-gold mb-1">{t("resultatTitre")}</p>
           <p className="text-ivory text-lg font-medium">{resultat.marque}</p>
           <p className="text-sm text-ivory/50 mt-1">{t("resultatMontant")}</p>
           <p className="text-4xl font-semibold text-ivory mt-2 font-[family-name:var(--font-fraunces)]">

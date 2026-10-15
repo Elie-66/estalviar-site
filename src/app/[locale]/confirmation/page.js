@@ -123,7 +123,7 @@ function Confirmation() {
               <span className="w-12 aspect-[1.586/1] rounded shrink-0 border border-white/10" style={{ background: c.background }} aria-hidden />
               <div className="flex-1 min-w-0">
                 <p className="text-ivory text-sm font-medium truncate">
-                  {c.marque}{c.beneficiaire ? <span className="text-ivory/55 font-normal"> · {t("pour", { prenom: c.beneficiaire })}</span> : null}
+                  {c.marque}{c.beneficiaire ? <span className="text-ivory/55 font-normal"> {t("pour", { prenom: c.beneficiaire })}</span> : null}
                 </p>
                 <p className="text-xs text-gold/80">
                   {c.dateEnvoi

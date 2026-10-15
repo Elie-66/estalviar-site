@@ -81,11 +81,9 @@ export default function BandeauEvenement({ onAffiche }) {
 
       <div className="relative max-w-[1240px] mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
         <div className="text-center md:text-left">
-          <p className="text-xs uppercase tracking-[0.2em] mb-3" style={{ color: theme.accent }}>
-            {evenement.nom} · <span className="normal-case tracking-normal">{date}</span> ·{" "}
-            <span className="inline-block rounded-full px-2 py-0.5 ml-0.5 font-semibold" style={{ background: `${theme.accent}22` }}>
-              {quand}
-            </span>
+          <p className="text-sm font-medium mb-2" style={{ color: theme.accent }}>
+            <span className="first-letter:uppercase inline-block">{date}</span>
+            <span className="text-ivory/60 font-normal">{", "}{quand.charAt(0).toLowerCase() + quand.slice(1)}</span>
           </p>
           <h2 className="text-2xl md:text-3xl font-semibold text-ivory leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
             {evenement.accroche || evenement.nom}

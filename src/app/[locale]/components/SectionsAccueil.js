@@ -131,8 +131,7 @@ export function RappelAnniversaire() {
               <span className="ml-auto text-xs text-ink/45">08:30</span>
             </div>
             <div className="px-5 py-6">
-              <p className="text-3xl leading-none">🎂</p>
-              <p className="mt-3 text-lg font-semibold leading-snug font-[family-name:var(--font-fraunces)]">
+              <p className="text-lg font-semibold leading-snug font-[family-name:var(--font-fraunces)]">
                 {t("rappelExempleTitre", { jours: JOURS_AVANT_RAPPEL })}
               </p>
               <p className="mt-2 text-sm text-ink/65 leading-relaxed">{t("rappelExempleTexte")}</p>

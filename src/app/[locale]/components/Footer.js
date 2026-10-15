@@ -85,7 +85,7 @@ export default function Footer() {
                 aria-expanded={ouvert === section.id}
                 className="w-full flex items-center justify-between py-4 text-left"
               >
-                <span className="text-sm uppercase tracking-wide text-ivory/70">{section.titre}</span>
+                <span className="text-[15px] text-ivory/80">{section.titre}</span>
                 <span aria-hidden className={`text-ivory/50 transition-transform ${ouvert === section.id ? "rotate-45" : ""}`}>
                   +
                 </span>
@@ -108,7 +108,7 @@ export default function Footer() {
         {/* Version ordinateur : une colonne par rubrique */}
         {sections.map((section) => (
           <div key={section.id} className="hidden md:block">
-            <p className="text-sm uppercase tracking-wide text-ivory/50 mb-3">{section.titre}</p>
+            <p className="text-sm font-medium text-ivory mb-3">{section.titre}</p>
             <ul className="space-y-2 text-sm text-ivory/80">
               {section.liens.map((lien) => (
                 <li key={lien.href}>

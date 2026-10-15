@@ -180,7 +180,7 @@ export default function PageCagnotte({ params }) {
           {cagnotte.montant_libre
             ? t("collecte", { montant: euros(cagnotte.montant_collecte) })
             : t("collecteSur", { montant: euros(cagnotte.montant_collecte), objectif: euros(cagnotte.montant_objectif) })}
-          {" · "}{t("participants", { n: contributions.length })}
+          {", "}{t("participants", { n: contributions.length })}
         </p>
         {!cagnotte.montant_libre && (
           <div className="mt-4 max-w-[560px]">
@@ -237,14 +237,14 @@ export default function PageCagnotte({ params }) {
         {complete ? (
           <div>
             <div className="text-center border border-vert/30 bg-vert/10 rounded-2xl p-6">
-              <p className="text-vert font-medium">{t("cloturee")} 🎉</p>
+              <p className="text-vert font-medium">{t("cloturee")}</p>
               <p className="text-sm text-ivory/65 mt-1">{cagnotte.statut === "attente_choix" ? t("attenteChoix") : t("carteEnvoyee")}</p>
             </div>
             {cagnotte.statut === "cloturee" && commandesCagnotte.length > 0 && (
               <div className="mt-6 space-y-4">
                 {commandesCagnotte.map((cmd) => (
                   <div key={cmd.id} className="border border-ivory/10 rounded-xl p-4">
-                    <p className="text-ivory font-medium">{cmd.marque} · {euros(cmd.montant)}</p>
+                    <p className="text-ivory font-medium flex justify-between gap-4"><span>{cmd.marque}</span><span>{euros(cmd.montant)}</span></p>
                     <div className="flex flex-wrap gap-3 mt-3">
                       <button onClick={() => handleRenvoyer(cmd.id, "createur")}
                         className="text-xs text-gold border border-gold/30 rounded-lg px-3 py-1.5 hover:bg-gold/10 transition-colors">

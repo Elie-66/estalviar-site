@@ -212,11 +212,12 @@ export default function Paiement() {
   }
 
   const onglet = (mode, label) => (
-    <button type="button" onClick={() => { setModeAuth(mode); setMessageAuth(null); }} aria-pressed={modeAuth === mode}
-      className={`flex-1 text-xs sm:text-sm py-2 px-2 rounded-md transition-colors ${
-        modeAuth === mode ? "bg-gold text-ink font-medium" : "text-ivory/65 hover:text-ivory"
+    <button type="button" role="tab" onClick={() => { setModeAuth(mode); setMessageAuth(null); }} aria-selected={modeAuth === mode}
+      className={`relative pb-3 text-sm whitespace-nowrap transition-colors ${
+        modeAuth === mode ? "text-ivory font-medium" : "text-ivory/50 hover:text-ivory/85"
       }`}>
       {label}
+      <span aria-hidden className={`absolute left-0 right-0 -bottom-px h-[2px] bg-gold transition-opacity ${modeAuth === mode ? "opacity-100" : "opacity-0"}`} />
     </button>
   );
 
@@ -238,11 +239,11 @@ export default function Paiement() {
               </div>
             ) : (
               <>
-                <div className="flex gap-1 border border-ivory/10 rounded-lg p-1 mb-5" role="group">
+                <div className="-mx-1 px-1 overflow-x-auto [scrollbar-width:none] mb-5"><div className="flex gap-5 min-w-full w-max border-b border-ivory/10" role="tablist">
                   {onglet("invite", t("ongletInvite"))}
                   {onglet("connexion", t("ongletConnexion"))}
                   {onglet("creer", t("ongletCreer"))}
-                </div>
+                </div></div>
                 {modeAuth === "invite" ? (
                   <div>
                     <label htmlFor="p-email" className="block text-sm text-ivory/70 mb-2">{t("votreEmail")}</label>
@@ -286,7 +287,7 @@ export default function Paiement() {
                 <li key={a.id} className="rounded-xl border border-ivory/10 p-4">
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-ivory text-sm font-medium truncate">
-                      {a.marque}{a.beneficiaire ? <span className="text-ivory/55 font-normal"> · {t("pour", { prenom: a.beneficiaire })}</span> : null}
+                      {a.marque}{a.beneficiaire ? <span className="text-ivory/55 font-normal"> {t("pour", { prenom: a.beneficiaire })}</span> : null}
                     </p>
                     <p className="text-ivory text-sm whitespace-nowrap">{euros(a.montant)}</p>
                   </div>

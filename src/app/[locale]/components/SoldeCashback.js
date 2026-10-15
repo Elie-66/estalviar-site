@@ -86,7 +86,7 @@ export default function SoldeCashback() {
                 <div key={i} className="flex justify-between gap-4 text-sm border-b border-ivory/5 pb-2">
                   <div className="min-w-0">
                     <span className="text-ivory">{t.has(`type_${m.type}`) ? t(`type_${m.type}`) : m.type}</span>
-                    {m.description && <span className="text-ivory/45"> · {m.description}</span>}
+                    {m.description && <span className="text-ivory/45">, {m.description}</span>}
                     <p className="text-xs text-ivory/45">{date(m.date)}</p>
                   </div>
                   <span className={`${s.couleur} whitespace-nowrap`}>{s.signe}{euros(m.montant)}</span>

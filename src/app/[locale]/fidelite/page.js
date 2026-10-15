@@ -178,7 +178,7 @@ export default function Fidelite() {
                   </ul>
                   {infos?.nouvelles > 0 && (
                     <div className="mt-auto pt-5">
-                      <p className="text-xs text-ivory/45 mb-2">{t("enseignes", { n: infos.nouvelles })} · {t("exemples")}</p>
+                      <p className="text-xs text-ivory/45 mb-2">{t("enseignes", { n: infos.nouvelles })}, {t("exemples").toLowerCase()}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {infos.exemples.map((m) => (
                           <a key={m.slug} href={`/${locale}/boutique/${m.slug}`} title={m.nom}

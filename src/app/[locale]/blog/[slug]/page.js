@@ -45,7 +45,7 @@ export default function Article({ params }) {
       <h1 className="text-3xl md:text-4xl font-semibold text-ivory leading-tight">{article.titre}</h1>
       <p className="mt-4 text-sm text-ivory/50">
         {[article.auteur, new Date(article.created_at).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" })]
-          .filter(Boolean).join(" · ")}
+          .filter(Boolean).join(", ")}
       </p>
       {article.image && <img src={article.image} alt="" className="mt-8 w-full rounded-2xl aspect-[16/9] object-cover" />}
       <div className="mt-10 text-ivory/80 text-[17px] leading-[1.8] space-y-5">

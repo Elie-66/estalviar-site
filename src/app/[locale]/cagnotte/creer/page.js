@@ -332,25 +332,21 @@ export default function CreerCagnotte() {
             </p>
 
             <label className="block text-sm text-ivory/70 mb-2 mt-6">{t("envoi")}</label>
-            <div className="flex gap-2 border border-ivory/10 rounded-lg p-1">
-              <button
-                type="button"
-                onClick={() => setEnvoiBeneficiaire(false)}
-                className={`flex-1 text-sm py-2 rounded-md transition-colors ${
-                  !envoiBeneficiaire ? "bg-gold text-ink font-medium" : "text-ivory/60"
-                }`}
-              >
-                {t("envoiMoi")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setEnvoiBeneficiaire(true)}
-                className={`flex-1 text-sm py-2 rounded-md transition-colors ${
-                  envoiBeneficiaire ? "bg-gold text-ink font-medium" : "text-ivory/60"
-                }`}
-              >
-                {t("envoiBenef")}
-              </button>
+            <div role="radiogroup" aria-label={t("envoi")} className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[[false, t("envoiMoi")], [true, t("envoiBenef")]].map(([valeur, libelle]) => {
+                const choisi = envoiBeneficiaire === valeur;
+                return (
+                  <button key={String(valeur)} type="button" role="radio" aria-checked={choisi} onClick={() => setEnvoiBeneficiaire(valeur)}
+                    className={`flex items-center gap-3 text-left text-sm rounded-lg border px-4 py-3 transition-colors ${
+                      choisi ? "border-gold/70 bg-gold/[0.06] text-ivory" : "border-ivory/15 text-ivory/65 hover:border-ivory/35"
+                    }`}>
+                    <span aria-hidden className={`w-4 h-4 shrink-0 rounded-full border flex items-center justify-center ${choisi ? "border-gold" : "border-ivory/35"}`}>
+                      {choisi && <span className="w-2 h-2 rounded-full bg-gold" />}
+                    </span>
+                    {libelle}
+                  </button>
+                );
+              })}
             </div>
 
             {envoiBeneficiaire && (

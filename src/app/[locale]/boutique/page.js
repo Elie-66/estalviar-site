@@ -7,6 +7,7 @@ import { supabase } from "../../../lib/supabase";
 import { DecorEvenement } from "../components/BandeauEvenement";
 import { themeDe } from "../components/themesEvenements";
 import CarteVitrine from "../components/CarteVitrine";
+import Tricolore from "../components/Tricolore";
 import { couleurCategorie } from "../../../lib/couleursCartes";
 import { pourOccasion, trouverOccasion } from "../../../lib/occasions";
 
@@ -139,6 +140,13 @@ export default function Boutique() {
   });
   const nbFrancaises = cartes.filter((c) => c.made_in_france).length;
 
+  // Sur téléphone, le rayon choisi doit être visible dans la ligne qui défile
+  useEffect(() => {
+    if (chargement) return;
+    const actif = document.querySelector('[role="tab"][aria-selected="true"]');
+    actif?.parentElement?.parentElement?.scrollTo({ left: Math.max(0, actif.offsetLeft - 24), behavior: "smooth" });
+  }, [onglet, chargement, evenement]);
+
   if (chargement) {
     return (
       <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-20 text-center text-ivory/60">
@@ -147,144 +155,133 @@ export default function Boutique() {
     );
   }
 
+  // Les rayons de la boutique : toutes les enseignes, l'événement du moment, Fabriqué en France
+  const rayons = [
+    { cle: "toutes", titre: t("ongletToutes"), nombre: cartes.length, accent: "#C9A227" },
+    ...(evenement ? [{ cle: "evenement", titre: evenement.nom, nombre: cartesEvenement.length, accent: themeDe(evenement.slug).accent }] : []),
+    ...(nbFrancaises > 0 ? [{ cle: "francaises", titre: t("ongletFrancaises"), nombre: nbFrancaises, tricolore: true }] : []),
+  ];
+  const nombreParCategorie = (cat) => (cat === "Toutes" ? cartesOnglet.length : cartesOnglet.filter((c) => c.categorie === cat).length);
+
   return (
     <div className="max-w-[1240px] w-full mx-auto px-6 pt-32 pb-20">
-      {(evenement || nbFrancaises > 0) && (
-      <div className="flex flex-wrap gap-1 sm:gap-2 border border-ivory/10 rounded-lg p-1 w-fit max-w-full mb-8">
-        <button
-          onClick={() => changerOnglet("toutes")}
-          className={`text-sm px-4 py-2 rounded-md transition-colors ${
-            onglet === "toutes" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-          }`}
-        >
-          {t("ongletToutes")}
-        </button>
-        {evenement && (
-          <button
-            onClick={() => changerOnglet("evenement")}
-            className={`text-sm px-4 py-2 rounded-md transition-colors ${
-              onglet === "evenement" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-            }`}
-          >
-            🎁 {evenement.nom}
-          </button>
-        )}
-        {nbFrancaises > 0 && (
-          <button
-            onClick={() => changerOnglet("francaises")}
-            className={`text-sm px-4 py-2 rounded-md transition-colors ${
-              onglet === "francaises" ? "bg-gold text-ink font-medium" : "text-ivory/60 hover:text-ivory"
-            }`}
-          >
-            🇫🇷 {t("ongletFrancaises")}
-          </button>
-        )}
-      </div>
-      )}
-
-      {onglet === "evenement" && evenement ? (
-        <div
-          className="relative overflow-hidden rounded-2xl border px-6 py-8 mb-8"
-          style={{ background: themeDe(evenement.slug).fond, borderColor: themeDe(evenement.slug).bordure }}
-        >
-          <DecorEvenement slug={evenement.slug} />
-          <div className="relative max-w-[640px]">
-          <h1 className="text-3xl font-semibold text-ivory mb-3">{evenement.nom}</h1>
-          <p className="text-sm" style={{ color: themeDe(evenement.slug).accent }}>
-            {new Date(`${evenement.date}T12:00:00Z`).toLocaleDateString(locale, {
-              weekday: "long", day: "numeric", month: "long", timeZone: "UTC",
-            })}
-            {" · "}
-            {evenement.joursRestants === 0 ? tEvenement("aujourdhui")
-              : evenement.joursRestants === 1 ? tEvenement("demain")
-              : tEvenement("dansJours", { jours: evenement.joursRestants })}
-          </p>
-          {evenement.description && <p className="text-ivory/75 text-sm mt-2">{evenement.description}</p>}
-          </div>
-        </div>
-      ) : (
-        <>
-          <h1 className="text-3xl font-semibold text-ivory mb-3">
-            {onglet === "francaises" ? t("titreFrancaises") : t("titre")}
-          </h1>
-          {onglet === "francaises" ? (
-            <p className="text-ivory/60 text-sm max-w-[640px] mb-8">{t("introFrancaises")}</p>
-          ) : (
-            <div className="mb-5" />
-          )}
-        </>
-      )}
-
-      <div className="relative max-w-[520px] mb-5">
-        <svg
-          width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-ivory/40" aria-hidden
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" strokeLinecap="round" />
-        </svg>
-        <input
-          type="search"
-          value={recherche}
-          onChange={(e) => setRecherche(e.target.value)}
-          placeholder={t("recherchePlaceholder")}
-          aria-label={t("recherchePlaceholder")}
-          className="w-full bg-ivory/[0.05] border border-ivory/15 rounded-full pl-11 pr-4 py-3 text-ivory text-sm focus:border-gold/60 outline-none"
-        />
-      </div>
-
-      {(budget || pour) && (
-        <div className="mb-5 flex flex-wrap gap-2">
-          {pour && (
-            <span className="inline-flex items-center rounded-full border border-gold/40 text-gold px-4 py-1.5 text-sm">
-              🎁 {t("pourQui", { prenom: pour })}
-            </span>
-          )}
-          {budget && (
-            <span className="inline-flex items-center gap-3 rounded-full bg-ivory text-ink pl-4 pr-1.5 py-1.5 text-sm">
-              <span className="font-medium">{t("filtreBudget", { montant: budget })}</span>
-              <button type="button" onClick={retirerBudget}
-                className="rounded-full bg-ink/10 hover:bg-ink/20 px-3 py-1 text-xs transition-colors">
-                {tOcc("retirer")} ✕
-              </button>
-            </span>
-          )}
-        </div>
-      )}
-
-      {occasion && (
-        <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-ivory text-ink pl-4 pr-1.5 py-1.5 text-sm">
-          <span className="font-medium">{tOcc("filtre", { occasion: tOcc(occasion.slug).toLowerCase() })}</span>
-          <button type="button" onClick={retirerOccasion}
-            className="rounded-full bg-ink/10 hover:bg-ink/20 px-3 py-1 text-xs transition-colors">
-            {tOcc("retirer")} ✕
-          </button>
-        </div>
-      )}
-
-      {/* Catégories : pastilles de couleur (défilent à l'horizontale sur téléphone) */}
-      <div className="-mx-6 px-6 overflow-x-auto mb-9 [scrollbar-width:none]">
-        <div role="group" aria-label={t("toutes")} className="flex gap-2 w-max pb-1">
-          {categories.map((cat) => {
-            const active = categorie === cat;
-            const couleur = cat === "Toutes" ? "#C9A227" : couleurCategorie(cat);
+      <h1 className="sr-only">{rayons.find((r) => r.cle === onglet)?.titre || t("titre")}</h1>
+      {/* Rayons : de grands titres, celui qu'on regarde est en clair */}
+      <div className="-mx-6 px-6 overflow-x-auto [scrollbar-width:none]">
+        <div role="tablist" aria-label={t("titre")} className="flex items-end gap-x-8 sm:gap-x-12 w-max">
+          {rayons.map((r) => {
+            const actif = onglet === r.cle;
             return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setCategorie(cat)}
-                aria-pressed={active}
-                className={`flex items-center gap-2 text-sm rounded-full pl-2.5 pr-4 py-2 border whitespace-nowrap transition-colors ${
-                  active ? "text-ink font-medium border-transparent" : "text-ivory/80 border-ivory/15 hover:border-ivory/35"
-                }`}
-                style={active ? { background: couleur, color: "#fff" } : undefined}
-              >
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: active ? "#fff" : couleur }} />
-                {cat === "Toutes" ? t("toutes") : traduireCategorie(cat)}
+              <button key={r.cle} type="button" role="tab" aria-selected={actif} onClick={() => changerOnglet(r.cle)}
+                className={`group relative pb-3 text-left transition-colors ${actif ? "text-ivory" : "text-ivory/30 hover:text-ivory/60"}`}>
+                <span className="block text-[1.7rem] sm:text-4xl font-semibold leading-none tracking-tight font-[family-name:var(--font-fraunces)] whitespace-nowrap">
+                  {r.titre}
+                  <sup className="ml-1.5 text-xs sm:text-sm font-normal font-sans tabular-nums align-super opacity-60">{r.nombre}</sup>
+                </span>
+                {actif && (
+                  r.tricolore
+                    ? <span aria-hidden className="absolute left-0 right-0 bottom-0 h-[3px] flex"><span className="flex-1 bg-[#2f5bd3]" /><span className="flex-1 bg-ivory" /><span className="flex-1 bg-[#e1293b]" /></span>
+                    : <span aria-hidden className="absolute left-0 right-0 bottom-0 h-[3px]" style={{ background: r.accent }} />
+                )}
               </button>
             );
           })}
         </div>
+      </div>
+
+      {/* Ce que contient le rayon */}
+      {onglet === "evenement" && evenement ? (
+        <div
+          className="relative overflow-hidden rounded-xl border px-6 py-5 mt-6"
+          style={{ background: themeDe(evenement.slug).fond, borderColor: themeDe(evenement.slug).bordure }}
+        >
+          <DecorEvenement slug={evenement.slug} />
+          <div className="relative max-w-[640px]">
+            <p className="text-sm font-medium" style={{ color: themeDe(evenement.slug).accent }}>
+              <span className="inline-block first-letter:uppercase">{new Date(`${evenement.date}T12:00:00Z`).toLocaleDateString(locale, {
+                weekday: "long", day: "numeric", month: "long", timeZone: "UTC",
+              })}</span>
+              {", "}
+              {evenement.joursRestants === 0 ? tEvenement("aujourdhui")
+                : evenement.joursRestants === 1 ? tEvenement("demain")
+                : tEvenement("dansJours", { jours: evenement.joursRestants })}
+            </p>
+            {evenement.description && <p className="text-ivory/75 text-sm mt-1.5">{evenement.description}</p>}
+          </div>
+        </div>
+      ) : onglet === "francaises" ? (
+        <p className="mt-6 text-ivory/60 text-[15px] leading-relaxed max-w-[640px]">{t("introFrancaises")}</p>
+      ) : null}
+
+      {/* Filtres actifs venus d'un lien (prénom, budget, occasion) */}
+      {(budget || pour || occasion) && (
+        <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
+          {pour && (
+            <span className="inline-flex items-center rounded-md border border-gold/40 text-gold px-3 py-1.5">
+              {t("pourQui", { prenom: pour })}
+            </span>
+          )}
+          {budget && (
+            <span className="inline-flex items-center gap-2 rounded-md border border-ivory/25 text-ivory pl-3 pr-1 py-1">
+              {t("filtreBudget", { montant: budget })}
+              <button type="button" onClick={retirerBudget} aria-label={tOcc("retirer")}
+                className="w-6 h-6 rounded flex items-center justify-center text-ivory/60 hover:text-ivory hover:bg-ivory/10">×</button>
+            </span>
+          )}
+          {occasion && (
+            <span className="inline-flex items-center gap-2 rounded-md border border-ivory/25 text-ivory pl-3 pr-1 py-1">
+              {tOcc("filtre", { occasion: tOcc(occasion.slug).toLowerCase() })}
+              <button type="button" onClick={retirerOccasion} aria-label={tOcc("retirer")}
+                className="w-6 h-6 rounded flex items-center justify-center text-ivory/60 hover:text-ivory hover:bg-ivory/10">×</button>
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Catégories (onglets soulignés de la couleur de la catégorie) et recherche */}
+      <div className="mt-8 mb-9 flex flex-col-reverse lg:flex-row lg:items-end gap-5 lg:gap-10 border-b border-ivory/10">
+        <div className="-mx-6 px-6 lg:mx-0 lg:px-0 overflow-x-auto [scrollbar-width:none] flex-1 min-w-0 lg:[mask-image:linear-gradient(to_right,black_calc(100%-40px),transparent)]">
+          <div role="group" aria-label={t("toutes")} className="flex gap-6 w-max">
+            {categories.map((cat) => {
+              const active = categorie === cat;
+              const couleur = cat === "Toutes" ? "#C9A227" : couleurCategorie(cat);
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCategorie(cat)}
+                  aria-pressed={active}
+                  className={`relative pb-3 text-[15px] whitespace-nowrap transition-colors ${
+                    active ? "text-ivory font-medium" : "text-ivory/50 hover:text-ivory/85"
+                  }`}
+                >
+                  {cat === "Toutes" ? t("toutes") : traduireCategorie(cat)}
+                  <span className="ml-1.5 text-xs tabular-nums text-ivory/35">{nombreParCategorie(cat)}</span>
+                  <span aria-hidden className={`absolute left-0 right-0 -bottom-px h-[2px] transition-opacity ${active ? "opacity-100" : "opacity-0"}`}
+                    style={{ background: couleur }} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <label className="relative block w-full lg:w-72 shrink-0">
+          <svg
+            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+            className="absolute left-0 top-1/2 -translate-y-1/2 lg:top-auto lg:translate-y-0 lg:bottom-[15px] text-ivory/40" aria-hidden
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+          </svg>
+          <input
+            type="search"
+            value={recherche}
+            onChange={(e) => setRecherche(e.target.value)}
+            placeholder={t("recherchePlaceholder")}
+            aria-label={t("recherchePlaceholder")}
+            className="w-full bg-transparent border-0 border-b border-ivory/20 lg:border-transparent pl-7 pr-2 py-2 lg:pt-0 lg:pb-3 text-[15px] lg:text-sm leading-normal text-ivory text-sm placeholder:text-ivory/40 focus:border-gold/70 outline-none"
+          />
+        </label>
       </div>
 
       {cartesFiltrees.length === 0 ? (
@@ -299,8 +296,8 @@ export default function Boutique() {
               prixLabel={budget ? t("montantChoisi", { montant: budget }) : `${t("apartirDe")} ${carte.montant_min} €`}
               badge={
                 carte.made_in_france && onglet !== "francaises" ? (
-                  <span title={t("badgeFabrique")} className="text-[10px] text-ink/70 bg-ink/[0.06] rounded-full px-2 py-0.5 whitespace-nowrap">
-                    🇫🇷 <span className="hidden sm:inline">{t("badgeFabrique")}</span>
+                  <span title={t("badgeFabrique")} className="inline-flex items-center gap-1.5 text-[10px] font-medium text-ink/70 bg-white/90 rounded px-1.5 py-1 whitespace-nowrap">
+                    <Tricolore className="w-3 h-2" /> <span className="hidden sm:inline">{t("badgeFabrique")}</span>
                   </span>
                 ) : null
               }

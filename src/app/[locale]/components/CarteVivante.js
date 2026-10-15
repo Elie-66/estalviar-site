@@ -75,13 +75,13 @@ export default function CarteVivante({ marques }) {
           />
         </div>
 
-        <div role="group" aria-label={t("messageLabel")} className="flex flex-wrap gap-2">
+        <div role="group" aria-label={t("messageLabel")} className="flex flex-wrap gap-x-5 gap-y-1">
           {messages.map((m, i) => (
             <button key={m} type="button" onClick={() => setIndexMessage(i)} aria-pressed={i === indexMessage}
-              className={`text-xs rounded-full px-3 py-1.5 border transition-colors ${
-                i === indexMessage ? "border-gold bg-gold/15 text-gold" : "border-ivory/15 text-ivory/70 hover:border-ivory/40"
+              className={`text-sm italic py-1 border-b transition-colors ${
+                i === indexMessage ? "border-gold text-ivory" : "border-transparent text-ivory/45 hover:text-ivory/75"
               }`}>
-              {m}
+              « {m} »
             </button>
           ))}
         </div>
