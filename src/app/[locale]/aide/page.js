@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 const THEMES = [
   { cle: "envoi", questions: ["q1", "q2", "q3", "q4"] },
   { cle: "cartes", questions: ["q5", "q6", "q7"] },
-  { cle: "paiement", questions: ["q8", "q9", "q10"] },
+  { cle: "paiement", questions: ["q8", "q9", "q10", "q16"] },
   { cle: "compte", questions: ["q11", "q12", "q13"] },
   { cle: "cagnottes", questions: ["q14", "q15"] },
 ];

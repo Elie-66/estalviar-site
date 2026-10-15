@@ -6,6 +6,7 @@ import { utilisateurConnecte } from '../../../lib/utilisateurServeur';
 import { calculerCashbackUtilisable } from '../../../lib/cashback';
 import { evaluerCode } from '../../../lib/codeInfluence';
 import { VERSION_CGV } from '../../../lib/infosLegales';
+import { nettoyerFacturation } from '../../../lib/factures';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const supabase = createClient(
@@ -19,7 +20,7 @@ const texteCourt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) :
 
 export async function POST(req) {
   try {
-    const { articles, emailAcheteur, emailsBeneficiaires, locale, utiliserCashback, codeInfluence, accepteCgv } = await req.json();
+    const { articles, emailAcheteur, emailsBeneficiaires, locale, utiliserCashback, codeInfluence, accepteCgv, facturation } = await req.json();
     const client = await utilisateurConnecte(req);
     const langue = ['fr', 'en', 'de', 'es', 'it'].includes(locale) ? locale : 'fr';
 
@@ -109,6 +110,8 @@ export async function POST(req) {
         code_influence_id: codeInfluenceId,
         cgv_version: VERSION_CGV,
         cgv_acceptees_le: new Date().toISOString(),
+        // Coordonnées de société pour la facture (facultatives)
+        facturation: nettoyerFacturation(facturation),
       })
       .select('id')
       .single();

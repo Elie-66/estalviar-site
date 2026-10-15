@@ -515,7 +515,9 @@
     "q15r": "El importe reunido se convierte igualmente en tarjeta regalo en la fecha de cierre. Las participaciones dan puntos de fidelidad, pero no cashback.",
     "pasTrouve": "¿No ha encontrado su respuesta?",
     "pasTrouveTexte": "Escríbanos: solemos responder en 2 días laborables.",
-    "contact": "Contactar"
+    "contact": "Contactar",
+    "q16": "¿Cómo consigo una factura?",
+    "q16r": "Se envía automáticamente: tu factura en PDF va adjunta al email de confirmación del pedido. Con una cuenta, también la encontrarás en Mi cuenta, pestaña Pedidos. Para una factura a nombre de tu empresa, marca «Factura a nombre de una empresa» al pagar."
   },
   "cagnotteChoisir": {
     "chargement": "Cargando…",
@@ -821,7 +823,14 @@
     "cgvRequise": "Marque la casilla para aceptar las condiciones.",
     "securise": "Pago seguro con Stripe",
     "erreurReseau": "Error de red, inténtelo de nuevo.",
-    "erreurInconnue": "Se ha producido un error, inténtelo de nuevo."
+    "erreurInconnue": "Se ha producido un error, inténtelo de nuevo.",
+    "factureSociete": "Factura a nombre de una empresa",
+    "factureRaisonSociale": "Razón social",
+    "factureAdresse": "Dirección de facturación",
+    "factureSiren": "Número de registro (opcional)",
+    "factureTva": "NIF-IVA intracomunitario (opcional)",
+    "factureAide": "Estos datos aparecerán en la factura que recibirás por email tras el pago.",
+    "factureIncomplete": "Indica la razón social y la dirección para la factura."
   },
   "panier": {
     "titre": "Su carrito",
@@ -1002,7 +1011,13 @@
     "supprimerOui": "Sí, eliminar mi cuenta",
     "suppression": "Eliminando…",
     "suppressionErreur": "No se ha podido eliminar. Escríbanos a info@estalviar.com.",
-    "voirCarte": "Ver la tarjeta"
+    "voirCarte": "Ver la tarjeta",
+    "facturesTitre": "Tus facturas",
+    "facturesAide": "Cada factura también va adjunta al email de confirmación.",
+    "factureCagnotte": "participación en un bote",
+    "factureCartes": "{n, plural, one {# tarjeta} other {# tarjetas}}",
+    "factureTelecharger": "Descargar",
+    "factureErreur": "La descarga no ha funcionado. Inténtalo de nuevo o escríbenos a info@estalviar.com."
   },
   "soldeCashback": {
     "chargement": "Cargando el cashback…",

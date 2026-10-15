@@ -8,6 +8,7 @@ import SoldeCashback from "../components/SoldeCashback";
 import { ChampMotDePasse, motDePasseValide } from "../components/CadreCompte";
 import { anniversaireValide, JOURS_AVANT_RAPPEL } from "../../../lib/rappelsAnniversaire";
 import { POINTS_NEWSLETTER } from "../../../lib/newsletter";
+import { telechargerFacture } from "../../../lib/telechargerFacture";
 
 const ONGLETS = ["infos", "commandes", "cashback", "beneficiaires", "cagnottes", "securite"];
 const PALIERS = [
@@ -75,6 +76,8 @@ export default function Profil() {
   // Commandes et points
   const [commandes, setCommandes] = useState([]);
   const [points, setPoints] = useState(0);
+  const [factures, setFactures] = useState([]);
+  const [erreurFacture, setErreurFacture] = useState("");
 
   // Bénéficiaires
   const [beneficiaires, setBeneficiaires] = useState([]);
@@ -136,6 +139,10 @@ export default function Profil() {
           supabase.from("catalogue").select("nom, slug").eq("actif", true).order("nom", { ascending: true }),
         ]);
       setCommandes(mesCommandes || []);
+      fetchSession("/api/factures")
+        .then((r) => (r.ok ? r.json() : { factures: [] }))
+        .then((d) => setFactures(d.factures || []))
+        .catch(() => {});
       setBeneficiaires(mesBeneficiaires || []);
       setCatalogue(catalogueData || []);
 
@@ -493,6 +500,34 @@ export default function Profil() {
             })}
           </ul>
         )
+      )}
+
+      {onglet === "commandes" && factures.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold text-ivory">{t("facturesTitre")}</h2>
+          <p className="mt-1 text-sm text-ivory/50">{t("facturesAide")}</p>
+          <ul className="mt-4 divide-y divide-ivory/10 border-y border-ivory/10">
+            {factures.map((f) => (
+              <li key={f.numero} className="py-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                <div className="min-w-0">
+                  <p className="text-sm text-ivory">{f.numero}</p>
+                  <p className="text-xs text-ivory/45">
+                    {dateLongue(f.emise_le)}, {f.type === "contribution" ? t("factureCagnotte") : t("factureCartes", { n: (f.lignes || []).length })}
+                  </p>
+                </div>
+                <div className="flex items-center gap-5">
+                  <span className="text-sm text-ivory">{euros(f.total)}</span>
+                  <button type="button"
+                    onClick={() => telechargerFacture(f.numero, fetchSession).then(() => setErreurFacture("")).catch(() => setErreurFacture(t("factureErreur")))}
+                    className="text-sm text-gold underline decoration-gold/40 underline-offset-4 hover:decoration-gold">
+                    {t("factureTelecharger")}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {erreurFacture && <p role="alert" className="mt-3 text-sm text-corail">{erreurFacture}</p>}
+        </section>
       )}
 
       {onglet === "beneficiaires" && (

@@ -515,7 +515,9 @@
     "q15r": "The amount collected is still converted into a gift card on the end date. Contributions earn loyalty points, but not cashback.",
     "pasTrouve": "Didn't find your answer?",
     "pasTrouveTexte": "Write to us: we usually reply within 2 working days.",
-    "contact": "Contact us"
+    "contact": "Contact us",
+    "q16": "How do I get an invoice?",
+    "q16r": "It's sent automatically: your PDF invoice is attached to the order confirmation email. With an account, you'll also find it in My account, Orders tab. For an invoice in your company's name, tick \"Invoice in a company name\" at checkout."
   },
   "cagnotteChoisir": {
     "chargement": "Loading…",
@@ -821,7 +823,14 @@
     "cgvRequise": "Tick the box to accept the terms.",
     "securise": "Secure payment by Stripe",
     "erreurReseau": "Network error, please try again.",
-    "erreurInconnue": "Something went wrong, please try again."
+    "erreurInconnue": "Something went wrong, please try again.",
+    "factureSociete": "Invoice in a company name",
+    "factureRaisonSociale": "Company name",
+    "factureAdresse": "Billing address",
+    "factureSiren": "Company registration number (optional)",
+    "factureTva": "VAT number (optional)",
+    "factureAide": "These details will appear on the invoice emailed to you after payment.",
+    "factureIncomplete": "Enter the company name and address for the invoice."
   },
   "panier": {
     "titre": "Your basket",
@@ -1002,7 +1011,13 @@
     "supprimerOui": "Yes, delete my account",
     "suppression": "Deleting…",
     "suppressionErreur": "Deletion did not work. Write to us at info@estalviar.com.",
-    "voirCarte": "View card"
+    "voirCarte": "View card",
+    "facturesTitre": "Your invoices",
+    "facturesAide": "Each invoice is also attached to the confirmation email.",
+    "factureCagnotte": "group gift contribution",
+    "factureCartes": "{n, plural, one {# card} other {# cards}}",
+    "factureTelecharger": "Download",
+    "factureErreur": "The download didn't work. Try again or write to us at info@estalviar.com."
   },
   "soldeCashback": {
     "chargement": "Loading cashback…",

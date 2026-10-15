@@ -85,6 +85,10 @@ export default function Admin() {
           <p className="text-ivory font-medium text-lg">Demandes pro</p>
           <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Suivre les demandes de devis</p>
         </a>
+        <a href="/fr/admin/factures" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
+          <p className="text-ivory font-medium text-lg">Factures</p>
+          <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Toutes les factures et le livre des recettes</p>
+        </a>
         <a href="/fr/admin/retractations" className="border border-ivory/10 rounded-xl p-7 hover:border-gold/40 hover:bg-ivory/[0.02] transition-colors">
           <p className="text-ivory font-medium text-lg">Rétractations</p>
           <p className="text-sm text-ivory/50 mt-2 leading-relaxed">Demandes à rembourser sous 14 jours</p>

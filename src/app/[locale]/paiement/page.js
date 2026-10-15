@@ -35,6 +35,9 @@ export default function Paiement() {
   const [accepteCgv, setAccepteCgv] = useState(false);
   const [cashback, setCashback] = useState(null);
   const [utiliserCashback, setUtiliserCashback] = useState(false);
+  // Facture au nom d'une société (facultatif)
+  const [factureSociete, setFactureSociete] = useState(false);
+  const [facturation, setFacturation] = useState({ societe: "", adresse: "", siren: "", tva: "" });
   const [codeSaisi, setCodeSaisi] = useState("");
   const [codeApplique, setCodeApplique] = useState(null);
   const [erreurCode, setErreurCode] = useState("");
@@ -167,6 +170,8 @@ export default function Paiement() {
     setCodeApplique(null);
   };
 
+  const factureIncomplete = factureSociete && (!facturation.societe.trim() || !facturation.adresse.trim());
+
   const handlePaiement = async () => {
     setChargement(true);
     setErreur("");
@@ -182,6 +187,7 @@ export default function Paiement() {
           utiliserCashback: reductionCashback > 0,
           codeInfluence: codeAffiche ? codeAffiche.code : null,
           accepteCgv,
+          facturation: factureSociete ? facturation : null,
           locale,
         }),
       });
@@ -276,6 +282,38 @@ export default function Paiement() {
                   <p role="status" className={`mt-3 text-sm ${messageAuth.ok ? "text-vert" : "text-corail"}`}>{messageAuth.texte}</p>
                 )}
               </>
+            )}
+
+            {/* Facture au nom d'une société */}
+            <label className="mt-5 flex items-center gap-3 text-sm text-ivory/80 cursor-pointer">
+              <input type="checkbox" checked={factureSociete} onChange={(e) => setFactureSociete(e.target.checked)}
+                className="w-4 h-4 shrink-0 accent-[#C9A227]" />
+              {t("factureSociete")}
+            </label>
+            {factureSociete && (
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label htmlFor="f-societe" className="block text-sm text-ivory/70 mb-2">{t("factureRaisonSociale")}</label>
+                  <input id="f-societe" type="text" maxLength={120} autoComplete="organization" value={facturation.societe}
+                    onChange={(e) => setFacturation((f) => ({ ...f, societe: e.target.value }))} className={classeChamp} />
+                </div>
+                <div className="sm:col-span-2">
+                  <label htmlFor="f-adresse" className="block text-sm text-ivory/70 mb-2">{t("factureAdresse")}</label>
+                  <textarea id="f-adresse" rows={2} maxLength={300} autoComplete="street-address" value={facturation.adresse}
+                    onChange={(e) => setFacturation((f) => ({ ...f, adresse: e.target.value }))} className={`${classeChamp} resize-none`} />
+                </div>
+                <div>
+                  <label htmlFor="f-siren" className="block text-sm text-ivory/70 mb-2">{t("factureSiren")}</label>
+                  <input id="f-siren" type="text" inputMode="numeric" maxLength={20} value={facturation.siren}
+                    onChange={(e) => setFacturation((f) => ({ ...f, siren: e.target.value }))} className={classeChamp} />
+                </div>
+                <div>
+                  <label htmlFor="f-tva" className="block text-sm text-ivory/70 mb-2">{t("factureTva")}</label>
+                  <input id="f-tva" type="text" maxLength={20} value={facturation.tva}
+                    onChange={(e) => setFacturation((f) => ({ ...f, tva: e.target.value }))} className={classeChamp} />
+                </div>
+                <p className="sm:col-span-2 -mt-1 text-xs text-ivory/45">{t("factureAide")}</p>
+              </div>
             )}
           </Etape>
 
@@ -394,12 +432,13 @@ export default function Paiement() {
             </span>
           </label>
 
-          <button onClick={handlePaiement} disabled={!emailAcheteur || !accepteCgv || chargement}
+          <button onClick={handlePaiement} disabled={!emailAcheteur || !accepteCgv || factureIncomplete || chargement}
             className="mt-5 w-full bg-gold text-ink font-semibold rounded-lg px-6 py-4 hover:bg-gold/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
             {chargement ? t("redirection") : t("payer", { montant: euros(totalAPayer) })}
           </button>
           {!emailAcheteur && <p className="mt-2 text-xs text-ivory/50 text-center">{t("emailRequis")}</p>}
           {emailAcheteur && !accepteCgv && <p className="mt-2 text-xs text-ivory/50 text-center">{t("cgvRequise")}</p>}
+          {emailAcheteur && accepteCgv && factureIncomplete && <p className="mt-2 text-xs text-ivory/50 text-center">{t("factureIncomplete")}</p>}
           {erreur && <p role="alert" className="mt-3 text-sm text-corail">{erreur}</p>}
 
           <p className="mt-5 flex items-center justify-center gap-2 text-xs text-ivory/50">

@@ -515,7 +515,9 @@
     "q15r": "L'importo raccolto diventa comunque una carta regalo alla data di chiusura. Le partecipazioni danno punti fedeltà, ma non cashback.",
     "pasTrouve": "Non hai trovato la risposta?",
     "pasTrouveTexte": "Scrivici: di solito rispondiamo entro 2 giorni lavorativi.",
-    "contact": "Contattaci"
+    "contact": "Contattaci",
+    "q16": "Come ottengo una fattura?",
+    "q16r": "Viene inviata automaticamente: la fattura in PDF è allegata all'email di conferma dell'ordine. Con un account, la trovi anche in Il mio account, scheda Ordini. Per una fattura intestata alla tua azienda, seleziona «Fattura intestata a un'azienda» al momento del pagamento."
   },
   "cagnotteChoisir": {
     "chargement": "Caricamento…",
@@ -821,7 +823,14 @@
     "cgvRequise": "Spunta la casella per accettare le condizioni.",
     "securise": "Pagamento sicuro con Stripe",
     "erreurReseau": "Errore di rete, riprova.",
-    "erreurInconnue": "Si è verificato un errore, riprova."
+    "erreurInconnue": "Si è verificato un errore, riprova.",
+    "factureSociete": "Fattura intestata a un'azienda",
+    "factureRaisonSociale": "Ragione sociale",
+    "factureAdresse": "Indirizzo di fatturazione",
+    "factureSiren": "Numero di registro (facoltativo)",
+    "factureTva": "Partita IVA intracomunitaria (facoltativa)",
+    "factureAide": "Questi dati compariranno sulla fattura inviata via email dopo il pagamento.",
+    "factureIncomplete": "Indica ragione sociale e indirizzo per la fattura."
   },
   "panier": {
     "titre": "Il tuo carrello",
@@ -1002,7 +1011,13 @@
     "supprimerOui": "Sì, elimina il mio account",
     "suppression": "Eliminazione…",
     "suppressionErreur": "L'eliminazione non è riuscita. Scrivici a info@estalviar.com.",
-    "voirCarte": "Vedi la carta"
+    "voirCarte": "Vedi la carta",
+    "facturesTitre": "Le tue fatture",
+    "facturesAide": "Ogni fattura è allegata anche all'email di conferma.",
+    "factureCagnotte": "partecipazione a una colletta",
+    "factureCartes": "{n, plural, one {# carta} other {# carte}}",
+    "factureTelecharger": "Scarica",
+    "factureErreur": "Il download non ha funzionato. Riprova o scrivici a info@estalviar.com."
   },
   "soldeCashback": {
     "chargement": "Caricamento del cashback…",

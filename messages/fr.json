@@ -515,7 +515,9 @@
     "q15r": "Le montant collecté est quand même converti en carte cadeau à la date de fin. Les participations rapportent des points de fidélité, mais pas de cashback.",
     "pasTrouve": "Vous n'avez pas trouvé votre réponse ?",
     "pasTrouveTexte": "Écrivez-nous : nous répondons en général sous 48 heures ouvrées.",
-    "contact": "Nous contacter"
+    "contact": "Nous contacter",
+    "q16": "Comment obtenir une facture ?",
+    "q16r": "Elle est envoyée automatiquement : votre facture PDF est jointe à l'email de confirmation de commande. Avec un compte, vous la retrouvez aussi dans Mon compte, onglet Commandes. Pour une facture au nom de votre société, cochez « Facture au nom d'une société » au moment du paiement."
   },
   "cagnotteChoisir": {
     "chargement": "Chargement…",
@@ -821,7 +823,14 @@
     "cgvRequise": "Cochez la case pour accepter les conditions.",
     "securise": "Paiement sécurisé par Stripe",
     "erreurReseau": "Erreur réseau, réessayez.",
-    "erreurInconnue": "Une erreur est survenue, réessayez."
+    "erreurInconnue": "Une erreur est survenue, réessayez.",
+    "factureSociete": "Facture au nom d'une société",
+    "factureRaisonSociale": "Raison sociale",
+    "factureAdresse": "Adresse de facturation",
+    "factureSiren": "SIREN (facultatif)",
+    "factureTva": "N° de TVA intracommunautaire (facultatif)",
+    "factureAide": "Ces informations figureront sur la facture envoyée par email après le paiement.",
+    "factureIncomplete": "Indiquez la raison sociale et l'adresse pour la facture."
   },
   "panier": {
     "titre": "Votre panier",
@@ -1002,7 +1011,13 @@
     "supprimerOui": "Oui, supprimer mon compte",
     "suppression": "Suppression…",
     "suppressionErreur": "La suppression n'a pas fonctionné. Écrivez-nous à info@estalviar.com.",
-    "voirCarte": "Voir la carte"
+    "voirCarte": "Voir la carte",
+    "facturesTitre": "Vos factures",
+    "facturesAide": "Chaque facture est aussi jointe à l'email de confirmation.",
+    "factureCagnotte": "participation à une cagnotte",
+    "factureCartes": "{n, plural, one {# carte} other {# cartes}}",
+    "factureTelecharger": "Télécharger",
+    "factureErreur": "Le téléchargement n'a pas fonctionné. Réessayez ou écrivez-nous à info@estalviar.com."
   },
   "soldeCashback": {
     "chargement": "Chargement du cashback…",

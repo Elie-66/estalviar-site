@@ -13,6 +13,9 @@ import {
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from "./emailTemplate";
 import { calculerCashbackGagne, REGLES_CASHBACK } from "./cashback";
 import { calculerCode, filtreCartes } from "./codeInfluence";
+import {
+  creerFacture, pdfFacture, nomFichierFacture, donneesFacturePanier, donneesFactureContribution, euros,
+} from "./factures";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -44,7 +47,7 @@ async function ajouterPoints(email, montant) {
 }
 
 // Email de remerciement au participant d'une cagnotte (+ invitation à créer un compte)
-function construireEmailMerciContribution({ contribution, cagnotte, compteExiste }) {
+function construireEmailMerciContribution({ contribution, cagnotte, compteExiste, avecFacture }) {
   const nom = echapperHtml(contribution.nom_contributeur);
   const beneficiaire = echapperHtml(cagnotte.beneficiaire);
   const montant = Number(contribution.montant);
@@ -54,7 +57,7 @@ function construireEmailMerciContribution({ contribution, cagnotte, compteExiste
 
   let contenu =
     titreEmail("Merci pour votre participation !") +
-    texteEmail(`${nom ? `Bonjour ${nom},<br/><br/>` : ""}Votre participation de <strong>${montant} €</strong> à la cagnotte pour <strong>${beneficiaire}</strong> a bien été enregistrée.`);
+    texteEmail(`${nom ? `Bonjour ${nom},<br/><br/>` : ""}Votre participation de <strong>${montant} €</strong> à la cagnotte pour <strong>${beneficiaire}</strong> a bien été enregistrée.${avecFacture ? " Votre facture est jointe à cet email." : ""}`);
 
   if (compteExiste) {
     contenu += texteEmail(`Elle vous rapporte <strong>${points} point${points > 1 ? "s" : ""} de fidélité</strong> sur votre compte Estalviar.`);
@@ -69,7 +72,60 @@ function construireEmailMerciContribution({ contribution, cagnotte, compteExiste
   return enveloppeEmail({ titre: "Merci pour votre participation", contenuHtml: contenu, siteUrl: SITE });
 }
 
-const centimes = (euros) => Math.round(Number(euros) * 100);
+const centimes = (montant) => Math.round(Number(montant) * 100);
+
+// Facture : créée une seule fois par paiement, puis jointe à l'email (en pièce jointe PDF)
+async function factureEnPieceJointe(donnees) {
+  try {
+    const facture = await creerFacture(supabase, donnees);
+    const pdf = await pdfFacture(facture);
+    return { facture, pieceJointe: { filename: nomFichierFacture(facture), content: Buffer.from(pdf) } };
+  } catch (e) {
+    console.error("Facture non créée", donnees.panier_id || donnees.contribution_id, e);
+    return { facture: null, pieceJointe: null };
+  }
+}
+
+// Email « Commande confirmée » envoyé à l'acheteur, avec sa facture
+function construireEmailConfirmation({ panier, facture, compteExiste }) {
+  const quand = (a) => {
+    const date = dateHeureParis(a.dateEnvoi, a.heureEnvoi);
+    if (!date || date <= new Date()) return "Envoyée maintenant";
+    return `Envoi prévu le ${date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "Europe/Paris" })} à ${a.heureEnvoi}`;
+  };
+  const lignes = (panier.articles || []).map((a) => `
+    <tr>
+      <td style="padding:12px 0; border-bottom:1px solid #eee; font-family:Arial, sans-serif; font-size:14px; color:#12172B;">
+        <strong>${echapperHtml(a.marque)}</strong>${a.beneficiaire ? ` pour ${echapperHtml(a.beneficiaire)}` : ""}
+        <div style="font-size:12px; color:#777; margin-top:3px;">${quand(a)}${a.emailBeneficiaire ? ` à ${echapperHtml(a.emailBeneficiaire)}` : ""}</div>
+      </td>
+      <td style="padding:12px 0; border-bottom:1px solid #eee; font-family:Arial, sans-serif; font-size:14px; color:#12172B; text-align:right; white-space:nowrap; vertical-align:top;">${euros(a.montant)}</td>
+    </tr>`).join("");
+  const cashback = Number(panier.cashback_utilise) || 0;
+  const ligneTotal = (libelle, montant, fort) => `
+    <tr>
+      <td style="padding:6px 0 0; font-family:Arial, sans-serif; font-size:${fort ? 15 : 13}px; color:${fort ? "#12172B" : "#777"}; ${fort ? "font-weight:bold;" : ""}">${libelle}</td>
+      <td style="padding:6px 0 0; font-family:Arial, sans-serif; font-size:${fort ? 15 : 13}px; color:#12172B; text-align:right; ${fort ? "font-weight:bold;" : ""}">${montant}</td>
+    </tr>`;
+
+  let contenu =
+    titreEmail("Merci pour votre commande") +
+    texteEmail(`Votre paiement est confirmé. Voici le récapitulatif${facture ? ` de la commande <strong>${facture.numero}</strong>` : ""} :`) +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+      ${lignes}
+      ${cashback > 0 ? ligneTotal("Réglé avec votre cashback", `- ${euros(cashback)}`) : ""}
+      ${ligneTotal("Total payé", euros(Number(panier.montant_total) - cashback), true)}
+    </table>`;
+  contenu += texteEmail(
+    facture
+      ? "Votre facture est jointe à cet email (PDF)."
+      : "Votre facture sera disponible sous peu ; si besoin, écrivez-nous à info@estalviar.com."
+  );
+  contenu += compteExiste
+    ? boutonEmail({ texte: "Voir mes commandes", lien: `${SITE}/fr/profil?onglet=commandes` })
+    : texteEmail(`Chaque carte est envoyée par email à la date choisie. Avec un <a href="${SITE}/fr/inscription?email=${encodeURIComponent(panier.email_acheteur)}" style="color:#C9A227;">compte Estalviar</a>, vous suivez vos envois et gagnez du cashback.`);
+  return enveloppeEmail({ titre: "Merci pour votre commande", contenuHtml: contenu, siteUrl: SITE });
+}
 
 // ---------------------------------------------------------------------------
 // ACHAT DE CARTES (boutique)
@@ -177,6 +233,21 @@ export async function traiterPaiementPanier(sessionOuId) {
     } catch (e) {
       console.error("Email de carte NON envoyé (la carte reste renvoyable depuis l'admin)", panier.id, emailDestinataire, e);
     }
+  }
+
+  // CONFIRMATION + FACTURE à l'acheteur
+  const { facture, pieceJointe } = await factureEnPieceJointe(donneesFacturePanier(panier, session.id));
+  try {
+    const { error: erreurConfirmation } = await resend.emails.send({
+      from: EXPEDITEUR,
+      to: emailAcheteur,
+      subject: facture ? `Commande confirmée (${facture.numero})` : "Commande confirmée",
+      html: construireEmailConfirmation({ panier, facture, compteExiste: !!profil }),
+      ...(pieceJointe ? { attachments: [pieceJointe] } : {}),
+    });
+    if (erreurConfirmation) throw new Error(erreurConfirmation.message || JSON.stringify(erreurConfirmation));
+  } catch (e) {
+    console.error("Email de confirmation non envoyé", panier.id, e);
   }
 
   // CASHBACK GAGNÉ
@@ -361,12 +432,14 @@ export async function traiterPaiementContribution(sessionOuId, contributionIdAtt
     // Les cagnottes comptent pour le palier (points) mais ne rapportent pas de cashback
     const compteExiste = await ajouterPoints(contribution.email_contributeur, contribution.montant);
 
+    const { pieceJointe } = await factureEnPieceJointe(donneesFactureContribution(contribution, cagnotte, session.id));
     try {
       await resend.emails.send({
         from: EXPEDITEUR,
         to: contribution.email_contributeur,
         subject: `Merci pour votre participation à la cagnotte pour ${cagnotte.beneficiaire}`,
-        html: construireEmailMerciContribution({ contribution, cagnotte, compteExiste }),
+        html: construireEmailMerciContribution({ contribution, cagnotte, compteExiste, avecFacture: !!pieceJointe }),
+        ...(pieceJointe ? { attachments: [pieceJointe] } : {}),
       });
     } catch (e) {
       console.error("Email de remerciement non envoyé", contribution.id, e);

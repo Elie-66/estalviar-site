@@ -515,7 +515,9 @@
     "q15r": "Der gesammelte Betrag wird am Enddatum trotzdem zur Geschenkkarte. Beiträge bringen Treuepunkte, aber kein Cashback.",
     "pasTrouve": "Keine Antwort gefunden?",
     "pasTrouveTexte": "Schreiben Sie uns: Wir antworten meist innerhalb von 2 Werktagen.",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "q16": "Wie erhalte ich eine Rechnung?",
+    "q16r": "Sie wird automatisch versendet: Ihre PDF-Rechnung ist der Bestellbestätigung per E-Mail beigefügt. Mit einem Konto finden Sie sie auch unter Mein Konto, Reiter Bestellungen. Für eine Rechnung auf Ihr Unternehmen wählen Sie beim Bezahlen „Rechnung auf ein Unternehmen“."
   },
   "cagnotteChoisir": {
     "chargement": "Wird geladen…",
@@ -821,7 +823,14 @@
     "cgvRequise": "Setzen Sie das Häkchen, um die Bedingungen zu akzeptieren.",
     "securise": "Sichere Zahlung über Stripe",
     "erreurReseau": "Netzwerkfehler, bitte erneut versuchen.",
-    "erreurInconnue": "Ein Fehler ist aufgetreten, bitte erneut versuchen."
+    "erreurInconnue": "Ein Fehler ist aufgetreten, bitte erneut versuchen.",
+    "factureSociete": "Rechnung auf ein Unternehmen",
+    "factureRaisonSociale": "Firmenname",
+    "factureAdresse": "Rechnungsadresse",
+    "factureSiren": "Handelsregisternummer (optional)",
+    "factureTva": "USt-IdNr. (optional)",
+    "factureAide": "Diese Angaben erscheinen auf der Rechnung, die Sie nach der Zahlung per E-Mail erhalten.",
+    "factureIncomplete": "Bitte geben Sie Firmenname und Adresse für die Rechnung an."
   },
   "panier": {
     "titre": "Ihr Warenkorb",
@@ -1002,7 +1011,13 @@
     "supprimerOui": "Ja, Konto löschen",
     "suppression": "Wird gelöscht…",
     "suppressionErreur": "Die Löschung hat nicht funktioniert. Schreiben Sie uns an info@estalviar.com.",
-    "voirCarte": "Karte ansehen"
+    "voirCarte": "Karte ansehen",
+    "facturesTitre": "Ihre Rechnungen",
+    "facturesAide": "Jede Rechnung ist auch der Bestätigungs-E-Mail beigefügt.",
+    "factureCagnotte": "Beitrag zu einem Gemeinschaftsgeschenk",
+    "factureCartes": "{n, plural, one {# Karte} other {# Karten}}",
+    "factureTelecharger": "Herunterladen",
+    "factureErreur": "Der Download hat nicht funktioniert. Versuchen Sie es erneut oder schreiben Sie an info@estalviar.com."
   },
   "soldeCashback": {
     "chargement": "Cashback wird geladen…",
