@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import { EXPEDITEUR } from '../../../lib/emailCarte';
+import { EXPEDITEUR, boutonVoirCarte } from '../../../lib/emailCarte';
 import { chiffrerCode } from '../../../lib/chiffrement';
 import { trouverDesign, echapperHtml } from '../../../lib/designs';
 
@@ -119,7 +119,7 @@ export async function POST(req) {
       const code = genererCode();
       nomsMarques.push(carte.marque);
 
-     await supabase.from('commandes').insert({
+      const { data: carteEnregistree } = await supabase.from('commandes').insert({
         email_acheteur: cagnotte.email_createur,
         email_destinataire: destinataire,
         marque: `Cagnotte ${carte.marque}`,
@@ -130,7 +130,7 @@ export async function POST(req) {
         code: chiffrerCode(code),
         statut: 'payee',
         cagnotte_id: cagnotte.id,
-      });
+      }).select().single();
 
       blocsHtml += blocCarte({
         marque: carte.marque,
@@ -141,7 +141,7 @@ export async function POST(req) {
         code,
         origin,
         beneficiaire: cagnotte.beneficiaire,
-      });
+      }) + boutonVoirCarte(carteEnregistree?.jeton_carte);
     }
 
     let htmlComplet = `

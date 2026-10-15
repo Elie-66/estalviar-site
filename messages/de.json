@@ -1001,7 +1001,8 @@
     "supprimerAvertissement": "Ihr Konto, Ihre Punkte und Ihr Cashback werden endgültig gelöscht. Ihre Bestellungen bleiben für die Buchhaltung gespeichert. Bestätigen?",
     "supprimerOui": "Ja, Konto löschen",
     "suppression": "Wird gelöscht…",
-    "suppressionErreur": "Die Löschung hat nicht funktioniert. Schreiben Sie uns an info@estalviar.com."
+    "suppressionErreur": "Die Löschung hat nicht funktioniert. Schreiben Sie uns an info@estalviar.com.",
+    "voirCarte": "Karte ansehen"
   },
   "soldeCashback": {
     "chargement": "Cashback wird geladen…",
@@ -1069,5 +1070,22 @@
     "boutique": "Marken ansehen",
     "cagnotte": "Sammelgeschenk starten",
     "lienFooter": "Über uns"
+  },
+  "maCarte": {
+    "metaTitre": "Ihre {marque} Geschenkkarte",
+    "titre": "Ihre Geschenkkarte",
+    "titrePour": "Eine Geschenkkarte für {prenom}",
+    "intro": "{marque}-Karte, versendet am {date}.",
+    "codeTitre": "Kartencode",
+    "copier": "Code kopieren",
+    "copie": "Code kopiert",
+    "prudence": "Dieser Code ist so viel wert wie Bargeld: Geben Sie ihn nicht weiter. Estalviar fragt Sie niemals danach, weder telefonisch noch per Nachricht.",
+    "imprimer": "Drucken oder als PDF speichern",
+    "astucePdf": "Für ein PDF wählen Sie „Als PDF speichern“ als Drucker.",
+    "utiliserTitre": "So lösen Sie die Karte ein",
+    "utiliser": "Geben Sie diesen Code beim Bezahlen auf der Website von {marque} ein. Im Geschäft zeigen Sie diese Seite oder einen Ausdruck an der Kasse, sofern die Marke ihre Geschenkkarten in Filialen akzeptiert.",
+    "aide": "Ein Problem mit dieser Karte? Schreiben Sie uns an <mail>info@estalviar.com</mail>, wir antworten in der Regel innerhalb von zwei Werktagen.",
+    "offrirTexte": "Möchten Sie selbst jemandem eine Freude machen?",
+    "offrir": "Eine Geschenkkarte verschenken"
   }
 }

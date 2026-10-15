@@ -93,7 +93,7 @@ export async function POST(req) {
       from: EXPEDITEUR,
       to: destinataire,
       subject: `Votre carte cadeau ${article.marque} (renvoi)`,
-      html: construireEmailCarte({ article, code: codeClair, mention: 'Ceci est un renvoi de votre carte cadeau.' }),
+      html: construireEmailCarte({ article, code: codeClair, jeton: commande.jeton_carte, mention: 'Ceci est un renvoi de votre carte cadeau.' }),
     });
     if (erreurEnvoi) {
       console.error('Renvoi refusé par Resend', commande.id, erreurEnvoi);

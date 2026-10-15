@@ -71,7 +71,24 @@ export async function articleDepuisCommande(supabase, commande) {
   };
 }
 
-export function construireEmailCarte({ article, code, mention }) {
+/** Lien vers la page en ligne d'une carte (à partir de son jeton secret) */
+export const lienCarte = (jeton) => (jeton ? `${SITE}/fr/carte/${jeton}` : null);
+
+/** Bouton « Voir ma carte en ligne » à placer sous une carte dans un email */
+export function boutonVoirCarte(jeton) {
+  const lien = lienCarte(jeton);
+  if (!lien) return "";
+  return `
+    <div style="text-align:center; margin: 18px 0 4px;">
+      <a href="${lien}" style="display:inline-block; background:#C9A227; color:#12172B; font-family: Arial, sans-serif; font-size:14px; font-weight:bold; text-decoration:none; padding:12px 24px; border-radius:8px;">
+        Voir ma carte en ligne
+      </a>
+      <p style="margin:8px 0 0; font-family: Arial, sans-serif; font-size:11px; color:rgba(246,242,233,0.5);">Pour copier le code facilement, ou l'imprimer.</p>
+    </div>
+  `;
+}
+
+export function construireEmailCarte({ article, code, mention, jeton }) {
   const logoUrl = `${SITE}${article.image || "/logos/estalviar-icone.svg"}`;
   const couleurTexte = article.texteFonce ? "#12172B" : "#F6F2E9";
   const couleurTexteAtt = article.texteFonce ? "rgba(18,23,43,0.6)" : "rgba(246,242,233,0.6)";
@@ -95,6 +112,7 @@ export function construireEmailCarte({ article, code, mention }) {
           ${echapperHtml(code)}
         </p>
       </div>
+      ${boutonVoirCarte(jeton)}
       ${mention ? `<p style="color:rgba(246,242,233,0.4); font-size:11px; text-align:center; margin-top:16px;">${echapperHtml(mention)}</p>` : ""}
     </div>
   `;

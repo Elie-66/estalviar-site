@@ -482,6 +482,11 @@ export default function Profil() {
                   <div className="text-right shrink-0">
                     <p className="text-ivory font-semibold">{euros(c.montant)}</p>
                     <span className="text-xs text-gold/80">{statutCommande(c)}</span>
+                    {c.jeton_carte && c.code && !["annulee", "remboursee"].includes(c.statut) && (
+                      <a href={`/${locale}/carte/${c.jeton_carte}`} className="block mt-2 text-sm text-ivory/80 underline decoration-ivory/30 underline-offset-4 hover:text-gold hover:decoration-gold">
+                        {t("voirCarte")}
+                      </a>
+                    )}
                   </div>
                 </li>
               );

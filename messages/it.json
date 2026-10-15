@@ -1001,7 +1001,8 @@
     "supprimerAvertissement": "Il tuo account, i tuoi punti e il tuo cashback saranno eliminati definitivamente. Gli ordini restano conservati per la contabilità. Confermi?",
     "supprimerOui": "Sì, elimina il mio account",
     "suppression": "Eliminazione…",
-    "suppressionErreur": "L'eliminazione non è riuscita. Scrivici a info@estalviar.com."
+    "suppressionErreur": "L'eliminazione non è riuscita. Scrivici a info@estalviar.com.",
+    "voirCarte": "Vedi la carta"
   },
   "soldeCashback": {
     "chargement": "Caricamento del cashback…",
@@ -1069,5 +1070,22 @@
     "boutique": "Vedi i marchi",
     "cagnotte": "Crea una colletta",
     "lienFooter": "Chi siamo"
+  },
+  "maCarte": {
+    "metaTitre": "La tua gift card {marque}",
+    "titre": "La tua gift card",
+    "titrePour": "Una gift card per {prenom}",
+    "intro": "Carta {marque}, inviata il {date}.",
+    "codeTitre": "Codice della carta",
+    "copier": "Copia il codice",
+    "copie": "Codice copiato",
+    "prudence": "Questo codice vale come denaro: non condividerlo. Estalviar non te lo chiederà mai, né al telefono né via messaggio.",
+    "imprimer": "Stampa o salva in PDF",
+    "astucePdf": "Per un PDF, scegli «Salva come PDF» come stampante.",
+    "utiliserTitre": "Come usarla",
+    "utiliser": "Inserisci questo codice al momento del pagamento sul sito di {marque}. In negozio, mostra questa pagina o la sua versione stampata alla cassa, se il marchio accetta le sue gift card nei punti vendita.",
+    "aide": "Un problema con questa carta? Scrivici a <mail>info@estalviar.com</mail>, di solito rispondiamo entro due giorni lavorativi.",
+    "offrirTexte": "Ti va di fare un regalo anche tu?",
+    "offrir": "Regala una gift card"
   }
 }

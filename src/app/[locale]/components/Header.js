@@ -83,7 +83,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-[74px] bg-ink/80 backdrop-blur-md border-b border-ivory/10 z-50">
+    <header className="print:hidden fixed top-0 left-0 right-0 h-[74px] bg-ink/80 backdrop-blur-md border-b border-ivory/10 z-50">
       <div className="max-w-[1240px] mx-auto h-full px-6 flex items-center justify-between">
 
         <LogoEstalviar

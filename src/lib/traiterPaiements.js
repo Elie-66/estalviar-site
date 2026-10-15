@@ -141,7 +141,7 @@ export async function traiterPaiementPanier(sessionOuId) {
     // Trop loin pour Resend : la tâche quotidienne « envoyer-cartes-programmees » l'enverra plus tard
     const statut = dateHeureEnvoi && joursAvant > JOURS_MAX_PROGRAMMATION ? "a_programmer" : "payee";
 
-    await supabase.from("commandes").insert({
+    const { data: carteEnregistree } = await supabase.from("commandes").insert({
       panier_id: panier.id, // lien vers le panier : sert à annuler le cashback si la carte est remboursée
       email_acheteur: emailAcheteur,
       email_beneficiaire: article.emailBeneficiaire || null,
@@ -155,7 +155,7 @@ export async function traiterPaiementPanier(sessionOuId) {
       date_envoi: article.dateEnvoi,
       heure_envoi: article.heureEnvoi,
       statut,
-    });
+    }).select().single();
 
     // La carte est payée : les points comptent tout de suite, même si l'envoi est programmé plus tard
     await ajouterPoints(emailAcheteur, article.montant);
@@ -165,7 +165,7 @@ export async function traiterPaiementPanier(sessionOuId) {
       from: EXPEDITEUR,
       to: emailDestinataire,
       subject: `Votre carte cadeau ${article.marque}`,
-      html: construireEmailCarte({ article, code }),
+      html: construireEmailCarte({ article, code, jeton: carteEnregistree?.jeton_carte }),
     };
     if (dateHeureEnvoi && joursAvant > 0) {
       optionsEnvoi.scheduledAt = dateHeureEnvoi.toISOString();

@@ -1001,7 +1001,8 @@
     "supprimerAvertissement": "Votre compte, vos points et votre cashback seront définitivement supprimés. Vos commandes restent conservées pour la comptabilité. Confirmer ?",
     "supprimerOui": "Oui, supprimer mon compte",
     "suppression": "Suppression…",
-    "suppressionErreur": "La suppression n'a pas fonctionné. Écrivez-nous à info@estalviar.com."
+    "suppressionErreur": "La suppression n'a pas fonctionné. Écrivez-nous à info@estalviar.com.",
+    "voirCarte": "Voir la carte"
   },
   "soldeCashback": {
     "chargement": "Chargement du cashback…",
@@ -1069,5 +1070,22 @@
     "boutique": "Voir les enseignes",
     "cagnotte": "Créer une cagnotte",
     "lienFooter": "Qui sommes-nous"
+  },
+  "maCarte": {
+    "metaTitre": "Votre carte cadeau {marque}",
+    "titre": "Votre carte cadeau",
+    "titrePour": "Une carte cadeau pour {prenom}",
+    "intro": "Carte {marque}, envoyée le {date}.",
+    "codeTitre": "Code de la carte",
+    "copier": "Copier le code",
+    "copie": "Code copié",
+    "prudence": "Ce code s'utilise comme de l'argent : ne le partagez pas. Estalviar ne vous le demandera jamais, ni par téléphone ni par message.",
+    "imprimer": "Imprimer ou enregistrer en PDF",
+    "astucePdf": "Pour un PDF, choisissez « Enregistrer au format PDF » comme imprimante.",
+    "utiliserTitre": "Comment l'utiliser",
+    "utiliser": "Saisissez ce code au moment de payer sur le site de {marque}. En magasin, montrez cette page ou sa version imprimée en caisse, si l'enseigne accepte ses cartes cadeaux en boutique.",
+    "aide": "Un souci avec cette carte ? Écrivez-nous à <mail>info@estalviar.com</mail>, nous répondons en général sous 48 heures ouvrées.",
+    "offrirTexte": "Envie de faire plaisir à votre tour ?",
+    "offrir": "Offrir une carte cadeau"
   }
 }

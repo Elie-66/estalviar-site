@@ -38,7 +38,7 @@ export default function BanniereCookies() {
 
   return (
     <div role="region" aria-label={t("titre")}
-      className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-[420px] z-[100] rounded-2xl bg-ink-secondary border border-ivory/15 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)] p-5">
+      className="print:hidden fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-[420px] z-[100] rounded-2xl bg-ink-secondary border border-ivory/15 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)] p-5">
       <p className="text-sm text-ivory/75 leading-relaxed">
         {t("texte")}{" "}
         <a href={`/${locale}/cookies`} className="text-gold underline underline-offset-2">{t("lien")}</a>

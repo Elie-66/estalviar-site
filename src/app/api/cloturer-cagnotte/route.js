@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import { EXPEDITEUR } from '../../../lib/emailCarte';
+import { EXPEDITEUR, boutonVoirCarte } from '../../../lib/emailCarte';
 import { chiffrerCode } from '../../../lib/chiffrement';
 import { enveloppeEmail, titreEmail, texteEmail, boutonEmail } from '../../../lib/emailTemplate';
 import { echapperHtml } from '../../../lib/designs';
@@ -21,7 +21,7 @@ function genererCode() {
   return `${bloc()}-${bloc()}-${bloc()}-${bloc()}`;
 }
 
-function construireEmailCarte({ marque, image, background, texteFonce, beneficiaire, message, montant, code, origin }) {
+function construireEmailCarte({ marque, image, background, texteFonce, beneficiaire, message, montant, code, origin, jeton }) {
   const logoUrl = `${origin}${image || '/logos/estalviar-icone.svg'}`;
   const couleurTexte = texteFonce ? '#12172B' : '#F6F2E9';
   const couleurTexteAtt = texteFonce ? 'rgba(18,23,43,0.6)' : 'rgba(246,242,233,0.6)';
@@ -41,6 +41,7 @@ function construireEmailCarte({ marque, image, background, texteFonce, beneficia
         </p>
         <p style="color:${couleurTexteAtt}; font-size:11px; letter-spacing:2px; margin-top:16px;">${code}</p>
       </div>
+      ${boutonVoirCarte(jeton)}
     </div>
   `;
 }
@@ -89,7 +90,7 @@ export async function POST(req) {
     if (cagnotte.carte_choisie) {
       const code = genererCode();
 
-      await supabase.from('commandes').insert({
+      const { data: carteEnregistree } = await supabase.from('commandes').insert({
         email_acheteur: cagnotte.email_createur,
         email_destinataire: destinataire,
         marque: `Cagnotte ${cagnotte.marque}`,
@@ -100,7 +101,7 @@ export async function POST(req) {
         code: chiffrerCode(code),
         statut: 'payee',
         cagnotte_id: cagnotte.id,
-      });
+      }).select().single();
 
       let html = construireEmailCarte({
         marque: cagnotte.marque,
@@ -112,6 +113,7 @@ export async function POST(req) {
         montant: cagnotte.montant_collecte,
         code,
         origin,
+        jeton: carteEnregistree?.jeton_carte,
       });
 
       if (participants && participants.length > 0) {

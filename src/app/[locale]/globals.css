@@ -67,3 +67,10 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: reduce) {
   [class*="animate-[flotter"] { animation: none !important; }
 }
+
+/* Impression (page « Ma carte ») : fond blanc, couleurs des cartes conservées */
+@media print {
+  @page { margin: 14mm; }
+  body { background: #fff !important; color: #12172B !important; }
+  .imprimer-couleurs { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

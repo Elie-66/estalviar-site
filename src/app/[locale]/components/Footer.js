@@ -61,7 +61,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-ink-secondary border-t border-ivory/10 mt-auto">
+    <footer className="print:hidden bg-ink-secondary border-t border-ivory/10 mt-auto">
       <div className="max-w-[1240px] mx-auto px-6 py-14 md:py-16 md:grid md:grid-cols-[1.4fr_repeat(4,1fr)] md:gap-10">
 
         {/* La marque */}

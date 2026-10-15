@@ -53,7 +53,7 @@ export async function envoyerCartesProgrammees(maintenant = new Date()) {
         from: EXPEDITEUR,
         to: commande.email_destinataire || commande.email_acheteur,
         subject: `Votre carte cadeau ${article.marque}`,
-        html: construireEmailCarte({ article, code }),
+        html: construireEmailCarte({ article, code, jeton: commande.jeton_carte }),
       };
       if (quand && quand > maintenant) options.scheduledAt = quand.toISOString();
 
