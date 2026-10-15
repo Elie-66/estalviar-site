@@ -16,130 +16,153 @@ function useSession() {
   return session;
 }
 
-/* ---------- Bande de réassurance, juste sous le hero ---------- */
-
-const ICONES = {
-  cadenas: <><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></>,
-  envoi: <><path d="M3 7l9 6 9-6" /><rect x="3" y="5" width="18" height="14" rx="2" /></>,
-  etoile: <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" />,
-  bulle: <path d="M4 5h16v11H9l-5 4z" />,
-};
-
-export function Reassurance() {
-  const t = useTranslations("accueilPlus");
-  const points = [
-    ["cadenas", 1], ["envoi", 2], ["etoile", 3], ["bulle", 4],
-  ];
-  return (
-    <section className="border-y border-ivory/10 bg-ivory/[0.025]">
-      <ul className="max-w-[1240px] mx-auto px-6 py-6 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-5">
-        {points.map(([icone, n]) => (
-          <li key={n} className="flex items-center gap-3">
-            <span className="shrink-0 w-10 h-10 rounded-full border border-gold/35 text-gold flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" aria-hidden>
-                {ICONES[icone]}
-              </svg>
-            </span>
-            <span className="min-w-0">
-              <span className="block text-ivory text-sm font-medium leading-snug">{t(`reassurance${n}Titre`)}</span>
-              <span className="hidden sm:block text-ivory/50 text-xs leading-snug">{t(`reassurance${n}Texte`)}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-/* ---------- Idées par budget ---------- */
+/* ---------- Trouver la bonne carte : par univers et par budget ---------- */
 
 const BUDGETS = [
-  { montant: 20, cle: "budget20", couleur: "#2E7D6B" },
-  { montant: 50, cle: "budget50", couleur: "#C9A227" },
-  { montant: 100, cle: "budget100", couleur: "#E5604D" },
+  { montant: 20, cle: "budget20", fond: "linear-gradient(150deg, #2E7D6B 0%, #173f36 100%)" },
+  { montant: 50, cle: "budget50", fond: "linear-gradient(150deg, #C9A227 0%, #7a6012 100%)" },
+  { montant: 100, cle: "budget100", fond: "linear-gradient(150deg, #5B3A5C 0%, #2a1a2b 100%)" },
 ];
 
-export function IdeesBudget({ cartes }) {
-  const t = useTranslations("accueilPlus");
+export function TrouverCarte({ cartes, traduireCategorie }) {
+  const t = useTranslations("accueil2");
   const tVit = useTranslations("accueilVitrine");
   const locale = useLocale();
   if (!cartes.length) return null;
 
+  // Univers : les catégories les plus fournies, avec 3 logos chacune
+  const parCategorie = {};
+  cartes.forEach((c) => {
+    if (!c.categorie) return;
+    (parCategorie[c.categorie] ||= []).push(c);
+  });
+  const univers = Object.entries(parCategorie)
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, 6);
+
   return (
-    <section className="max-w-[1240px] w-full mx-auto px-6 pt-20">
-      <h2 className="text-2xl md:text-3xl font-semibold text-ivory">{t("budgetTitre")}</h2>
-      <p className="mt-2 text-ivory/60 mb-8">{t("budgetTexte")}</p>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {BUDGETS.map((b) => {
-          const nombre = cartes.filter((c) => c.montant_min <= b.montant && b.montant <= c.montant_max).length;
-          if (nombre === 0) return null;
-          return (
-            <a key={b.montant} href={`/${locale}/boutique?budget=${b.montant}`}
-              className="group relative overflow-hidden rounded-2xl border border-ivory/10 bg-ivory/[0.03] p-6 flex items-end justify-between gap-4 transition-colors hover:border-ivory/25 focus-visible:outline-2 focus-visible:outline-gold">
-              <span aria-hidden className="absolute left-0 inset-y-0 w-1" style={{ background: b.couleur }} />
-              <span>
-                <span className="block text-ivory text-[2.6rem] leading-none font-semibold font-[family-name:var(--font-fraunces)]">
-                  {b.montant}<span className="text-2xl ml-1" style={{ color: b.couleur }}>€</span>
-                </span>
-                <span className="block mt-3 text-ivory font-medium">{t(b.cle)}</span>
-                <span className="block text-xs text-ivory/50 mt-0.5">{tVit("nbEnseignes", { n: nombre })}</span>
-              </span>
-              <span className="text-sm text-ivory/60 group-hover:text-gold whitespace-nowrap transition-colors">
-                {t("budgetVoir")}
-                <span aria-hidden className="inline-block ml-1 transition-transform group-hover:translate-x-0.5">›</span>
-              </span>
-            </a>
-          );
-        })}
+    <section className="border-t border-ivory/10">
+      <div className="max-w-[1240px] mx-auto px-6 py-20">
+        <h2 className="text-2xl md:text-3xl font-semibold text-ivory">{t("trouverTitre")}</h2>
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-12 lg:gap-16">
+
+          <div>
+            <h3 className="text-sm font-medium text-ivory/55 mb-2">{t("parUnivers")}</h3>
+            <ul className="border-t border-ivory/10">
+              {univers.map(([nom, liste]) => (
+                <li key={nom} className="border-b border-ivory/10">
+                  <a href={`/${locale}/boutique?categorie=${encodeURIComponent(nom)}`}
+                    className="group flex items-center gap-4 py-4">
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-ivory text-lg sm:text-xl font-semibold font-[family-name:var(--font-fraunces)] group-hover:text-gold transition-colors truncate">
+                        {traduireCategorie(nom)}
+                      </span>
+                      <span className="block text-xs text-ivory/45 mt-0.5">{tVit("nbEnseignes", { n: liste.length })}</span>
+                    </span>
+                    <span className="hidden sm:flex gap-1.5 shrink-0" aria-hidden>
+                      {liste.filter((c) => c.image).slice(0, 3).map((c) => (
+                        <span key={c.slug} className="h-8 w-14 rounded bg-white flex items-center justify-center px-1.5">
+                          <img src={c.image} alt="" className="max-h-[65%] max-w-full object-contain" />
+                        </span>
+                      ))}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-ivory/55 mb-4">{t("parBudget")}</h3>
+            <div className="grid grid-cols-3 lg:grid-cols-1 gap-3">
+              {BUDGETS.map((b) => {
+                const nombre = cartes.filter((c) => c.montant_min <= b.montant && b.montant <= c.montant_max).length;
+                return (
+                  <a key={b.montant} href={`/${locale}/boutique?budget=${b.montant}`}
+                    className="group flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-5 focus-visible:outline-2 focus-visible:outline-gold rounded-xl">
+                    <span className="relative block w-full lg:w-40 shrink-0 aspect-[1.586/1] rounded-xl p-3 border border-white/10 shadow-[0_14px_30px_-18px_rgba(0,0,0,0.9)] transition-transform group-hover:-translate-y-0.5"
+                      style={{ background: b.fond }}>
+                      <span className="absolute top-2.5 right-3 text-white/60 text-[8px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
+                      <span className="absolute bottom-2.5 left-3 text-white text-2xl sm:text-3xl font-semibold leading-none font-[family-name:var(--font-fraunces)]">
+                        {b.montant}<span className="text-base ml-0.5 opacity-80">€</span>
+                      </span>
+                    </span>
+                    <span>
+                      <span className="block text-ivory text-sm sm:text-base font-medium group-hover:text-gold transition-colors">{t(b.cle)}</span>
+                      <span className="block text-xs text-ivory/45 mt-0.5">{tVit("nbEnseignes", { n: nombre })}</span>
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ---------- Rappels d'anniversaire ---------- */
+/* ---------- Deux services : cagnotte et rappels d'anniversaire ---------- */
 
-export function RappelAnniversaire() {
-  const t = useTranslations("accueilPlus");
+export function Services() {
+  const t = useTranslations("accueil2");
+  const tPlus = useTranslations("accueilPlus");
+  const tCagnotte = useTranslations("cagnotteAccueil");
   const locale = useLocale();
   const session = useSession();
-  const lien = session ? `/${locale}/profil?onglet=beneficiaires` : `/${locale}/inscription`;
+  const lienRappels = session ? `/${locale}/profil?onglet=beneficiaires` : `/${locale}/inscription`;
+  const lien = "inline-block mt-5 text-sm text-gold underline decoration-gold/50 underline-offset-4 hover:decoration-gold";
 
   return (
     <section className="border-t border-ivory/10">
-      <div className="max-w-[1240px] mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <div className="text-center md:text-left">
-          <h2 className="text-3xl md:text-4xl font-semibold text-ivory leading-tight">{t("rappelTitre")}</h2>
-          <p className="mt-6 text-ivory/60 leading-relaxed max-w-md mx-auto md:mx-0">
-            {t("rappelTexte", { jours: JOURS_AVANT_RAPPEL })}
-          </p>
-          <a href={lien}
-            className="inline-block mt-8 bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors">
-            {t("rappelBouton")}
-          </a>
-        </div>
+      <div className="max-w-[1240px] mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-10 lg:gap-20">
 
-        {/* Aperçu de l'email de rappel */}
-        <div aria-hidden className="relative max-w-[440px] w-full mx-auto">
-          <div className="absolute -inset-6 rounded-[2rem] opacity-40 blur-3xl"
-            style={{ background: "radial-gradient(circle at 60% 40%, #E5604D 0%, transparent 65%)" }} />
-          <div className="relative rotate-2 rounded-2xl bg-ivory text-ink shadow-[0_30px_60px_-25px_rgba(0,0,0,0.9)] overflow-hidden">
-            <div className="flex items-center gap-3 px-5 py-3.5 border-b border-ink/10">
-              <span className="w-8 h-8 rounded-full bg-ink text-ivory text-sm flex items-center justify-center font-semibold font-[family-name:var(--font-fraunces)]">
-                E<span className="text-gold">.</span>
-              </span>
-              <span className="text-sm font-medium">{t("rappelExempleDe")}</span>
-              <span className="ml-auto text-xs text-ink/45">08:30</span>
-            </div>
-            <div className="px-5 py-6">
-              <p className="text-lg font-semibold leading-snug font-[family-name:var(--font-fraunces)]">
-                {t("rappelExempleTitre", { jours: JOURS_AVANT_RAPPEL })}
-              </p>
-              <p className="mt-2 text-sm text-ink/65 leading-relaxed">{t("rappelExempleTexte")}</p>
-              <span className="mt-5 inline-block bg-gold text-ink text-sm font-semibold rounded-lg px-4 py-2.5">
-                {t("rappelExempleBouton")}
-              </span>
+        {/* Cagnotte */}
+        <div>
+          <div aria-hidden className="relative h-44 sm:h-52 rounded-2xl overflow-hidden border border-ivory/10 bg-ivory/[0.03] flex items-center justify-center">
+            <div className="w-[58%] max-w-[290px] aspect-[1.586/1] -rotate-3 rounded-xl p-4 flex flex-col justify-between border border-white/10 shadow-[0_24px_40px_-24px_rgba(0,0,0,0.9)]"
+              style={{ background: "linear-gradient(150deg, #5B3A5C 0%, #0d1022 100%)" }}>
+              <div className="flex justify-between items-start">
+                <span className="text-white text-xs font-medium">{tPlus("cagnotteVisuel")}</span>
+                <span className="text-white/50 text-[8px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
+              </div>
+              <div>
+                <p className="text-white text-2xl font-semibold leading-none font-[family-name:var(--font-fraunces)]">
+                  140<span className="text-gold text-base ml-0.5">€</span><span className="text-white/40 text-xs font-sans ml-1.5">/ 200 €</span>
+                </p>
+                <div className="mt-2 h-1.5 rounded-full bg-white/10 overflow-hidden"><div className="h-full w-[70%] bg-gold rounded-full" /></div>
+              </div>
             </div>
           </div>
+          <h2 className="mt-7 text-2xl font-semibold text-ivory">{t("cagnotteTitre")}</h2>
+          <p className="mt-2 text-ivory/65 leading-relaxed max-w-[30rem]">{t("cagnotteTexte")}</p>
+          <a href={`/${locale}/cagnotte/creer`} className={lien}>{tCagnotte("bouton")}</a>
+        </div>
+
+        {/* Rappels d'anniversaire */}
+        <div>
+          <div aria-hidden className="relative h-44 sm:h-52 rounded-2xl overflow-hidden border border-ivory/10 bg-ivory/[0.03] flex items-center justify-center">
+            <div className="w-[82%] max-w-[360px] rotate-2 rounded-xl bg-ivory text-ink shadow-[0_24px_40px_-24px_rgba(0,0,0,0.9)] overflow-hidden">
+              <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-ink/10">
+                <span className="w-6 h-6 rounded-full bg-ink text-ivory text-[11px] flex items-center justify-center font-semibold font-[family-name:var(--font-fraunces)]">
+                  E<span className="text-gold">.</span>
+                </span>
+                <span className="text-xs font-medium">{tPlus("rappelExempleDe")}</span>
+                <span className="ml-auto text-[11px] text-ink/45">08:30</span>
+              </div>
+              <div className="px-4 py-3.5">
+                <p className="text-sm font-semibold leading-snug font-[family-name:var(--font-fraunces)]">
+                  {tPlus("rappelExempleTitre", { jours: JOURS_AVANT_RAPPEL })}
+                </p>
+                <span className="mt-2.5 inline-block bg-gold text-ink text-xs font-semibold rounded-md px-3 py-1.5">
+                  {tPlus("rappelExempleBouton")}
+                </span>
+              </div>
+            </div>
+          </div>
+          <h2 className="mt-7 text-2xl font-semibold text-ivory">{t("rappelTitre")}</h2>
+          <p className="mt-2 text-ivory/65 leading-relaxed max-w-[30rem]">{t("rappelTexte", { jours: JOURS_AVANT_RAPPEL })}</p>
+          <a href={lienRappels} className={lien}>{tPlus("rappelBouton")}</a>
         </div>
       </div>
     </section>
@@ -205,33 +228,24 @@ export function Newsletter() {
   };
 
   return (
-    <section id="newsletter" className="scroll-mt-24 max-w-[1240px] w-full mx-auto px-6 pb-20">
-      <div className="relative overflow-hidden rounded-2xl px-6 py-10 sm:px-12 grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 lg:gap-14 items-center"
-        style={{ background: "radial-gradient(circle at 92% 8%, rgba(201,162,39,0.22), transparent 42%), linear-gradient(135deg, #1d2440 0%, #12172B 60%)" }}>
-
-        {/* Le jeton de 25 points */}
-        <div className="relative mx-auto lg:mx-0 w-32 h-32 sm:w-36 sm:h-36 rounded-full flex flex-col items-center justify-center text-ink shadow-[0_18px_40px_-18px_rgba(201,162,39,0.9)]"
-          style={{ background: "radial-gradient(circle at 32% 28%, #fff6d6 0%, #E3C25A 38%, #C9A227 70%, #9c7c17 100%)" }}>
-          <span className="absolute inset-2 rounded-full border border-ink/15" aria-hidden />
-          <span className="text-5xl font-semibold leading-none font-[family-name:var(--font-fraunces)]">{POINTS_NEWSLETTER}</span>
-          <span className="text-[11px] font-semibold tracking-wide mt-1">{t("jetonPoints")}</span>
+    <section id="newsletter" className="scroll-mt-24 border-t border-ivory/10">
+      <div className="max-w-[1240px] mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-semibold text-ivory">{t("nlTitre")}</h2>
+          <p className="mt-3 text-ivory/65 leading-relaxed max-w-[34rem]">{t("nlTexte", { points: POINTS_NEWSLETTER })}</p>
         </div>
 
-        <div className="relative text-center lg:text-left">
-          <p className="text-gold text-sm font-medium">{t("nlPoints", { points: POINTS_NEWSLETTER })}</p>
-          <h2 className="mt-1 text-2xl md:text-3xl font-semibold text-ivory">{t("nlTitre")}</h2>
-          <p className="mt-3 text-ivory/65 leading-relaxed max-w-[38rem] mx-auto lg:mx-0">{t("nlTexte", { points: POINTS_NEWSLETTER })}</p>
-
+        <div>
           {dejaInscrit ? (
-            !message && <p className="mt-6 text-sm text-vert">{t("nlDejaInscrit")}</p>
+            !message && <p className="text-sm text-vert">{t("nlDejaInscrit")}</p>
           ) : (
-            <form onSubmit={inscrire} className="mt-6 flex flex-col sm:flex-row gap-3 max-w-[520px] mx-auto lg:mx-0">
+            <form onSubmit={inscrire} className="flex flex-col sm:flex-row gap-3">
               {session ? (
                 <p className="flex-1 self-center text-sm text-ivory/60 truncate">{t("nlCompte", { email: session.user.email })}</p>
               ) : (
                 <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} maxLength={200}
                   placeholder={t("nlPlaceholder")} aria-label={t("nlPlaceholder")} autoComplete="email"
-                  className="flex-1 min-w-0 bg-ivory/[0.07] border border-ivory/20 rounded-lg px-4 py-3 text-ivory text-sm focus:border-gold/70 outline-none" />
+                  className="flex-1 min-w-0 bg-ivory/[0.06] border border-ivory/20 rounded-lg px-4 py-3 text-ivory text-sm focus:border-gold/70 outline-none" />
               )}
               <button type="submit" disabled={envoi || session === null}
                 className="bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors disabled:opacity-50 whitespace-nowrap">

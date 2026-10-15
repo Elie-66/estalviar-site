@@ -58,12 +58,6 @@ export default function Footer() {
 
   return (
     <footer className="bg-ink-secondary border-t border-ivory/10 mt-auto">
-      <div className="border-b border-ivory/10">
-        <div className="max-w-[1240px] mx-auto px-6 py-4 text-center text-xs text-ivory/50">
-          {t("cartesNumeriques")}
-        </div>
-      </div>
-
       <div className="max-w-[1240px] mx-auto px-6 py-14 md:py-16 md:grid md:grid-cols-[1.4fr_repeat(4,1fr)] md:gap-10">
 
         {/* La marque */}
@@ -124,19 +118,13 @@ export default function Footer() {
         <div className="max-w-[1240px] mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-ivory/50">
           <p>&copy; 2026 {t("copyright")}</p>
 
-          <div className="flex items-center gap-4 text-ivory/40">
-            {["Visa", "Mastercard", "PayPal", "Apple Pay"].map((methode) => (
-              <span key={methode} className="flex items-center gap-1.5 text-[10px]">
-                <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
-                  <rect x="0.5" y="0.5" width="15" height="11" rx="1.5" stroke="currentColor" strokeWidth="1" />
-                  <rect x="0.5" y="3" width="15" height="2" fill="currentColor" />
-                </svg>
-                {methode}
-              </span>
-            ))}
-          </div>
-
-          <p>{t("paiementSecurise")}</p>
+          <p className="flex items-center gap-2">
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="none" aria-hidden>
+              <rect x="1" y="6" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
+              <path d="M3.5 6V4a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" strokeWidth="1.2" />
+            </svg>
+            {t("paiementSecurise")}
+          </p>
         </div>
       </div>
     </footer>

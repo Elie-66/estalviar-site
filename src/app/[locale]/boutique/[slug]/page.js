@@ -216,12 +216,12 @@ export default function FicheCarte({ params }) {
           <div className="hidden md:block">
             {carteVisuel}
 
-            <p className="mt-4 text-center text-xs text-ivory/30 font-[family-name:var(--font-space-mono)] uppercase tracking-wide">
+            <p className="mt-4 text-center text-xs text-ivory/40">
               {t("apercu")}
             </p>
           </div>
 
-          <p className="md:hidden mt-1 text-center text-xs text-ivory/30 font-[family-name:var(--font-space-mono)] uppercase tracking-wide">
+          <p className="md:hidden mt-1 text-center text-xs text-ivory/40">
             {t("apercu")}
           </p>
 
@@ -244,14 +244,7 @@ export default function FicheCarte({ params }) {
             </div>
           </div>
 
-          <div className="mt-6 bg-ink-secondary/50 border border-ivory/10 rounded-lg p-4">
-            <p className="text-xs uppercase tracking-wide text-gold mb-2">{t("commentCaMarche")}</p>
-            <ol className="text-sm text-ivory/60 space-y-1 list-decimal list-inside">
-              <li>{t("etape1")}</li>
-              <li>{t("etape2")}</li>
-              <li>{t("etape3")}</li>
-            </ol>
-          </div>
+          <p className="mt-6 text-sm text-ivory/55 leading-relaxed">{t("infoEnvoi")}</p>
 
           {autresCartes.length > 0 && (
             <div className="mt-6">
@@ -279,8 +272,7 @@ export default function FicheCarte({ params }) {
 
         <div>
           <a href={`/${locale}/boutique`} className="text-sm text-ivory/55 hover:text-gold">‹ {t("retourBoutique")}</a>
-          <p className="mt-4 text-sm text-gold mb-1">{t("carteCadeau")}</p>
-          <h1 className="text-4xl font-semibold text-ivory">{carte.nom}</h1>
+          <h1 className="mt-4 text-4xl font-semibold text-ivory">{carte.nom}</h1>
           {carte.made_in_france && (
             <p className="mt-3 inline-flex items-center gap-2 text-sm text-ivory/80">
               <Tricolore /> {t("fabriqueEnFrance")}

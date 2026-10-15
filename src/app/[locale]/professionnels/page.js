@@ -71,50 +71,36 @@ export default function Professionnels() {
 
         {/* Présentation */}
         <div>
-          <p className="text-sm text-gold mb-4">{t("surtitre")}</p>
-          <h1 className="text-4xl md:text-5xl font-semibold text-ivory leading-tight">{t("titre")}</h1>
-          <p className="mt-6 text-ivory/70 leading-relaxed max-w-[560px]">{t("intro")}</p>
+          <h1 className="text-4xl md:text-5xl font-semibold text-ivory leading-[1.08] tracking-tight">{t("titre")}</h1>
+          <p className="mt-6 text-ivory/75 text-lg leading-relaxed max-w-[560px]">{t("intro")}</p>
+          <p className="mt-3 text-ivory/50 leading-relaxed max-w-[560px]">{t("pour")}</p>
           <a href="#devis"
             className="lg:hidden inline-block mt-6 bg-gold text-ink text-sm font-semibold rounded-lg px-6 py-3 hover:bg-gold/90 transition-colors">
             {t("ctaMobile")}
           </a>
 
-          <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="border border-ivory/10 rounded-xl p-5">
-                <p className="text-ivory font-medium">{t(`usage${n}Titre`)}</p>
-                <p className="text-sm text-ivory/55 mt-2 leading-relaxed">{t(`usage${n}Texte`)}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-10 space-y-4">
+          <h2 className="mt-12 text-lg font-semibold text-ivory">{t("inclusTitre")}</h2>
+          <dl className="mt-4 border-t border-ivory/10">
             {[1, 2, 3, 4, 5].map((n) => (
-              <div key={n} className="flex gap-3">
-                <span className="text-gold mt-0.5" aria-hidden>✓</span>
-                <p className="text-sm text-ivory/70 leading-relaxed">
-                  <span className="text-ivory font-medium">{t(`avantage${n}Titre`)}.</span> {t(`avantage${n}Texte`)}
-                </p>
+              <div key={n} className="grid grid-cols-1 sm:grid-cols-[170px_1fr] gap-x-6 gap-y-1 py-4 border-b border-ivory/10">
+                <dt className="text-ivory font-medium">{t(`avantage${n}Titre`)}</dt>
+                <dd className="text-sm text-ivory/65 leading-relaxed">{t(`avantage${n}Texte`)}</dd>
               </div>
             ))}
-          </div>
+          </dl>
 
-          <div className="mt-12">
-            <h2 className="text-lg font-semibold text-ivory mb-5">{t("commentTitre")}</h2>
-            <ol className="space-y-5">
-              {[1, 2, 3].map((n, i) => (
-                <li key={n} className="flex gap-4">
-                  <span className="w-9 h-9 shrink-0 rounded-full border border-gold/40 text-gold flex items-center justify-center font-semibold font-[family-name:var(--font-fraunces)]">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <p className="text-ivory font-medium">{t(`etape${n}Titre`)}</p>
-                    <p className="text-sm text-ivory/55">{t(`etape${n}Texte`)}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <h2 className="mt-12 text-lg font-semibold text-ivory">{t("commentTitre")}</h2>
+          <ol className="mt-4 space-y-4">
+            {[1, 2, 3].map((n) => (
+              <li key={n} className="grid grid-cols-[1.75rem_1fr] gap-x-2">
+                <span className="text-ivory/40 tabular-nums">{n}.</span>
+                <span>
+                  <span className="text-ivory font-medium">{t(`etape${n}Titre`)}</span>
+                  <span className="block text-sm text-ivory/55">{t(`etape${n}Texte`)}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
         </div>
 
         {/* Formulaire */}

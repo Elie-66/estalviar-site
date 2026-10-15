@@ -33,17 +33,17 @@
     "cgv": "Terms",
     "confidentialite": "Privacy",
     "cookies": "Cookies",
-    "paiementSecurise": "Secure payment",
+    "paiementSecurise": "Secure payment by Stripe",
     "copyright": "Estalviar. All rights reserved.",
     "blog": "Blog",
     "legal": "Legal"
   },
   "accueilVitrine": {
     "accroche": "Personalized gift cards",
-    "titre1": "The perfect gift,",
-    "titre2": "truly personalized.",
-    "description": "Choose the amount, add a name and a message, and give a gift card that’s made specifically for that person, not just another generic gift card.",
-    "bouton": "Discover the shop",
+    "titre1": "The gift card",
+    "titre2": "with their name on it.",
+    "description": "The big brands, plus brands made in France. Choose the amount, add a first name and a short note: the card arrives by email, straight away or on the day. No service fee.",
+    "bouton": "See the brands",
     "pour": "For",
     "messageSteam": "GG well played!",
     "messageFnac": "Happy birthday!",
@@ -99,7 +99,7 @@
   "ficheProduit": {
     "carteCadeau": "Gift card",
     "carteIntrouvable": "Card not found.",
-    "apercu": "Preview — final rendering may vary slightly",
+    "apercu": "Preview: final rendering may vary slightly",
     "choisirDesign": "Choose a design",
     "commentCaMarche": "How it works?",
     "etape1": "Choose the amount and personalize your card",
@@ -132,7 +132,8 @@
     "dateInvalide": "This date does not exist.",
     "datePassee": "This date has already passed.",
     "dateTropLoin": "Sending can be scheduled up to one year ahead.",
-    "voirPanier": "View basket"
+    "voirPanier": "View basket",
+    "infoEnvoi": "Card sent by email, straight away or on the chosen date. Secure payment, no service fee."
   },
   "legal": {
     "mentions": {
@@ -199,8 +200,8 @@
     }
   },
   "seo": {
-    "accueilTitre": "Estalviar — Personalized gift cards",
-    "accueilDescription": "Give a truly personalized gift card: free amount, message, delivery date. Amazon, Fnac, Steam and more, delivered by email in a few clicks.",
+    "accueilTitre": "Personalised gift cards | Estalviar",
+    "accueilDescription": "Give a personalised gift card: any amount, a first name, a message and a sending date. The big brands and brands made in France, delivered by email.",
     "boutiqueTitre": "All gift cards",
     "boutiqueDescription": "Over 200 brands as personalised gift cards: fashion, sport, tech, food and brands made in France. Sent by email, instantly or on a scheduled date.",
     "ficheTitre": "{nom} gift card",
@@ -300,8 +301,8 @@
     "retirer": "Remove"
   },
   "fideliteAccueil": {
-    "titre": "Every card you give earns you rewards",
-    "texte": "With an Estalviar account, every euro you spend becomes a point. From €100, your purchases earn cashback to spend on your next cards.",
+    "titre": "The loyalty programme",
+    "texte": "€1 spent = 1 point. From 100 points, your orders earn cashback to use on your next cards.",
     "creerCompte": "Create my account",
     "programme": "Discover the programme",
     "desInscription": "from sign-up",
@@ -329,8 +330,8 @@
     "q4": "What if the email doesn't arrive?",
     "r4": "First check the spam folder. Otherwise, write to info@estalviar.com with the address used for the order and we'll resend the card.",
     "toutes": "See all questions",
-    "proTitre": "Are you a company or works council?",
-    "proTexte": "Gifts for your teams or clients: a single invoice, volume pricing, a quote within 48 hours.",
+    "proTitre": "Businesses and works councils",
+    "proTexte": "Gift cards for your employees and clients: a single invoice, volume pricing, a quote within 48 hours.",
     "proBouton": "Request a quote"
   },
   "accueilPlus": {
@@ -357,7 +358,7 @@
     "rappelExempleDe": "Estalviar",
     "nlPoints": "{points} free points",
     "nlTitre": "Get our gift ideas",
-    "nlTexte": "Mother's Day, Christmas, new made-in-France brands: one email at the right moments, no more. Plus {points} loyalty points on your account.",
+    "nlTexte": "Gift ideas ahead of Mother's Day, Christmas and the other big dates, plus new brands made in France. An email now and then, and {points} free loyalty points.",
     "nlPlaceholder": "Your email address",
     "nlBouton": "Sign me up",
     "nlEnvoi": "Signing up…",
@@ -372,7 +373,8 @@
     "nlMentions": "Unsubscribe in one click from any email.",
     "nlCompte": "Signing up with {email}",
     "cagnotteExemple": "6 contributors",
-    "jetonPoints": "points"
+    "jetonPoints": "points",
+    "cagnotteVisuel": "For Julien"
   },
   "retractation": {
     "titre": "Withdraw from an order",
@@ -679,7 +681,8 @@
     "mdpIdentique": "Choose a password different from the old one.",
     "nouveauOk": "Your password has been changed.",
     "allerCompte": "Go to my account",
-    "lienExpire": "This link is no longer valid (it may have expired or already been used). Request a new one."
+    "lienExpire": "This link is no longer valid (it may have expired or already been used). Request a new one.",
+    "avantagesTexte": "With an account, every card you give earns you points, then cashback from the Silver tier. Your orders, group gifts and loved ones' birthdays are all in one place."
   },
   "confirmation": {
     "chargement": "Confirming your order…",
@@ -710,7 +713,7 @@
   },
   "contact": {
     "titre": "Got a question?",
-    "intro": "An order, a card, a partnership idea: write to us and a real person will reply.",
+    "intro": "An order, a card, a partnership idea: write to us, we usually reply within 2 working days.",
     "nom": "Name",
     "email": "Email",
     "sujet": "Subject",
@@ -759,7 +762,7 @@
   },
   "introuvable": {
     "titre": "This page got lost on the way",
-    "texte": "The address may be incomplete, or the page no longer exists. Don't worry: the gift cards are still here.",
+    "texte": "The address may be incomplete, or the page has moved.",
     "boutique": "See the brands",
     "accueil": "Back to the homepage",
     "aide": "Need help?",
@@ -843,8 +846,8 @@
   },
   "pro": {
     "surtitre": "Businesses, works councils, associations",
-    "titre": "The gift your teams and clients actually choose.",
-    "intro": "Give personalised gift cards valid at over 200 brands. You set the budget, everyone treats themselves. We handle everything, from order to delivery.",
+    "titre": "Gift cards for your employees and clients.",
+    "intro": "You set a budget per person and everyone picks their brand from the whole catalogue. We handle the sending, you get a single invoice.",
     "ctaMobile": "Request my free quote",
     "usage1Titre": "Your teams",
     "usage1Texte": "End of year, bonuses, birthdays, welcomes: a gift everyone actually chooses.",
@@ -852,15 +855,15 @@
     "usage2Texte": "Thank your best clients and partners with a gesture they will remember.",
     "usage3Titre": "Your incentives",
     "usage3Texte": "Reward your sales staff and best teams with rewards that motivate.",
-    "avantage1Titre": "Over 200 brands",
-    "avantage1Texte": "Fashion, sport, tech, food, travel… and brands made in France.",
-    "avantage2Titre": "Personalised",
+    "avantage1Titre": "The catalogue",
+    "avantage1Texte": "Fashion, sport, tech, food, travel, and brands made in France.",
+    "avantage2Titre": "Personalisation",
     "avantage2Texte": "The first name, your message and the design of your choice on every card.",
-    "avantage3Titre": "Sent for you",
+    "avantage3Titre": "Sending",
     "avantage3Texte": "Each recipient receives their card by email, straight away or on the date you choose.",
-    "avantage4Titre": "One single invoice",
+    "avantage4Titre": "Invoicing",
     "avantage4Texte": "One order, one invoice, one dedicated contact. Payment by bank transfer possible.",
-    "avantage5Titre": "Volume pricing",
+    "avantage5Titre": "Pricing",
     "avantage5Texte": "The more you order, the better the price. Free, no-obligation quote.",
     "commentTitre": "How it works",
     "etape1Titre": "You describe your needs",
@@ -899,7 +902,9 @@
     "erreurReseau": "Network error, please try again.",
     "merciTitre": "Thank you, your request has been sent",
     "merciTexte": "We will get back to you within 48 hours with a personalised quote. A confirmation email has just been sent to you.",
-    "decouvrir": "Browse the brands"
+    "decouvrir": "Browse the brands",
+    "pour": "End-of-year gifts, bonuses, arrivals and leavers, client thank-yous, sales incentives.",
+    "inclusTitre": "What's included"
   },
   "profil": {
     "chargement": "Loading your account…",
@@ -1025,5 +1030,21 @@
     "movember": "Movember: men's health awareness month.",
     "noel": "Merry Christmas!",
     "accueil": "Estalviar, home"
+  },
+  "accueil2": {
+    "murTitre": "Brands",
+    "murTout": "See all {n} brands",
+    "trouverTitre": "Find the right card",
+    "parUnivers": "By category",
+    "parBudget": "By budget",
+    "budget20": "A little something",
+    "budget50": "The classic gift",
+    "budget100": "For big occasions",
+    "cagnotteTitre": "A group gift",
+    "cagnotteTexte": "Share a link and everyone chips in what they like. On the end date, the total becomes a gift card.",
+    "rappelTitre": "Birthday reminders",
+    "rappelTexte": "Save your loved ones' birthdays in your account: we email you {jours} days before.",
+    "paliersSeuil": "{n} points",
+    "paliersDepart": "From sign-up"
   }
 }

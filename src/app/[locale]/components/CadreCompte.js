@@ -23,11 +23,7 @@ export default function CadreCompte({ titre, sousTitre, children, pied }) {
           </div>
         </div>
         <p className="text-2xl font-semibold text-ivory font-[family-name:var(--font-fraunces)]">{t("avantagesTitre")}</p>
-        <ul className="mt-5 space-y-3 text-ivory/70">
-          {[1, 2, 3, 4].map((n) => (
-            <li key={n} className="flex gap-3"><span className="text-gold" aria-hidden>✓</span>{t(`avantage${n}`)}</li>
-          ))}
-        </ul>
+        <p className="mt-4 text-ivory/70 leading-relaxed max-w-[30rem]">{t("avantagesTexte")}</p>
       </div>
 
       <div className="w-full max-w-[440px] mx-auto lg:mx-0">

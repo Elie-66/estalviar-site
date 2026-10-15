@@ -20,10 +20,10 @@ export default function Aide() {
       <h1 className="text-3xl md:text-4xl font-semibold text-ivory">{t("titre")}</h1>
       <p className="mt-3 text-ivory/65">{t("intro")}</p>
 
-      <nav aria-label={t("themes")} className="mt-8 flex flex-wrap gap-2">
+      <nav aria-label={t("themes")} className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-b border-ivory/10 pb-3">
         {THEMES.map((th) => (
           <a key={th.cle} href={`#${th.cle}`}
-            className="text-sm rounded-full border border-ivory/15 px-4 py-2 text-ivory/80 hover:border-gold/50 hover:text-gold transition-colors">
+            className="text-[15px] text-ivory/60 hover:text-gold transition-colors">
             {t(`theme_${th.cle}`)}
           </a>
         ))}

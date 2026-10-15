@@ -33,17 +33,17 @@
     "cgv": "Condiciones",
     "confidentialite": "Privacidad",
     "cookies": "Cookies",
-    "paiementSecurise": "Pago seguro",
+    "paiementSecurise": "Pago seguro con Stripe",
     "copyright": "Estalviar. Todos los derechos reservados.",
     "blog": "Blog",
     "legal": "Legal"
   },
   "accueilVitrine": {
     "accroche": "Tarjetas regalo personalizables",
-    "titre1": "El regalo perfecto,",
-    "titre2": "verdaderamente personalizado.",
-    "description": "Elige el importe, añade un nombre y un mensaje, y regala una tarjeta regalo hecha especialmente para esa persona, no otra tarjeta regalo genérica.",
-    "bouton": "Descubrir la tienda",
+    "titre1": "La tarjeta regalo",
+    "titre2": "con su nombre.",
+    "description": "Las grandes marcas y marcas fabricadas en Francia. Elija el importe, añada un nombre y unas palabras: la tarjeta llega por email, al momento o el día señalado. Sin gastos de servicio.",
+    "bouton": "Ver las marcas",
     "pour": "Para",
     "messageSteam": "¡GG bien jugado!",
     "messageFnac": "¡Feliz cumpleaños!",
@@ -99,7 +99,7 @@
   "ficheProduit": {
     "carteCadeau": "Tarjeta regalo",
     "carteIntrouvable": "Tarjeta no encontrada.",
-    "apercu": "Vista previa — el resultado final puede variar ligeramente",
+    "apercu": "Vista previa: el resultado final puede variar ligeramente",
     "choisirDesign": "Elige un diseño",
     "commentCaMarche": "¿Cómo funciona?",
     "etape1": "Elige el importe y personaliza tu tarjeta",
@@ -132,7 +132,8 @@
     "dateInvalide": "Esta fecha no existe.",
     "datePassee": "Esta fecha ya ha pasado.",
     "dateTropLoin": "El envío puede programarse hasta con un año de antelación.",
-    "voirPanier": "Ver el carrito"
+    "voirPanier": "Ver el carrito",
+    "infoEnvoi": "Tarjeta enviada por email, al momento o en la fecha elegida. Pago seguro, sin gastos de servicio."
   },
   "legal": {
     "mentions": {
@@ -199,8 +200,8 @@
     }
   },
   "seo": {
-    "accueilTitre": "Estalviar — Tarjetas regalo personalizables",
-    "accueilDescription": "Regala una tarjeta regalo verdaderamente personalizada: importe libre, mensaje, fecha de envío. Amazon, Fnac, Steam y más, entregadas por email en pocos clics.",
+    "accueilTitre": "Tarjetas regalo personalizadas | Estalviar",
+    "accueilDescription": "Regale una tarjeta regalo personalizada: importe libre, nombre, mensaje y fecha de envío. Las grandes marcas y marcas fabricadas en Francia, entregadas por email.",
     "boutiqueTitre": "Todas las tarjetas regalo",
     "boutiqueDescription": "Más de 200 marcas en tarjeta regalo personalizable: moda, deporte, tecnología, gastronomía y marcas fabricadas en Francia. Envío por email, inmediato o programado.",
     "ficheTitre": "Tarjeta regalo {nom}",
@@ -300,8 +301,8 @@
     "retirer": "Quitar"
   },
   "fideliteAccueil": {
-    "titre": "Cada tarjeta que regalas te recompensa",
-    "texte": "Con una cuenta Estalviar, cada euro gastado se convierte en un punto. A partir de 100 €, tus compras te dan cashback para tus próximas tarjetas.",
+    "titre": "El programa de fidelidad",
+    "texte": "1 € gastado = 1 punto. A partir de 100 puntos, sus pedidos le dan cashback para usar en sus próximas tarjetas.",
     "creerCompte": "Crear mi cuenta",
     "programme": "Descubrir el programa",
     "desInscription": "desde el registro",
@@ -329,9 +330,9 @@
     "q4": "¿Y si el email no llega?",
     "r4": "Revisa primero el correo no deseado. Si no, escríbenos a info@estalviar.com con la dirección del pedido y la reenviamos.",
     "toutes": "Ver todas las preguntas",
-    "proTitre": "¿Eres una empresa o un comité de empresa?",
-    "proTexte": "Regalos para tu equipo o tus clientes: una sola factura, precios por volumen, presupuesto en 48 h.",
-    "proBouton": "Pedir presupuesto"
+    "proTitre": "Empresas y comités de empresa",
+    "proTexte": "Tarjetas regalo para sus empleados y clientes: una sola factura, precios según el volumen, presupuesto en 48 h.",
+    "proBouton": "Pedir un presupuesto"
   },
   "accueilPlus": {
     "reassurance1Titre": "Pago seguro",
@@ -357,7 +358,7 @@
     "rappelExempleDe": "Estalviar",
     "nlPoints": "{points} puntos de regalo",
     "nlTitre": "Reciba nuestras ideas de regalo",
-    "nlTexte": "Día de la Madre, Navidad, nuevas marcas fabricadas en Francia: un email en el momento justo, nada más. Y {points} puntos de fidelidad en su cuenta.",
+    "nlTexte": "Ideas de regalo antes del Día de la Madre, Navidad y las otras grandes fechas, y las nuevas marcas fabricadas en Francia. Un email de vez en cuando, y {points} puntos de fidelidad de regalo.",
     "nlPlaceholder": "Su dirección de email",
     "nlBouton": "Suscribirme",
     "nlEnvoi": "Suscribiendo…",
@@ -372,7 +373,8 @@
     "nlMentions": "Baja en un clic desde cada email.",
     "nlCompte": "Suscripción con {email}",
     "cagnotteExemple": "6 participantes",
-    "jetonPoints": "puntos"
+    "jetonPoints": "puntos",
+    "cagnotteVisuel": "Para Julien"
   },
   "retractation": {
     "titre": "Desistimiento",
@@ -679,7 +681,8 @@
     "mdpIdentique": "Elija una contraseña distinta de la anterior.",
     "nouveauOk": "Su contraseña ha sido modificada.",
     "allerCompte": "Ir a mi cuenta",
-    "lienExpire": "Este enlace ya no es válido (puede haber caducado o ya se ha usado). Solicite uno nuevo."
+    "lienExpire": "Este enlace ya no es válido (puede haber caducado o ya se ha usado). Solicite uno nuevo.",
+    "avantagesTexte": "Con una cuenta, cada tarjeta que regala le da puntos, y cashback a partir del nivel Plata. Sus pedidos, botes y los cumpleaños de sus seres queridos están en un solo lugar."
   },
   "confirmation": {
     "chargement": "Confirmando su pedido…",
@@ -710,7 +713,7 @@
   },
   "contact": {
     "titre": "¿Una pregunta?",
-    "intro": "Un pedido, una tarjeta, una idea de colaboración: escríbanos y le responderá una persona de verdad.",
+    "intro": "Un pedido, una tarjeta, una idea de colaboración: escríbanos, solemos responder en 2 días laborables.",
     "nom": "Nombre",
     "email": "Email",
     "sujet": "Asunto",
@@ -759,7 +762,7 @@
   },
   "introuvable": {
     "titre": "Esta página se ha perdido por el camino",
-    "texte": "Puede que la dirección esté incompleta o que la página ya no exista. Tranquilo: las tarjetas regalo siguen aquí.",
+    "texte": "Puede que la dirección esté incompleta o que la página se haya movido.",
     "boutique": "Ver las marcas",
     "accueil": "Volver al inicio",
     "aide": "¿Necesita ayuda?",
@@ -843,8 +846,8 @@
   },
   "pro": {
     "surtitre": "Empresas, comités de empresa, asociaciones",
-    "titre": "El regalo que sus equipos y clientes eligen de verdad.",
-    "intro": "Regale tarjetas personalizadas válidas en más de 200 marcas. Usted fija el presupuesto y cada uno se da un capricho. Nos ocupamos de todo, del pedido al envío.",
+    "titre": "Tarjetas regalo para sus empleados y clientes.",
+    "intro": "Usted fija un presupuesto por persona y cada uno elige su marca en todo el catálogo. Nosotros gestionamos los envíos y usted recibe una sola factura.",
     "ctaMobile": "Pedir mi presupuesto gratis",
     "usage1Titre": "Sus equipos",
     "usage1Texte": "Fin de año, primas, cumpleaños, bienvenidas: un regalo que cada uno elige de verdad.",
@@ -852,15 +855,15 @@
     "usage2Texte": "Agradezca a sus mejores clientes y socios con un detalle que se recuerda.",
     "usage3Titre": "Sus retos",
     "usage3Texte": "Premie a sus comerciales y mejores equipos con recompensas que motivan.",
-    "avantage1Titre": "Más de 200 marcas",
-    "avantage1Texte": "Moda, deporte, tecnología, gastronomía, viajes… y marcas fabricadas en Francia.",
-    "avantage2Titre": "Personalizadas",
+    "avantage1Titre": "El catálogo",
+    "avantage1Texte": "Moda, deporte, tecnología, gastronomía, viajes y marcas fabricadas en Francia.",
+    "avantage2Titre": "La personalización",
     "avantage2Texte": "El nombre, su mensaje y el diseño que elija en cada tarjeta.",
-    "avantage3Titre": "Enviadas por nosotros",
+    "avantage3Titre": "Los envíos",
     "avantage3Texte": "Cada beneficiario recibe su tarjeta por email, al instante o en la fecha elegida.",
-    "avantage4Titre": "Una sola factura",
+    "avantage4Titre": "La facturación",
     "avantage4Texte": "Un pedido, una factura, un interlocutor dedicado. Pago por transferencia posible.",
-    "avantage5Titre": "Precios por volumen",
+    "avantage5Titre": "Las tarifas",
     "avantage5Texte": "Cuanto más pide, mejor el precio. Presupuesto gratuito y sin compromiso.",
     "commentTitre": "Cómo funciona",
     "etape1Titre": "Describe su necesidad",
@@ -899,7 +902,9 @@
     "erreurReseau": "Error de red, inténtelo de nuevo.",
     "merciTitre": "Gracias, su solicitud se ha enviado",
     "merciTexte": "Le responderemos en 48 h con un presupuesto personalizado. Acabamos de enviarle un email de confirmación.",
-    "decouvrir": "Descubrir las marcas"
+    "decouvrir": "Descubrir las marcas",
+    "pour": "Fin de año, primas, incorporaciones y despedidas, agradecimientos a clientes, incentivos comerciales.",
+    "inclusTitre": "Qué incluye"
   },
   "profil": {
     "chargement": "Cargando su cuenta…",
@@ -1025,5 +1030,21 @@
     "movember": "Movember: mes de concienciación sobre la salud masculina.",
     "noel": "¡Feliz Navidad!",
     "accueil": "Estalviar, inicio"
+  },
+  "accueil2": {
+    "murTitre": "Las marcas",
+    "murTout": "Ver las {n} marcas",
+    "trouverTitre": "Encontrar la tarjeta adecuada",
+    "parUnivers": "Por categoría",
+    "parBudget": "Por presupuesto",
+    "budget20": "Un pequeño detalle",
+    "budget50": "El regalo clásico",
+    "budget100": "Para las grandes ocasiones",
+    "cagnotteTitre": "Un bote entre varios",
+    "cagnotteTexte": "Comparta un enlace y cada uno aporta lo que quiere. En la fecha final, el total se convierte en una tarjeta regalo.",
+    "rappelTitre": "Recordatorios de cumpleaños",
+    "rappelTexte": "Guarde los cumpleaños de sus seres queridos en su cuenta: le escribimos {jours} días antes.",
+    "paliersSeuil": "{n} puntos",
+    "paliersDepart": "Desde el registro"
   }
 }

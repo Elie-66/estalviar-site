@@ -16,7 +16,6 @@ const PALIERS = [
 const REGLES = { joursAttente: 14, commandeMinimum: 20, plafondPourcent: 50 };
 
 const palierPour = (points) => [...PALIERS].reverse().find((p) => points >= p.seuil) || PALIERS[0];
-const medaille = (couleur) => ({ background: `radial-gradient(circle at 30% 30%, #fff8, transparent 45%), ${couleur}` });
 
 export default function Fidelite() {
   const t = useTranslations("fidelitePage");
@@ -81,10 +80,7 @@ export default function Fidelite() {
           <div className="rounded-2xl border border-ivory/15 bg-ivory/[0.03] p-6">
             <p className="text-sm text-ivory/55">{t("statut")}</p>
             <div className="mt-3 flex items-center gap-4">
-              <span className="w-14 h-14 rounded-full shrink-0 flex items-center justify-center text-ink text-lg font-semibold font-[family-name:var(--font-fraunces)]"
-                style={medaille(actuel.couleur)}>
-                {tFid(`${actuel.cle}Nom`).charAt(0)}
-              </span>
+              <span aria-hidden className="w-1 self-stretch rounded-full" style={{ background: actuel.couleur }} />
               <div>
                 <p className="text-ivory text-xl font-semibold">{tFid(`${actuel.cle}Nom`)}</p>
                 <p className="text-ivory/60 text-sm">{t("points", { n: points })}</p>
@@ -131,9 +127,9 @@ export default function Fidelite() {
       <section className="border-t border-ivory/10">
         <div className="max-w-[1140px] mx-auto px-6 py-16">
           <h2 className="text-2xl md:text-3xl font-semibold text-ivory mb-8">{t("gagnerTitre")}</h2>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-12">
             {[1, 2, 3, 4].map((n) => (
-              <li key={n} className="rounded-xl border border-ivory/10 p-5">
+              <li key={n} className="border-t border-ivory/10 pt-4 pb-6">
                 <p className="text-ivory font-medium">
                   {n === 3 ? t("gagner3Titre").replace("25", String(POINTS_NEWSLETTER)) : t(`gagner${n}Titre`)}
                 </p>
@@ -156,24 +152,19 @@ export default function Fidelite() {
               return (
                 <li key={p.cle} className="relative rounded-2xl border p-5 flex flex-col"
                   style={{ borderColor: estActuel ? p.couleur : "rgba(246,242,233,0.1)", background: estActuel ? `${p.couleur}10` : undefined }}>
-                  {estActuel && (
-                    <span className="absolute -top-2.5 right-4 text-[11px] font-semibold text-ink rounded-full px-2.5 py-0.5" style={{ background: p.couleur }}>
-                      {t("palierActuel")}
-                    </span>
-                  )}
+                  <span aria-hidden className="absolute inset-x-0 top-0 h-1 rounded-t-2xl" style={{ background: p.couleur }} />
                   <div className="flex items-center gap-3">
-                    <span className="w-11 h-11 rounded-full shrink-0 flex items-center justify-center text-ink font-semibold font-[family-name:var(--font-fraunces)]"
-                      style={medaille(p.couleur)}>
-                      {tFid(`${p.cle}Nom`).charAt(0)}
-                    </span>
                     <div>
-                      <p className="text-ivory font-semibold text-lg leading-tight">{tFid(`${p.cle}Nom`)}</p>
+                      <p className="text-ivory font-semibold text-xl leading-tight font-[family-name:var(--font-fraunces)]">
+                        {tFid(`${p.cle}Nom`)}
+                        {estActuel && <span className="ml-2 align-middle text-xs font-sans font-medium text-gold">{t("palierActuel")}</span>}
+                      </p>
                       <p className="text-xs text-gold/85">{p.seuil === 0 ? t("desDepart") : t("aPartirDe", { n: p.seuil })}</p>
                     </div>
                   </div>
                   <ul className="mt-4 space-y-1.5 text-sm text-ivory/70">
                     {avantages[p.cle].map((a) => (
-                      <li key={a} className="flex gap-2"><span className="text-gold" aria-hidden>•</span>{a}</li>
+                      <li key={a}>{a}</li>
                     ))}
                   </ul>
                   {infos?.nouvelles > 0 && (

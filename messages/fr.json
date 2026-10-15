@@ -33,17 +33,17 @@
     "cgv": "CGV",
     "confidentialite": "Confidentialité",
     "cookies": "Cookies",
-    "paiementSecurise": "Paiement sécurisé",
+    "paiementSecurise": "Paiement sécurisé par Stripe",
     "copyright": "Estalviar. Tous droits réservés.",
     "blog": "Blog",
     "legal": "Légal"
   },
   "accueilVitrine": {
     "accroche": "Cartes cadeaux personnalisables",
-    "titre1": "Le bon cadeau,",
-    "titre2": "personnalisé pour de vrai.",
-    "description": "Choisissez le montant, ajoutez un nom et un message, et offrez une carte cadeau qui est faite pour la personne, pas une carte cadeau générique de plus.",
-    "bouton": "Découvrir la boutique",
+    "titre1": "La carte cadeau",
+    "titre2": "à son prénom.",
+    "description": "Les grandes enseignes et des marques fabriquées en France. Choisissez le montant, ajoutez un prénom et un petit mot : la carte arrive par email, tout de suite ou le jour J. Sans frais de service.",
+    "bouton": "Voir les enseignes",
     "pour": "Pour",
     "messageSteam": "GG bien joué !",
     "messageFnac": "Joyeux anniversaire !",
@@ -99,7 +99,7 @@
   "ficheProduit": {
     "carteCadeau": "Carte cadeau",
     "carteIntrouvable": "Carte introuvable.",
-    "apercu": "Aperçu — le rendu final peut légèrement varier",
+    "apercu": "Aperçu : le rendu final peut légèrement varier",
     "choisirDesign": "Choisissez un design",
     "commentCaMarche": "Comment ça marche?",
     "etape1": "Choisissez le montant et personnalisez votre carte",
@@ -132,7 +132,8 @@
     "dateInvalide": "Cette date n'existe pas.",
     "datePassee": "Cette date est déjà passée.",
     "dateTropLoin": "L'envoi peut être programmé jusqu'à un an à l'avance.",
-    "voirPanier": "Voir le panier"
+    "voirPanier": "Voir le panier",
+    "infoEnvoi": "Carte envoyée par email, tout de suite ou à la date choisie. Paiement sécurisé, sans frais de service."
   },
   "legal": {
     "mentions": {
@@ -199,8 +200,8 @@
     }
   },
   "seo": {
-    "accueilTitre": "Estalviar — Cartes cadeaux personnalisables",
-    "accueilDescription": "Offrez une carte cadeau vraiment personnalisée : montant libre, message, date d'envoi. Amazon, Fnac, Steam et plus, livrées par email en quelques clics.",
+    "accueilTitre": "Cartes cadeaux personnalisées | Estalviar",
+    "accueilDescription": "Offrez une carte cadeau personnalisée : montant libre, prénom, message et date d'envoi. Les grandes enseignes et des marques fabriquées en France, livrées par email.",
     "boutiqueTitre": "Toutes les cartes cadeaux",
     "boutiqueDescription": "Plus de 200 enseignes en carte cadeau personnalisable : mode, sport, high-tech, gastronomie et marques fabriquées en France. Envoi par email, immédiat ou programmé.",
     "ficheTitre": "Carte cadeau {nom}",
@@ -300,8 +301,8 @@
     "retirer": "Retirer"
   },
   "fideliteAccueil": {
-    "titre": "Chaque carte offerte vous rapporte",
-    "texte": "Avec un compte Estalviar, chaque euro dépensé devient un point. Dès 100 €, vos achats vous rapportent du cashback, à dépenser sur vos prochaines cartes.",
+    "titre": "Le programme de fidélité",
+    "texte": "1 € dépensé = 1 point. À partir de 100 points, vos commandes vous rapportent du cashback, à utiliser sur vos prochaines cartes.",
     "creerCompte": "Créer mon compte",
     "programme": "Découvrir le programme",
     "desInscription": "dès l'inscription",
@@ -329,8 +330,8 @@
     "q4": "Et si l'email n'arrive pas ?",
     "r4": "Vérifiez d'abord les courriers indésirables. Sinon, écrivez-nous à info@estalviar.com avec l'adresse utilisée pour la commande : nous renvoyons la carte.",
     "toutes": "Voir toutes les questions",
-    "proTitre": "Vous êtes une entreprise ou un CSE ?",
-    "proTexte": "Cadeaux pour vos équipes ou vos clients : une seule facture, des tarifs selon le volume, devis sous 48 h.",
+    "proTitre": "Entreprises et CSE",
+    "proTexte": "Cartes cadeaux pour vos salariés et vos clients : une facture unique, des tarifs selon le volume, un devis sous 48 h.",
     "proBouton": "Demander un devis"
   },
   "accueilPlus": {
@@ -357,7 +358,7 @@
     "rappelExempleDe": "Estalviar",
     "nlPoints": "{points} points offerts",
     "nlTitre": "Recevez nos idées cadeaux",
-    "nlTexte": "Fête des mères, Noël, nouvelles marques fabriquées en France : un email aux bons moments, pas plus. Et {points} points de fidélité sur votre compte.",
+    "nlTexte": "Les idées cadeaux avant la Fête des mères, Noël et les autres grandes dates, et les nouvelles marques fabriquées en France. Un email de temps en temps, et {points} points de fidélité offerts.",
     "nlPlaceholder": "Votre adresse email",
     "nlBouton": "M'inscrire",
     "nlEnvoi": "Inscription…",
@@ -372,7 +373,8 @@
     "nlMentions": "Désinscription en un clic depuis chaque email.",
     "nlCompte": "Inscription avec {email}",
     "cagnotteExemple": "6 contributeurs",
-    "jetonPoints": "points"
+    "jetonPoints": "points",
+    "cagnotteVisuel": "Pour Julien"
   },
   "retractation": {
     "titre": "Se rétracter",
@@ -679,7 +681,8 @@
     "mdpIdentique": "Choisissez un mot de passe différent de l'ancien.",
     "nouveauOk": "Votre mot de passe a été modifié.",
     "allerCompte": "Aller à mon compte",
-    "lienExpire": "Ce lien n'est plus valide (il a peut-être expiré ou déjà servi). Demandez-en un nouveau."
+    "lienExpire": "Ce lien n'est plus valide (il a peut-être expiré ou déjà servi). Demandez-en un nouveau.",
+    "avantagesTexte": "Avec un compte, chaque carte offerte vous rapporte des points, puis du cashback dès le palier Argent. Vos commandes, vos cagnottes et les anniversaires de vos proches sont réunis au même endroit."
   },
   "confirmation": {
     "chargement": "Nous confirmons votre commande…",
@@ -710,7 +713,7 @@
   },
   "contact": {
     "titre": "Une question ?",
-    "intro": "Une commande, une carte, une idée de partenariat : écrivez-nous, une vraie personne vous répond.",
+    "intro": "Une commande, une carte, une idée de partenariat : écrivez-nous, nous répondons en général sous 48 h ouvrées.",
     "nom": "Nom",
     "email": "Email",
     "sujet": "Sujet",
@@ -759,7 +762,7 @@
   },
   "introuvable": {
     "titre": "Cette page s'est perdue en route",
-    "texte": "L'adresse est peut-être incomplète, ou la page n'existe plus. Pas de panique : les cartes cadeaux, elles, sont toujours là.",
+    "texte": "L'adresse est peut-être incomplète, ou la page a été déplacée.",
     "boutique": "Voir les enseignes",
     "accueil": "Retour à l'accueil",
     "aide": "Besoin d'aide ?",
@@ -843,8 +846,8 @@
   },
   "pro": {
     "surtitre": "Entreprises, CSE, associations",
-    "titre": "Le cadeau que vos équipes et vos clients choisissent vraiment.",
-    "intro": "Offrez des cartes cadeaux personnalisées, valables dans plus de 200 enseignes. Vous fixez le budget, chacun se fait plaisir. Nous nous occupons de tout, de la commande à l'envoi.",
+    "titre": "Cartes cadeaux pour vos salariés et vos clients.",
+    "intro": "Vous fixez un budget par personne, chacun choisit son enseigne dans tout le catalogue. Nous gérons les envois, vous recevez une seule facture.",
     "ctaMobile": "Demander mon devis gratuit",
     "usage1Titre": "Vos équipes",
     "usage1Texte": "Fin d'année, primes, anniversaires, bienvenue : un cadeau que chacun choisit vraiment.",
@@ -852,15 +855,15 @@
     "usage2Texte": "Remerciez vos meilleurs clients et partenaires avec une attention qui marque les esprits.",
     "usage3Titre": "Vos challenges",
     "usage3Texte": "Récompensez vos commerciaux et vos meilleures équipes avec des récompenses qui motivent.",
-    "avantage1Titre": "Plus de 200 enseignes",
-    "avantage1Texte": "Mode, sport, high-tech, gastronomie, voyages… et des marques fabriquées en France.",
-    "avantage2Titre": "Personnalisées",
+    "avantage1Titre": "Le catalogue",
+    "avantage1Texte": "Mode, sport, high-tech, gastronomie, voyages, et des marques fabriquées en France.",
+    "avantage2Titre": "La personnalisation",
     "avantage2Texte": "Le prénom, votre message et le design de votre choix sur chaque carte.",
-    "avantage3Titre": "Envoyées pour vous",
+    "avantage3Titre": "Les envois",
     "avantage3Texte": "Chaque bénéficiaire reçoit sa carte par email, tout de suite ou à la date que vous choisissez.",
-    "avantage4Titre": "Une seule facture",
+    "avantage4Titre": "La facturation",
     "avantage4Texte": "Une commande, une facture, un interlocuteur dédié. Paiement par virement possible.",
-    "avantage5Titre": "Tarifs selon le volume",
+    "avantage5Titre": "Les tarifs",
     "avantage5Texte": "Plus vous commandez, plus le prix est intéressant. Devis gratuit et sans engagement.",
     "commentTitre": "Comment ça marche",
     "etape1Titre": "Vous décrivez votre besoin",
@@ -899,7 +902,9 @@
     "erreurReseau": "Erreur réseau, réessayez.",
     "merciTitre": "Merci, votre demande est envoyée",
     "merciTexte": "Nous revenons vers vous sous 48 h avec un devis personnalisé. Un email de confirmation vient de vous être envoyé.",
-    "decouvrir": "Découvrir les enseignes"
+    "decouvrir": "Découvrir les enseignes",
+    "pour": "Fin d'année, primes, arrivées et départs, remerciements clients, challenges commerciaux.",
+    "inclusTitre": "Ce qui est compris"
   },
   "profil": {
     "chargement": "Chargement de votre compte…",
@@ -1025,5 +1030,21 @@
     "movember": "Movember : mois de sensibilisation à la santé masculine.",
     "noel": "Joyeux Noël !",
     "accueil": "Estalviar, accueil"
+  },
+  "accueil2": {
+    "murTitre": "Les enseignes",
+    "murTout": "Voir les {n} enseignes",
+    "trouverTitre": "Trouver la bonne carte",
+    "parUnivers": "Par univers",
+    "parBudget": "Par budget",
+    "budget20": "Un petit mot",
+    "budget50": "Le cadeau classique",
+    "budget100": "Pour les grandes occasions",
+    "cagnotteTitre": "Une cagnotte à plusieurs",
+    "cagnotteTexte": "Partagez un lien, chacun participe du montant qu'il veut. À la date de fin, le total devient une carte cadeau.",
+    "rappelTitre": "Les rappels d'anniversaire",
+    "rappelTexte": "Enregistrez les dates de vos proches dans votre compte : on vous écrit {jours} jours avant.",
+    "paliersSeuil": "{n} points",
+    "paliersDepart": "Dès l'inscription"
   }
 }

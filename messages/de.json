@@ -33,17 +33,17 @@
     "cgv": "AGB",
     "confidentialite": "Datenschutz",
     "cookies": "Cookies",
-    "paiementSecurise": "Sichere Zahlung",
+    "paiementSecurise": "Sichere Zahlung über Stripe",
     "copyright": "Estalviar. Alle Rechte vorbehalten.",
     "blog": "Blog",
     "legal": "Rechtliches"
   },
   "accueilVitrine": {
     "accroche": "Personalisierbare Geschenkkarten",
-    "titre1": "Das perfekte Geschenk,",
-    "titre2": "wirklich persönlich.",
-    "description": "Wählen Sie den Betrag, fügen Sie einen Namen und eine Nachricht hinzu und verschenken Sie eine Geschenkkarte, die speziell für diese Person gemacht ist, nicht einfach eine weitere gewöhnliche Geschenkkarte.",
-    "bouton": "Shop entdecken",
+    "titre1": "Die Geschenkkarte",
+    "titre2": "mit ihrem Namen.",
+    "description": "Die großen Marken und Marken, die in Frankreich herstellen. Betrag wählen, Vornamen und ein paar Worte hinzufügen: Die Karte kommt per E-Mail, sofort oder am großen Tag. Ohne Servicegebühr.",
+    "bouton": "Marken ansehen",
     "pour": "Für",
     "messageSteam": "GG gut gespielt!",
     "messageFnac": "Alles Gute zum Geburtstag!",
@@ -99,7 +99,7 @@
   "ficheProduit": {
     "carteCadeau": "Geschenkkarte",
     "carteIntrouvable": "Karte nicht gefunden.",
-    "apercu": "Vorschau — die endgültige Darstellung kann leicht abweichen",
+    "apercu": "Vorschau: die endgültige Darstellung kann leicht abweichen",
     "choisirDesign": "Design wählen",
     "commentCaMarche": "So funktioniert's?",
     "etape1": "Wählen Sie den Betrag und personalisieren Sie Ihre Karte",
@@ -132,7 +132,8 @@
     "dateInvalide": "Dieses Datum existiert nicht.",
     "datePassee": "Dieses Datum liegt in der Vergangenheit.",
     "dateTropLoin": "Der Versand kann bis zu einem Jahr im Voraus geplant werden.",
-    "voirPanier": "Warenkorb ansehen"
+    "voirPanier": "Warenkorb ansehen",
+    "infoEnvoi": "Karte per E-Mail, sofort oder zum gewählten Datum. Sichere Zahlung, ohne Servicegebühr."
   },
   "legal": {
     "mentions": {
@@ -199,8 +200,8 @@
     }
   },
   "seo": {
-    "accueilTitre": "Estalviar — Personalisierbare Geschenkkarten",
-    "accueilDescription": "Verschenken Sie eine wirklich personalisierte Geschenkkarte: freier Betrag, Nachricht, Versanddatum. Amazon, Fnac, Steam und mehr, per E-Mail in wenigen Klicks geliefert.",
+    "accueilTitre": "Personalisierte Geschenkkarten | Estalviar",
+    "accueilDescription": "Verschenken Sie eine personalisierte Geschenkkarte: freier Betrag, Vorname, Nachricht und Versanddatum. Die großen Marken und Marken aus Frankreich, per E-Mail geliefert.",
     "boutiqueTitre": "Alle Geschenkkarten",
     "boutiqueDescription": "Über 200 Marken als personalisierte Geschenkkarte: Mode, Sport, Technik, Genuss und Marken „Made in France“. Versand per E-Mail, sofort oder geplant.",
     "ficheTitre": "{nom} Geschenkkarte",
@@ -300,8 +301,8 @@
     "retirer": "Entfernen"
   },
   "fideliteAccueil": {
-    "titre": "Jede verschenkte Karte zahlt sich aus",
-    "texte": "Mit einem Estalviar-Konto wird jeder ausgegebene Euro zu einem Punkt. Ab 100 € bringen Ihnen Ihre Einkäufe Cashback für Ihre nächsten Karten.",
+    "titre": "Das Treueprogramm",
+    "texte": "1 € ausgegeben = 1 Punkt. Ab 100 Punkten bringen Ihnen Ihre Bestellungen Cashback für Ihre nächsten Karten.",
     "creerCompte": "Konto erstellen",
     "programme": "Zum Programm",
     "desInscription": "ab der Anmeldung",
@@ -329,9 +330,9 @@
     "q4": "Und wenn die E-Mail nicht ankommt?",
     "r4": "Prüfen Sie zuerst den Spam-Ordner. Andernfalls schreiben Sie an info@estalviar.com mit der Bestelladresse – wir senden die Karte erneut.",
     "toutes": "Alle Fragen ansehen",
-    "proTitre": "Sie sind ein Unternehmen oder Betriebsrat?",
-    "proTexte": "Geschenke für Ihr Team oder Ihre Kunden: eine Rechnung, Mengenpreise, Angebot innerhalb von 48 Std.",
-    "proBouton": "Angebot anfordern"
+    "proTitre": "Unternehmen und Betriebsräte",
+    "proTexte": "Geschenkkarten für Ihre Mitarbeitenden und Kunden: eine einzige Rechnung, Mengenpreise, ein Angebot innerhalb von 48 Stunden.",
+    "proBouton": "Angebot anfragen"
   },
   "accueilPlus": {
     "reassurance1Titre": "Sichere Zahlung",
@@ -357,7 +358,7 @@
     "rappelExempleDe": "Estalviar",
     "nlPoints": "{points} Punkte geschenkt",
     "nlTitre": "Unsere Geschenkideen per E-Mail",
-    "nlTexte": "Muttertag, Weihnachten, neue Marken „Made in France“: eine E-Mail zur richtigen Zeit, nicht mehr. Dazu {points} Treuepunkte auf Ihrem Konto.",
+    "nlTexte": "Geschenkideen vor Muttertag, Weihnachten und den anderen großen Tagen, dazu neue Marken „Made in France“. Ab und zu eine E-Mail, und {points} Treuepunkte geschenkt.",
     "nlPlaceholder": "Ihre E-Mail-Adresse",
     "nlBouton": "Anmelden",
     "nlEnvoi": "Anmeldung…",
@@ -372,7 +373,8 @@
     "nlMentions": "Abmeldung mit einem Klick in jeder E-Mail.",
     "nlCompte": "Anmeldung mit {email}",
     "cagnotteExemple": "6 Beitragende",
-    "jetonPoints": "Punkte"
+    "jetonPoints": "Punkte",
+    "cagnotteVisuel": "Für Julien"
   },
   "retractation": {
     "titre": "Widerruf",
@@ -679,7 +681,8 @@
     "mdpIdentique": "Wählen Sie ein anderes Passwort als das alte.",
     "nouveauOk": "Ihr Passwort wurde geändert.",
     "allerCompte": "Zu meinem Konto",
-    "lienExpire": "Dieser Link ist nicht mehr gültig (abgelaufen oder bereits verwendet). Fordern Sie einen neuen an."
+    "lienExpire": "Dieser Link ist nicht mehr gültig (abgelaufen oder bereits verwendet). Fordern Sie einen neuen an.",
+    "avantagesTexte": "Mit einem Konto bringt Ihnen jede verschenkte Karte Punkte und ab der Stufe Silber Cashback. Ihre Bestellungen, Sammelgeschenke und die Geburtstage Ihrer Liebsten finden Sie an einem Ort."
   },
   "confirmation": {
     "chargement": "Wir bestätigen Ihre Bestellung…",
@@ -710,7 +713,7 @@
   },
   "contact": {
     "titre": "Eine Frage?",
-    "intro": "Eine Bestellung, eine Karte, eine Partnerschaftsidee: Schreiben Sie uns, ein echter Mensch antwortet.",
+    "intro": "Eine Bestellung, eine Karte, eine Partnerschaftsidee: Schreiben Sie uns, wir antworten in der Regel innerhalb von 2 Werktagen.",
     "nom": "Name",
     "email": "E-Mail",
     "sujet": "Betreff",
@@ -759,7 +762,7 @@
   },
   "introuvable": {
     "titre": "Diese Seite ist unterwegs verloren gegangen",
-    "texte": "Die Adresse ist vielleicht unvollständig oder die Seite existiert nicht mehr. Keine Sorge: Die Geschenkkarten sind noch da.",
+    "texte": "Die Adresse ist vielleicht unvollständig, oder die Seite wurde verschoben.",
     "boutique": "Marken ansehen",
     "accueil": "Zur Startseite",
     "aide": "Brauchen Sie Hilfe?",
@@ -843,8 +846,8 @@
   },
   "pro": {
     "surtitre": "Unternehmen, Betriebsräte, Vereine",
-    "titre": "Das Geschenk, das Ihre Teams und Kunden wirklich selbst wählen.",
-    "intro": "Verschenken Sie personalisierte Geschenkkarten für über 200 Marken. Sie legen das Budget fest, jeder gönnt sich etwas. Wir kümmern uns um alles, von der Bestellung bis zum Versand.",
+    "titre": "Geschenkkarten für Ihre Mitarbeitenden und Kunden.",
+    "intro": "Sie legen ein Budget pro Person fest, jeder wählt seine Marke aus dem gesamten Katalog. Wir übernehmen den Versand, Sie erhalten eine einzige Rechnung.",
     "ctaMobile": "Kostenloses Angebot anfordern",
     "usage1Titre": "Ihre Teams",
     "usage1Texte": "Jahresende, Prämien, Geburtstage, Willkommen: ein Geschenk, das jeder selbst wählt.",
@@ -852,15 +855,15 @@
     "usage2Texte": "Danken Sie Ihren besten Kunden und Partnern mit einer Aufmerksamkeit, die in Erinnerung bleibt.",
     "usage3Titre": "Ihre Wettbewerbe",
     "usage3Texte": "Belohnen Sie Ihren Vertrieb und Ihre besten Teams mit motivierenden Prämien.",
-    "avantage1Titre": "Über 200 Marken",
-    "avantage1Texte": "Mode, Sport, Technik, Genuss, Reisen… und Marken „Made in France“.",
-    "avantage2Titre": "Personalisiert",
+    "avantage1Titre": "Der Katalog",
+    "avantage1Texte": "Mode, Sport, Technik, Genuss, Reisen und Marken, die in Frankreich herstellen.",
+    "avantage2Titre": "Die Personalisierung",
     "avantage2Texte": "Vorname, Ihre Nachricht und Ihr Wunschdesign auf jeder Karte.",
-    "avantage3Titre": "Für Sie versendet",
+    "avantage3Titre": "Der Versand",
     "avantage3Texte": "Jeder Empfänger erhält seine Karte per E-Mail, sofort oder zum gewünschten Datum.",
-    "avantage4Titre": "Eine einzige Rechnung",
+    "avantage4Titre": "Die Rechnung",
     "avantage4Texte": "Eine Bestellung, eine Rechnung, ein fester Ansprechpartner. Zahlung per Überweisung möglich.",
-    "avantage5Titre": "Mengenpreise",
+    "avantage5Titre": "Die Preise",
     "avantage5Texte": "Je mehr Sie bestellen, desto günstiger. Kostenloses, unverbindliches Angebot.",
     "commentTitre": "So funktioniert es",
     "etape1Titre": "Sie beschreiben Ihren Bedarf",
@@ -899,7 +902,9 @@
     "erreurReseau": "Netzwerkfehler, bitte erneut versuchen.",
     "merciTitre": "Danke, Ihre Anfrage wurde gesendet",
     "merciTexte": "Wir melden uns innerhalb von 48 Stunden mit einem persönlichen Angebot. Eine Bestätigung wurde Ihnen per E-Mail gesendet.",
-    "decouvrir": "Marken entdecken"
+    "decouvrir": "Marken entdecken",
+    "pour": "Jahresende, Prämien, Ein- und Austritte, Dank an Kunden, Vertriebswettbewerbe.",
+    "inclusTitre": "Das ist inbegriffen"
   },
   "profil": {
     "chargement": "Ihr Konto wird geladen…",
@@ -1025,5 +1030,21 @@
     "movember": "Movember: Monat der Männergesundheit.",
     "noel": "Frohe Weihnachten!",
     "accueil": "Estalviar, Startseite"
+  },
+  "accueil2": {
+    "murTitre": "Die Marken",
+    "murTout": "Alle {n} Marken ansehen",
+    "trouverTitre": "Die passende Karte finden",
+    "parUnivers": "Nach Bereich",
+    "parBudget": "Nach Budget",
+    "budget20": "Eine kleine Aufmerksamkeit",
+    "budget50": "Das klassische Geschenk",
+    "budget100": "Für große Anlässe",
+    "cagnotteTitre": "Ein Sammelgeschenk",
+    "cagnotteTexte": "Teilen Sie einen Link, jeder gibt, was er möchte. Am Enddatum wird die Summe zur Geschenkkarte.",
+    "rappelTitre": "Geburtstagserinnerungen",
+    "rappelTexte": "Speichern Sie die Geburtstage Ihrer Liebsten in Ihrem Konto: Wir schreiben Ihnen {jours} Tage vorher.",
+    "paliersSeuil": "{n} Punkte",
+    "paliersDepart": "Ab der Anmeldung"
   }
 }

@@ -330,10 +330,7 @@ export default function Profil() {
       <a href={`/${locale}/fidelite`} className="mt-6 block rounded-2xl border border-ivory/15 bg-ivory/[0.03] p-5 hover:border-ivory/30 transition-colors">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="w-11 h-11 rounded-full shrink-0 flex items-center justify-center text-ink font-semibold font-[family-name:var(--font-fraunces)]"
-              style={{ background: `radial-gradient(circle at 30% 30%, #fff8, transparent 45%), ${palierActuel.couleur}` }}>
-              {tFid(`${palierActuel.cle}Nom`).charAt(0)}
-            </span>
+            <span aria-hidden className="w-1 self-stretch rounded-full" style={{ background: palierActuel.couleur }} />
             <div>
               <p className="text-ivory font-semibold">{tFid(`${palierActuel.cle}Nom`)}</p>
               <p className="text-sm text-ivory/60">{t("points", { n: points })}</p>
