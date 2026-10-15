@@ -234,7 +234,9 @@
     "retractationTitre": "Recesso",
     "retractationDescription": "Esercita online il diritto di recesso su un ordine Estalviar.",
     "cartePhysiqueTitre": "Attiva la mia carta",
-    "introuvableTitre": "Pagina non trovata"
+    "introuvableTitre": "Pagina non trovata",
+    "aproposTitre": "Chi siamo",
+    "aproposDescription": "La storia di Estalviar: un nome catalano, carte regalo personalizzate, collette e marchi prodotti in Francia."
   },
   "commentCaMarcheAccueil": {
     "titre": "Come funziona ?",
@@ -1046,5 +1048,26 @@
     "rappelTexte": "Salva i compleanni dei tuoi cari nel tuo account: ti scriviamo {jours} giorni prima.",
     "paliersSeuil": "{n} punti",
     "paliersDepart": "Dall'iscrizione"
+  },
+  "apropos": {
+    "titre": "Perché Estalviar",
+    "bonjour": "Ciao,",
+    "p1": "Estalviar è nato dalla frustrazione di un cliente. Regalo carte regalo per quasi tutto: compleanni, feste d'addio, fine anno e tutti quei «grazie» che non sappiamo dire. E ogni volta la stessa cosa: un codice freddo in un'email impersonale, sempre gli stessi marchi, niente che parli della persona che lo riceve.",
+    "p2": "Il prodotto non era quasi cambiato da anni. Ho voluto cambiarlo, partendo da tutto ciò che mi dava fastidio da cliente.",
+    "p3": "Il nome viene da casa mia. Vengo dal sud della Francia, da una terra dove si sente ancora il catalano. <i>Estalviar</i> vuol dire risparmiare, e <i>s'estalviar</i>, risparmiarsi una fatica. È ciò che dovrebbe fare una carta regalo: risparmiare a chi regala la paura di sbagliare, e a chi riceve un regalo che finirà in fondo a un armadio. Una carta regalo non dovrebbe essere il regalo di ripiego. Dovrebbe essere il regalo giusto.",
+    "p4": "Così ho iniziato da ciò che mi mancava.",
+    "p5": "<b>Prima di tutto, la colletta.</b> Per il compleanno di un collega che conosciamo poco, spesso si mettono dei soldi in una busta e qualcuno compra un regalo a caso. Qui ognuno partecipa online e la persona festeggiata sceglie da sola la sua carta.",
+    "p6": "<b>Poi l'invio programmato</b>, per chi ha troppe cose in testa. Si prepara la carta con mesi di anticipo e arriva proprio il giorno giusto. E se salvi i compleanni dei tuoi cari, ti avvisiamo una settimana prima.",
+    "p7": "<b>Una carta con il suo nome</b>, con un nome, due parole e un design, perché sembri un regalo e non un buono sconto.",
+    "p8": "<b>Spazio ai marchi che producono in Francia</b>, spesso assenti dagli altri siti. Regalare una carta può anche far vivere un laboratorio.",
+    "p9": "<b>E niente costi.</b> Una carta da 50 € costa 50 €, e ogni carta che regali ti fa guadagnare punti, poi cashback.",
+    "p10": "Estalviar è appena all'inizio. Se hai un'idea, un commento o un marchio da farmi scoprire, scrivimi a <mail>info@estalviar.com</mail>. Leggo tutti i messaggi.",
+    "signature": "Elie",
+    "fonction": "Fondatore di Estalviar",
+    "ps": "P.S. Si pronuncia «es-tal-vi-a», la r è muta.",
+    "note": "<i>estalviar</i> (catalano, verbo): risparmiare, economizzare. <i>S'estalviar</i>: risparmiarsi una fatica.",
+    "boutique": "Vedi i marchi",
+    "cagnotte": "Crea una colletta",
+    "lienFooter": "Chi siamo"
   }
 }

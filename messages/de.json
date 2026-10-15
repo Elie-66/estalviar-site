@@ -234,7 +234,9 @@
     "retractationTitre": "Widerruf",
     "retractationDescription": "Üben Sie Ihr Widerrufsrecht für eine Estalviar-Bestellung online aus.",
     "cartePhysiqueTitre": "Karte aktivieren",
-    "introuvableTitre": "Seite nicht gefunden"
+    "introuvableTitre": "Seite nicht gefunden",
+    "aproposTitre": "Über uns",
+    "aproposDescription": "Die Geschichte von Estalviar: ein katalanischer Name, personalisierte Geschenkkarten, Sammelgeschenke und Marken aus Frankreich."
   },
   "commentCaMarcheAccueil": {
     "titre": "So funktioniert's ?",
@@ -1046,5 +1048,26 @@
     "rappelTexte": "Speichern Sie die Geburtstage Ihrer Liebsten in Ihrem Konto: Wir schreiben Ihnen {jours} Tage vorher.",
     "paliersSeuil": "{n} Punkte",
     "paliersDepart": "Ab der Anmeldung"
+  },
+  "apropos": {
+    "titre": "Warum Estalviar",
+    "bonjour": "Hallo,",
+    "p1": "Estalviar ist aus dem Frust eines Kunden entstanden. Ich verschenke Geschenkkarten zu fast jedem Anlass: Geburtstage, Abschiede, Jahresende und all die Dankeschöns, die man nicht in Worte fassen kann. Und jedes Mal dasselbe: ein kalter Code in einer unpersönlichen E-Mail, immer dieselben Marken, nichts, das zur beschenkten Person passt.",
+    "p2": "Das Produkt hatte sich seit Jahren kaum verändert. Ich wollte etwas bewegen, ausgehend von allem, was mich als Kunde gestört hat.",
+    "p3": "Der Name kommt aus meiner Heimat. Ich stamme aus Südfrankreich, aus einer Gegend, in der man noch Katalanisch hört. <i>Estalviar</i> heißt sparen, und <i>s'estalviar</i>, sich eine Mühe ersparen. Genau das sollte eine Geschenkkarte tun: dem Schenkenden die Angst ersparen, danebenzuliegen, und dem Beschenkten ein Geschenk, das im Schrank verstaubt. Eine Geschenkkarte sollte keine Notlösung sein. Sie sollte das richtige Geschenk sein.",
+    "p4": "Also habe ich mit dem angefangen, was mir gefehlt hat.",
+    "p5": "<b>Zuerst das Sammelgeschenk.</b> Zum Geburtstag eines Kollegen, den man kaum kennt, landet oft Bargeld in einem Umschlag, und dann kauft jemand irgendein Geschenk. Hier gibt jeder online etwas dazu, und das Geburtstagskind wählt seine Karte selbst.",
+    "p6": "<b>Dann der geplante Versand</b>, für alle, die zu viel im Kopf haben. Man bereitet die Karte Monate im Voraus vor, sie kommt pünktlich an. Und wenn Sie die Geburtstage Ihrer Liebsten speichern, erinnern wir Sie eine Woche vorher.",
+    "p7": "<b>Eine Karte mit Namen</b>, mit Vornamen, ein paar Worten und einem Design, damit sie wie ein Geschenk aussieht und nicht wie ein Gutschein.",
+    "p8": "<b>Platz für Marken, die in Frankreich herstellen</b> und auf anderen Seiten oft fehlen. Eine Karte zu verschenken kann auch eine Werkstatt am Leben halten.",
+    "p9": "<b>Und keine Gebühren.</b> Eine Karte über 50 € kostet 50 €, und jede verschenkte Karte bringt Ihnen Punkte, dann Cashback.",
+    "p10": "Estalviar fängt gerade erst an. Wenn Sie eine Idee, eine Anmerkung oder eine Marke für mich haben, schreiben Sie mir an <mail>info@estalviar.com</mail>. Ich lese jede Nachricht.",
+    "signature": "Elie",
+    "fonction": "Gründer von Estalviar",
+    "ps": "PS: Man spricht es „es-tal-wi-a“, das r bleibt stumm.",
+    "note": "<i>estalviar</i> (Katalanisch, Verb): sparen, ersparen. <i>S'estalviar</i>: sich eine Mühe ersparen.",
+    "boutique": "Marken ansehen",
+    "cagnotte": "Sammelgeschenk starten",
+    "lienFooter": "Über uns"
   }
 }

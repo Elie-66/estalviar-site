@@ -11,6 +11,7 @@ export default function Footer() {
   const locale = pathname.split("/")[1];
   const t = useTranslations("footer");
   const tRetractation = useTranslations("retractation");
+  const tApropos = useTranslations("apropos");
   const [ouvert, setOuvert] = useState(null);
 
   const sections = [
@@ -36,6 +37,7 @@ export default function Footer() {
       id: "aide",
       titre: t("aide"),
       liens: [
+        { href: `/${locale}/qui-sommes-nous`, label: tApropos("lienFooter") },
         { href: `/${locale}/aide`, label: t("centreAide") },
         { href: `/${locale}/contact`, label: t("contact") },
         { href: `/${locale}/blog`, label: t("blog") },

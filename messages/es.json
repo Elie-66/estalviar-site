@@ -234,7 +234,9 @@
     "retractationTitre": "Desistimiento",
     "retractationDescription": "Ejerza en línea su derecho de desistimiento sobre un pedido de Estalviar.",
     "cartePhysiqueTitre": "Activar mi tarjeta",
-    "introuvableTitre": "Página no encontrada"
+    "introuvableTitre": "Página no encontrada",
+    "aproposTitre": "Quiénes somos",
+    "aproposDescription": "La historia de Estalviar: un nombre catalán, tarjetas regalo personalizadas, botes y marcas fabricadas en Francia."
   },
   "commentCaMarcheAccueil": {
     "titre": "Cómo funciona ?",
@@ -1046,5 +1048,26 @@
     "rappelTexte": "Guarde los cumpleaños de sus seres queridos en su cuenta: le escribimos {jours} días antes.",
     "paliersSeuil": "{n} puntos",
     "paliersDepart": "Desde el registro"
+  },
+  "apropos": {
+    "titre": "Por qué Estalviar",
+    "bonjour": "Hola:",
+    "p1": "Estalviar nació de la frustración de un cliente. Regalo tarjetas regalo para casi todo: cumpleaños, despedidas, fin de año y todos esos «gracias» que no sabemos decir. Y cada vez lo mismo: un código frío en un email impersonal, siempre las mismas marcas, nada que hable de la persona que lo recibe.",
+    "p2": "El producto apenas había cambiado en años. Quise cambiarlo, partiendo de todo lo que me molestaba como cliente.",
+    "p3": "El nombre viene de mi tierra. Soy del sur de Francia, de una zona donde todavía se oye el catalán. <i>Estalviar</i> significa ahorrar, y <i>s'estalviar</i>, ahorrarse una molestia. Es lo que debería hacer una tarjeta regalo: ahorrar a quien regala el miedo a equivocarse, y a quien la recibe un regalo que acabará en el fondo de un armario. Una tarjeta regalo no debería ser el regalo por defecto. Debería ser el regalo acertado.",
+    "p4": "Así que empecé por lo que me faltaba.",
+    "p5": "<b>Primero, el bote.</b> Para el cumpleaños de un compañero al que apenas conocemos, a menudo se mete dinero en un sobre y alguien compra un regalo al azar. Aquí, cada uno participa en línea y la persona homenajeada elige su propia tarjeta.",
+    "p6": "<b>Después, el envío programado</b>, para quienes tienen demasiadas cosas en la cabeza. Se prepara la tarjeta con meses de antelación y llega justo el día señalado. Y si guarda los cumpleaños de sus seres queridos, le avisamos una semana antes.",
+    "p7": "<b>Una tarjeta con su nombre</b>, con un nombre, unas palabras y un diseño, para que parezca un regalo y no un vale de descuento.",
+    "p8": "<b>Un lugar para las marcas que fabrican en Francia</b>, a menudo ausentes de otros sitios. Regalar una tarjeta también puede dar vida a un taller.",
+    "p9": "<b>Y sin gastos.</b> Una tarjeta de 50 € cuesta 50 €, y cada tarjeta que regala le da puntos, y luego cashback.",
+    "p10": "Estalviar acaba de empezar. Si tiene una idea, un comentario o una marca que debería descubrir, escríbame a <mail>info@estalviar.com</mail>. Leo todos los mensajes.",
+    "signature": "Elie",
+    "fonction": "Fundador de Estalviar",
+    "ps": "P. D.: se pronuncia «es-tal-vi-a», la r no suena.",
+    "note": "<i>estalviar</i> (catalán, verbo): ahorrar, economizar. <i>S'estalviar</i>: ahorrarse una molestia.",
+    "boutique": "Ver las marcas",
+    "cagnotte": "Crear un bote",
+    "lienFooter": "Quiénes somos"
   }
 }

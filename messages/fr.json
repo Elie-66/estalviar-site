@@ -234,7 +234,9 @@
     "retractationTitre": "Se rétracter",
     "retractationDescription": "Exercez votre droit de rétractation en ligne sur une commande Estalviar.",
     "cartePhysiqueTitre": "Activer ma carte",
-    "introuvableTitre": "Page introuvable"
+    "introuvableTitre": "Page introuvable",
+    "aproposTitre": "Qui sommes-nous",
+    "aproposDescription": "L'histoire d'Estalviar : un nom catalan, des cartes cadeaux personnalisées, des cagnottes et des marques fabriquées en France."
   },
   "commentCaMarcheAccueil": {
     "titre": "Comment ça marche ?",
@@ -1046,5 +1048,26 @@
     "rappelTexte": "Enregistrez les dates de vos proches dans votre compte : on vous écrit {jours} jours avant.",
     "paliersSeuil": "{n} points",
     "paliersDepart": "Dès l'inscription"
+  },
+  "apropos": {
+    "titre": "Pourquoi Estalviar",
+    "bonjour": "Bonjour,",
+    "p1": "Estalviar est né d'une frustration de client. J'offre des cartes cadeaux pour à peu près tout : les anniversaires, les pots de départ, les fins d'année, et tous ces « merci » qu'on ne sait pas comment dire. Et chaque fois, la même chose : un code froid dans un email impersonnel, toujours les mêmes enseignes, rien qui parle de la personne qui reçoit.",
+    "p2": "Le produit n'avait presque pas bougé depuis des années. J'ai eu envie de le faire bouger, en partant de tout ce qui m'agaçait en tant que client.",
+    "p3": "Le nom vient de chez moi. Je suis du sud de la France, d'une terre où l'on entend encore le catalan. <i>Estalviar</i> veut dire épargner, et <i>s'estalviar</i>, s'épargner une peine. C'est ce que devrait faire une carte cadeau : épargner à celui qui offre la peur de se tromper, et à celui qui reçoit un cadeau qui finira au fond d'un placard. Une carte cadeau ne devrait pas être un cadeau par défaut. Elle devrait être le bon cadeau.",
+    "p4": "Alors j'ai commencé par ce qui me manquait.",
+    "p5": "<b>La cagnotte, d'abord.</b> Pour l'anniversaire d'un collègue qu'on connaît peu, on glisse souvent un billet dans une enveloppe, puis quelqu'un achète un cadeau au hasard. Ici, chacun participe en ligne et la personne fêtée choisit elle-même sa carte.",
+    "p6": "<b>L'envoi programmé, ensuite</b>, pour ceux qui ont trop de choses en tête. On prépare la carte des mois à l'avance, elle arrive pile le jour J. Et si vous enregistrez les anniversaires de vos proches, on vous prévient une semaine avant.",
+    "p7": "<b>Une carte à son nom</b>, avec un prénom, un mot et un design, pour qu'elle ressemble à un cadeau et pas à un bon de réduction.",
+    "p8": "<b>Une place pour les marques qui fabriquent en France</b>, souvent absentes des autres sites. Offrir une carte peut aussi faire vivre un atelier.",
+    "p9": "<b>Et aucun frais.</b> Une carte de 50 € coûte 50 €, et chaque carte offerte vous rapporte des points, puis du cashback.",
+    "p10": "Estalviar ne fait que commencer. Si vous avez une idée, une remarque ou une marque à me faire découvrir, écrivez-moi à <mail>info@estalviar.com</mail>. Je lis tous les messages.",
+    "signature": "Elie",
+    "fonction": "Fondateur d'Estalviar",
+    "ps": "P.-S. : ça se prononce « es-tal-vi-a », le r reste muet.",
+    "note": "<i>estalviar</i> (catalan, verbe) : épargner, économiser. <i>S'estalviar</i> : s'épargner une peine.",
+    "boutique": "Voir les enseignes",
+    "cagnotte": "Créer une cagnotte",
+    "lienFooter": "Qui sommes-nous"
   }
 }

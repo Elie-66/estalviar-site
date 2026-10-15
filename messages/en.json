@@ -234,7 +234,9 @@
     "retractationTitre": "Withdraw from an order",
     "retractationDescription": "Exercise your right of withdrawal online on an Estalviar order.",
     "cartePhysiqueTitre": "Activate my card",
-    "introuvableTitre": "Page not found"
+    "introuvableTitre": "Page not found",
+    "aproposTitre": "About us",
+    "aproposDescription": "The story of Estalviar: a Catalan name, personalised gift cards, group gifts and brands made in France."
   },
   "commentCaMarcheAccueil": {
     "titre": "How it works ?",
@@ -1046,5 +1048,26 @@
     "rappelTexte": "Save your loved ones' birthdays in your account: we email you {jours} days before.",
     "paliersSeuil": "{n} points",
     "paliersDepart": "From sign-up"
+  },
+  "apropos": {
+    "titre": "Why Estalviar",
+    "bonjour": "Hello,",
+    "p1": "Estalviar was born out of a customer's frustration. I give gift cards for just about everything: birthdays, leaving parties, end-of-year presents, and all those thank-yous you don't know how to say. And every time, the same thing: a cold code in an impersonal email, always the same brands, nothing about the person receiving it.",
+    "p2": "The product had barely changed in years. I wanted to change it, starting from everything that annoyed me as a customer.",
+    "p3": "The name comes from home. I'm from the south of France, from a land where Catalan is still spoken. <i>Estalviar</i> means to save, and <i>s'estalviar</i>, to spare yourself the trouble. That is what a gift card should do: spare the giver the fear of getting it wrong, and spare the recipient a present that ends up at the back of a cupboard. A gift card shouldn't be the fallback gift. It should be the right gift.",
+    "p4": "So I started with what I was missing.",
+    "p5": "<b>First, the group gift.</b> For the birthday of a colleague you barely know, people often slip cash into an envelope, then someone buys a random present. Here, everyone chips in online and the person being celebrated chooses their own card.",
+    "p6": "<b>Then, scheduled sending</b>, for people with too much on their mind. You prepare the card months ahead and it arrives right on the day. And if you save your loved ones' birthdays, we remind you a week before.",
+    "p7": "<b>A card with their name on it</b>, with a first name, a note and a design, so it looks like a present and not a discount voucher.",
+    "p8": "<b>Room for brands that manufacture in France</b>, often missing from other sites. Giving a card can also keep a workshop going.",
+    "p9": "<b>And no fees.</b> A €50 card costs €50, and every card you give earns you points, then cashback.",
+    "p10": "Estalviar is only just getting started. If you have an idea, a comment or a brand I should discover, write to me at <mail>info@estalviar.com</mail>. I read every message.",
+    "signature": "Elie",
+    "fonction": "Founder of Estalviar",
+    "ps": "P.S. It's pronounced \"es-tal-vee-ah\", the r is silent.",
+    "note": "<i>estalviar</i> (Catalan, verb): to save, to spare. <i>S'estalviar</i>: to spare yourself the trouble.",
+    "boutique": "See the brands",
+    "cagnotte": "Start a group gift",
+    "lienFooter": "About us"
   }
 }
