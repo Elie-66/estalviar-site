@@ -12,6 +12,20 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const arrondi = (n) => Math.round(Number(n) * 100) / 100;
 
 /**
+ * Où en est l'envoi du code ?
+ * • « pas encore » : carte programmée à plus de 29 jours (elle n'est pas encore chez Resend)
+ * • « programmé » : email programmé chez Resend, qu'on peut encore annuler
+ * • « envoyé » : le code est parti, on ne peut plus le reprendre
+ */
+function etatEnvoi(commande) {
+  if (["a_programmer"].includes(commande.statut)) return "pas_encore";
+  if (commande.email_statut === "annule") return "pas_encore";
+  if (commande.email_statut === "programme" && commande.email_id) return "programme";
+  if (!commande.code) return "pas_encore"; // participation à une cagnotte : pas de code
+  return "envoye";
+}
+
+/**
  * Part de la carte payée par carte bancaire (le reste a été payé avec du cashback).
  * Ex. : panier de 100 € dont 10 € de cashback → une carte de 50 € a été payée 45 € par carte.
  */
@@ -36,6 +50,7 @@ export async function GET(req) {
   if (!commande) return NextResponse.json({ error: "Commande introuvable" }, { status: 404 });
   const { montant, panier } = await partPayeeParCarte(commande);
   return NextResponse.json({
+    etatEnvoi: etatEnvoi(commande),
     montantCarte: montant,
     partCashback: arrondi(Number(commande.montant) - montant),
     stripePossible: !!panier?.stripe_session_id,
@@ -49,11 +64,29 @@ export async function POST(req) {
   if (!acces) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   try {
-    const { commandeId, viaStripe } = await req.json();
+    const { commandeId, viaStripe, malgreEnvoi } = await req.json();
     const { data: commande } = await supabaseAdmin.from("commandes").select("*").eq("id", commandeId).maybeSingle();
     if (!commande) return NextResponse.json({ error: "Commande introuvable" }, { status: 404 });
 
     const { montant, panier } = await partPayeeParCarte(commande);
+
+    // 0) Le code ne doit pas partir : on annule l'email programmé chez Resend.
+    //    Si le code a déjà été envoyé, on ne rembourse que sur confirmation expresse (geste commercial).
+    let etat = commande.statut === "remboursee" ? "pas_encore" : etatEnvoi(commande);
+    if (etat === "programme") {
+      const { error: erreurAnnulation } = await resend.emails.cancel(commande.email_id);
+      if (erreurAnnulation) {
+        etat = "envoye"; // trop tard : Resend l'a déjà envoyé
+      } else {
+        await supabaseAdmin.from("commandes").update({ email_statut: "annule", email_maj_le: new Date().toISOString() }).eq("id", commande.id);
+      }
+    }
+    if (etat === "envoye" && !malgreEnvoi) {
+      return NextResponse.json(
+        { error: "Le code de cette carte a déjà été envoyé : il reste utilisable. Cochez « Rembourser quand même » si c'est un geste commercial.", codeEnvoye: true },
+        { status: 409 }
+      );
+    }
 
     // 1) Remboursement Stripe (une seule fois par carte, même si on clique deux fois)
     let remboursementId = commande.stripe_remboursement || null;
@@ -113,8 +146,11 @@ export async function POST(req) {
       }
     }
 
-    await journaliser(acces, "rembourser carte", { commande: commande.id, montant, stripe: !!remboursementId, avoir: avoir?.numero || null });
-    return NextResponse.json({ ok: true, avoir: avoir?.numero || null, montant, stripe: !!remboursementId });
+    await journaliser(acces, "rembourser carte", {
+      commande: commande.id, montant, stripe: !!remboursementId, avoir: avoir?.numero || null,
+      code: etat === "envoye" ? "déjà envoyé" : "jamais envoyé",
+    });
+    return NextResponse.json({ ok: true, avoir: avoir?.numero || null, montant, stripe: !!remboursementId, envoiAnnule: etat !== "envoye" });
   } catch (e) {
     console.error("Remboursement", e);
     const message = e?.type?.startsWith?.("Stripe") ? `Stripe a refusé le remboursement : ${e.message}` : "Le remboursement n'a pas pu être fait";

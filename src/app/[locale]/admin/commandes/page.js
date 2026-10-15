@@ -16,6 +16,7 @@ const SUIVI = {
   clique: ["Ouvert", "text-vert"],
   rejete: ["Non livré", "text-corail"],
   signale: ["Signalé comme indésirable", "text-corail"],
+  annule: ["Envoi annulé (remboursée)", "text-ivory/45"],
 };
 const PROBLEMES = ["rejete", "signale", "retarde"];
 
@@ -76,7 +77,7 @@ export default function AdminCommandes() {
   const [message, setMessage] = useState(null);
 
   const ouvrirRemboursement = async (commandeId) => {
-    setRemboursement({ id: commandeId, infos: null, enCours: false, erreur: "" });
+    setRemboursement({ id: commandeId, infos: null, enCours: false, erreur: "", malgreEnvoi: false });
     const res = await fetchAdmin(`/api/admin-rembourser?commande=${encodeURIComponent(commandeId)}`);
     const json = await res.json().catch(() => ({}));
     setRemboursement((r) => (r?.id === commandeId ? { ...r, infos: res.ok ? json : null, erreur: res.ok ? "" : json.error || "Erreur" } : r));
@@ -88,16 +89,18 @@ export default function AdminCommandes() {
     const res = await fetchAdmin("/api/admin-rembourser", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ commandeId: id, viaStripe }),
+      body: JSON.stringify({ commandeId: id, viaStripe, malgreEnvoi: remboursement.malgreEnvoi }),
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
       setRemboursement((r) => ({ ...r, enCours: false, erreur: json.error || "Erreur" }));
       return;
     }
-    setCommandes((prev) => prev.map((c) => (c.id === id ? { ...c, statut: "remboursee" } : c)));
+    setCommandes((prev) => prev.map((c) => (c.id === id
+      ? { ...c, statut: "remboursee", email_statut: json.envoiAnnule && c.email_statut === "programme" ? "annule" : c.email_statut }
+      : c)));
     setRemboursement(null);
-    setMessage(`Carte remboursée${json.stripe ? " sur Stripe" : ""}${json.avoir ? `, avoir ${json.avoir} envoyé au client` : ""}.`);
+    setMessage(`Carte remboursée${json.stripe ? " sur Stripe" : ""}${json.envoiAnnule ? ", le code ne sera pas envoyé" : ""}${json.avoir ? `, avoir ${json.avoir} envoyé au client` : ""}.`);
   };
 
   const renvoyer = async () => {
@@ -339,6 +342,26 @@ export default function AdminCommandes() {
                 {!remboursement.infos && !remboursement.erreur && <p className="mt-2 text-sm text-ivory/50">Calcul du montant…</p>}
                 {remboursement.infos && (
                   <>
+                    {remboursement.infos.etatEnvoi === "pas_encore" && (
+                      <p className="mt-1 text-sm text-vert">Le code n&apos;a pas encore été envoyé : il ne partira pas.</p>
+                    )}
+                    {remboursement.infos.etatEnvoi === "programme" && (
+                      <p className="mt-1 text-sm text-vert">L&apos;email du code est programmé : il sera annulé, le code ne partira pas.</p>
+                    )}
+                    {remboursement.infos.etatEnvoi === "envoye" && (
+                      <div className="mt-2 border border-corail/40 rounded-lg p-3">
+                        <p className="text-sm text-corail">
+                          Attention : le code a déjà été envoyé au destinataire et reste utilisable chez l&apos;enseigne.
+                          Selon les CGV, cette carte n&apos;est plus remboursable.
+                        </p>
+                        <label className="mt-2 flex items-center gap-2 text-sm text-ivory/80 cursor-pointer">
+                          <input type="checkbox" checked={remboursement.malgreEnvoi}
+                            onChange={(e) => setRemboursement((r) => ({ ...r, malgreEnvoi: e.target.checked }))}
+                            className="w-4 h-4 accent-[#C9A227]" />
+                          Rembourser quand même (geste commercial)
+                        </label>
+                      </div>
+                    )}
                     <p className="mt-1 text-sm text-ivory/60">
                       Montant payé par carte bancaire : <span className="text-ivory">{remboursement.infos.montantCarte.toFixed(2).replace(".", ",")} €</span>
                       {remboursement.infos.partCashback > 0 && (
@@ -348,12 +371,12 @@ export default function AdminCommandes() {
                     </p>
                     <div className="mt-3 flex flex-wrap gap-3">
                       {remboursement.infos.stripePossible && (
-                        <button type="button" disabled={remboursement.enCours} onClick={() => rembourser(true)}
+                        <button type="button" disabled={remboursement.enCours || (remboursement.infos.etatEnvoi === "envoye" && !remboursement.malgreEnvoi)} onClick={() => rembourser(true)}
                           className="bg-gold text-ink text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gold/90 disabled:opacity-40">
                           Rembourser {remboursement.infos.montantCarte.toFixed(2).replace(".", ",")} € via Stripe
                         </button>
                       )}
-                      <button type="button" disabled={remboursement.enCours} onClick={() => rembourser(false)}
+                      <button type="button" disabled={remboursement.enCours || (remboursement.infos.etatEnvoi === "envoye" && !remboursement.malgreEnvoi)} onClick={() => rembourser(false)}
                         className="text-sm text-ivory/80 border border-ivory/20 rounded-lg px-4 py-2 hover:border-ivory/40 disabled:opacity-40">
                         Déjà remboursé depuis Stripe : créer l&apos;avoir
                       </button>

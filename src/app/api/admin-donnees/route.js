@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin, accesAdmin, journaliser } from "../../../lib/verifierAdmin";
 import { SECTIONS } from "../../../lib/admin";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Route unique pour les pages admin : lecture et écriture des tables protégées.
 // Seules les tables et actions listées ici sont autorisées.
@@ -97,6 +100,16 @@ export async function POST(req) {
 
     if (resultat.error) {
       return NextResponse.json({ error: resultat.error.message }, { status: 500 });
+    }
+    // Carte annulée : si son email est programmé chez Resend, on l'annule pour que le code ne parte pas
+    if (table === "commandes" && action === "modifier" && ["annulee", "remboursee"].includes(donnees?.statut)) {
+      const { data: carte } = await supabaseAdmin.from("commandes").select("email_id, email_statut").eq("id", id).maybeSingle();
+      if (carte?.email_statut === "programme" && carte.email_id) {
+        const { error: erreurAnnulation } = await resend.emails.cancel(carte.email_id);
+        if (!erreurAnnulation) {
+          await supabaseAdmin.from("commandes").update({ email_statut: "annule", email_maj_le: new Date().toISOString() }).eq("id", id);
+        }
+      }
     }
     await journaliser(acces, `${action} ${table}`, { id: id ?? null, champs: donnees ? Object.keys(donnees) : [] });
     return NextResponse.json({ ok: true });
