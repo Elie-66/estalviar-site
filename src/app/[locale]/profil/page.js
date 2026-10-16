@@ -324,7 +324,7 @@ export default function Profil() {
     <div className="max-w-[760px] mx-auto px-6 pt-28 md:pt-32 pb-20">
       {/* En-tête : avatar, nom, palier */}
       <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-2xl font-semibold text-ink font-[family-name:var(--font-fraunces)]"
+        <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-2xl font-semibold text-ink font-[family-name:var(--font-titre)]"
           style={{ backgroundColor: couleurAvatar }}>
           {avatarIllustration ? <img src={avatarIllustration} alt="" className="w-full h-full object-cover" /> : initiale}
         </div>
@@ -374,7 +374,7 @@ export default function Profil() {
             <p className={libelle}>{t("avatar")}</p>
             <div className="flex flex-wrap gap-3">
               <button type="button" onClick={() => setAvatarIllustration(null)} aria-pressed={!avatarIllustration} aria-label={t("avatarInitiale")}
-                className={`w-14 h-14 rounded-full flex items-center justify-center text-lg font-semibold text-ink font-[family-name:var(--font-fraunces)] transition-all ${
+                className={`w-14 h-14 rounded-full flex items-center justify-center text-lg font-semibold text-ink font-[family-name:var(--font-titre)] transition-all ${
                   !avatarIllustration ? "ring-2 ring-offset-2 ring-offset-ink ring-gold" : "opacity-70 hover:opacity-100"
                 }`} style={{ backgroundColor: couleurAvatar }}>
                 {initiale}
@@ -637,7 +637,7 @@ export default function Profil() {
                       <span className="text-gold/80 text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
                     </div>
                     <div className="relative mt-4">
-                      <p className={`text-3xl font-semibold font-[family-name:var(--font-fraunces)] ${fonce ? "text-ink" : "text-white"}`}>
+                      <p className={`text-3xl font-semibold font-[family-name:var(--font-titre)] ${fonce ? "text-ink" : "text-white"}`}>
                         {euros(c.montant_collecte)}
                         {!c.montant_libre && <span className={`text-sm font-sans ml-2 ${fonce ? "text-ink/45" : "text-white/45"}`}>/ {euros(c.montant_objectif)}</span>}
                       </p>

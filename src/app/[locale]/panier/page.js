@@ -44,7 +44,7 @@ export default function Panier() {
               {article.image
                 ? <img src={article.image} alt="" className="relative h-3.5 sm:h-4 w-fit max-w-[70%] object-contain object-left drop-shadow-md" />
                 : <span className="relative text-[10px] text-white font-semibold">{article.marque}</span>}
-              <p className={`relative text-sm font-semibold font-[family-name:var(--font-fraunces)] ${article.texteFonce ? "text-ink" : "text-white"}`}>
+              <p className={`relative text-sm font-semibold font-[family-name:var(--font-titre)] ${article.texteFonce ? "text-ink" : "text-white"}`}>
                 {article.montant}<span className="text-xs text-gold ml-0.5">€</span>
               </p>
             </div>

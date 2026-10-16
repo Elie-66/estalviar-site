@@ -3,7 +3,13 @@ import { getMessages } from 'next-intl/server';
 import { SITE_URL, alternates } from '../../lib/seo';
 import { RESEAUX } from '../../lib/reseaux';
 // Polices hébergées par le site lui-même (aucune requête vers Google Fonts : RGPD)
-import "@fontsource-variable/fraunces/opsz.css";
+import "@fontsource-variable/fraunces/opsz.css"; // logo uniquement
+import "@fontsource/brygada-1918/latin-400.css";
+import "@fontsource/brygada-1918/latin-500.css";
+import "@fontsource/brygada-1918/latin-600.css";
+import "@fontsource/brygada-1918/latin-700.css";
+import "@fontsource/brygada-1918/latin-400-italic.css";
+import "@fontsource/brygada-1918/latin-600-italic.css";
 import "@fontsource-variable/inter";
 import "@fontsource/space-mono/400.css";
 import "@fontsource/space-mono/700.css";

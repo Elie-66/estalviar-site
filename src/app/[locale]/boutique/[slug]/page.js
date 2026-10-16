@@ -174,7 +174,7 @@ export default function FicheCarte({ params }) {
             <img src={carte.image} alt={carte.nom}
               className={`max-h-full max-w-full object-contain object-left drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] ${logoBlanc ? "brightness-0 invert" : "rounded-md"}`} />
           ) : (
-            <span className={`text-lg font-semibold font-[family-name:var(--font-fraunces)] ${couleurTexte}`}>{carte.nom}</span>
+            <span className={`text-lg font-semibold font-[family-name:var(--font-titre)] ${couleurTexte}`}>{carte.nom}</span>
           )}
         </div>
         <span className={`text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)] ${texteFonce ? "text-ink/50" : "text-white/70"}`}>
@@ -191,7 +191,7 @@ export default function FicheCarte({ params }) {
         )}
         <div className={`h-px mb-3 ${texteFonce ? "bg-ink/20" : "bg-white/25"}`} />
         <div className="flex items-end justify-between">
-          <p className={`text-4xl sm:text-5xl font-semibold leading-none font-[family-name:var(--font-fraunces)] ${couleurTexte}`}>
+          <p className={`text-4xl sm:text-5xl font-semibold leading-none font-[family-name:var(--font-titre)] ${couleurTexte}`}>
             {montant || 0}<span className="text-2xl text-gold ml-1">€</span>
           </p>
           <span className={`text-[10px] font-[family-name:var(--font-space-mono)] tracking-wider ${couleurTexteAtt2}`}>

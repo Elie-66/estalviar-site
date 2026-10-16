@@ -48,7 +48,7 @@ export default function CarteVivante({ marques }) {
               {marque.image
                 ? <img src={marque.image} alt={marque.nom}
                     className={`max-h-full max-w-full object-contain object-left drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] ${logoEnBlanc(marque) ? "brightness-0 invert" : "rounded-md"}`} />
-                : <span className="text-white text-lg font-semibold font-[family-name:var(--font-fraunces)]">{marque.nom}</span>}
+                : <span className="text-white text-lg font-semibold font-[family-name:var(--font-titre)]">{marque.nom}</span>}
             </div>
             <span className="text-white/70 text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
           </div>
@@ -56,7 +56,7 @@ export default function CarteVivante({ marques }) {
             <p className="text-white text-lg sm:text-xl font-medium truncate">{t("pour", { prenom: nom })}</p>
             <p className="text-white/70 text-sm italic truncate">« {messages[indexMessage]} »</p>
             <div className="h-px bg-white/25 my-3" />
-            <p className="text-white text-4xl sm:text-5xl font-semibold font-[family-name:var(--font-fraunces)] leading-none">
+            <p className="text-white text-4xl sm:text-5xl font-semibold font-[family-name:var(--font-titre)] leading-none">
               {montantAffiche}<span className="text-gold text-2xl ml-1">€</span>
             </p>
           </div>

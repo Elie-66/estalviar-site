@@ -32,7 +32,7 @@ export default async function QuiSommesNous({ params }) {
 
   return (
     <div className="px-6 pt-28 md:pt-36 pb-24">
-      <article className="max-w-[860px] mx-auto text-ivory font-[family-name:var(--font-fraunces)]">
+      <article className="max-w-[860px] mx-auto text-ivory font-[family-name:var(--font-titre)]">
         <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">{t("titre")}</h1>
         <p className={`mt-10 ${paragraphe}`}>{t("bonjour")}</p>
 

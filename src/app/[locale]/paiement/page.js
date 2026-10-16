@@ -11,7 +11,7 @@ function Etape({ numero, titre, children }) {
   return (
     <section className="border-t border-ivory/10 pt-7 mt-7 first:border-t-0 first:pt-0 first:mt-0">
       <h2 className="flex items-center gap-3 text-lg font-semibold text-ivory mb-5">
-        <span className="w-7 h-7 rounded-full border border-gold/50 text-gold text-sm flex items-center justify-center font-[family-name:var(--font-fraunces)]">
+        <span className="w-7 h-7 rounded-full border border-gold/50 text-gold text-sm flex items-center justify-center font-[family-name:var(--font-titre)]">
           {numero}
         </span>
         {titre}

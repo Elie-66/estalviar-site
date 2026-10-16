@@ -182,7 +182,7 @@ export default function Home() {
               <li key={p.cle} className="grid grid-cols-[4px_1fr] sm:grid-cols-[4px_150px_1fr] gap-x-5 gap-y-1 py-5 border-b border-ivory/10">
                 <span aria-hidden className="row-span-2 sm:row-span-1 rounded-full" style={{ background: p.couleur }} />
                 <span>
-                  <span className="block text-ivory font-semibold font-[family-name:var(--font-fraunces)] text-lg leading-tight">{tFid(`${p.cle}Nom`)}</span>
+                  <span className="block text-ivory font-semibold font-[family-name:var(--font-titre)] text-lg leading-tight">{tFid(`${p.cle}Nom`)}</span>
                   <span className="block text-xs text-ivory/45 mt-0.5">
                     {p.seuil === 0 ? t2("paliersDepart") : t2("paliersSeuil", { n: p.seuil })}
                   </span>

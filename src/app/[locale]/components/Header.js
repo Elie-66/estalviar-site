@@ -88,7 +88,7 @@ export default function Header() {
 
         <LogoEstalviar
           href={`/${segments[1]}`}
-          className="text-xl font-semibold uppercase tracking-wide text-ivory font-[family-name:var(--font-fraunces)]"
+          className="text-xl font-semibold uppercase tracking-wide text-ivory font-[family-name:var(--font-logo)]"
         />
 
         <nav className="hidden md:flex items-center gap-8 text-ivory/80">
@@ -129,7 +129,7 @@ export default function Header() {
                 </div>
               ) : (
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-ink flex-shrink-0 font-[family-name:var(--font-fraunces)]"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-ink flex-shrink-0 font-[family-name:var(--font-titre)]"
                   style={{ backgroundColor: couleurAvatar }}
                 >
                   {initiale}
@@ -186,7 +186,7 @@ export default function Header() {
                   </div>
                 ) : (
                   <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold text-ink flex-shrink-0 font-[family-name:var(--font-fraunces)]"
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold text-ink flex-shrink-0 font-[family-name:var(--font-titre)]"
                     style={{ backgroundColor: couleurAvatar }}
                   >
                     {initiale}

@@ -17,7 +17,7 @@ export default function CarteVitrine({ carte, href, prixLabel, badge }) {
           <img src={carte.image} alt="" className="max-h-[46%] max-w-[64%] object-contain transition-transform duration-300 group-hover:scale-105" />
         ) : (
           <span
-            className="px-4 text-center text-lg sm:text-xl font-semibold leading-tight font-[family-name:var(--font-fraunces)]"
+            className="px-4 text-center text-lg sm:text-xl font-semibold leading-tight font-[family-name:var(--font-titre)]"
             style={{ color: couleur }}
           >
             {carte.nom}

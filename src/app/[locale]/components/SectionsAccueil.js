@@ -54,7 +54,7 @@ export function TrouverCarte({ cartes, traduireCategorie }) {
                   <a href={`/${locale}/boutique?categorie=${encodeURIComponent(nom)}`}
                     className="group flex items-center gap-4 py-4">
                     <span className="flex-1 min-w-0">
-                      <span className="block text-ivory text-lg sm:text-xl font-semibold font-[family-name:var(--font-fraunces)] group-hover:text-gold transition-colors truncate">
+                      <span className="block text-ivory text-lg sm:text-xl font-semibold font-[family-name:var(--font-titre)] group-hover:text-gold transition-colors truncate">
                         {traduireCategorie(nom)}
                       </span>
                       <span className="block text-xs text-ivory/45 mt-0.5">{tVit("nbEnseignes", { n: liste.length })}</span>
@@ -83,7 +83,7 @@ export function TrouverCarte({ cartes, traduireCategorie }) {
                     <span className="relative block w-full lg:w-40 shrink-0 aspect-[1.586/1] rounded-xl p-3 border border-white/10 shadow-[0_14px_30px_-18px_rgba(0,0,0,0.9)] transition-transform group-hover:-translate-y-0.5"
                       style={{ background: b.fond }}>
                       <span className="absolute top-2.5 right-3 text-white/60 text-[8px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
-                      <span className="absolute bottom-2.5 left-3 text-white text-2xl sm:text-3xl font-semibold leading-none font-[family-name:var(--font-fraunces)]">
+                      <span className="absolute bottom-2.5 left-3 text-white text-2xl sm:text-3xl font-semibold leading-none font-[family-name:var(--font-titre)]">
                         {b.montant}<span className="text-base ml-0.5 opacity-80">€</span>
                       </span>
                     </span>
@@ -127,7 +127,7 @@ export function Services() {
                 <span className="text-white/50 text-[8px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
               </div>
               <div>
-                <p className="text-white text-2xl font-semibold leading-none font-[family-name:var(--font-fraunces)]">
+                <p className="text-white text-2xl font-semibold leading-none font-[family-name:var(--font-titre)]">
                   140<span className="text-gold text-base ml-0.5">€</span><span className="text-white/40 text-xs font-sans ml-1.5">/ 200 €</span>
                 </p>
                 <div className="mt-2 h-1.5 rounded-full bg-white/10 overflow-hidden"><div className="h-full w-[70%] bg-gold rounded-full" /></div>
@@ -144,14 +144,14 @@ export function Services() {
           <div aria-hidden className="relative h-44 sm:h-52 rounded-2xl overflow-hidden border border-ivory/10 bg-ivory/[0.03] flex items-center justify-center">
             <div className="w-[82%] max-w-[360px] rotate-2 rounded-xl bg-ivory text-ink shadow-[0_24px_40px_-24px_rgba(0,0,0,0.9)] overflow-hidden">
               <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-ink/10">
-                <span className="w-6 h-6 rounded-full bg-ink text-ivory text-[11px] flex items-center justify-center font-semibold font-[family-name:var(--font-fraunces)]">
+                <span className="w-6 h-6 rounded-full bg-ink text-ivory text-[11px] flex items-center justify-center font-semibold font-[family-name:var(--font-titre)]">
                   E<span className="text-gold">.</span>
                 </span>
                 <span className="text-xs font-medium">{tPlus("rappelExempleDe")}</span>
                 <span className="ml-auto text-[11px] text-ink/45">08:30</span>
               </div>
               <div className="px-4 py-3.5">
-                <p className="text-sm font-semibold leading-snug font-[family-name:var(--font-fraunces)]">
+                <p className="text-sm font-semibold leading-snug font-[family-name:var(--font-titre)]">
                   {tPlus("rappelExempleTitre", { jours: JOURS_AVANT_RAPPEL })}
                 </p>
                 <span className="mt-2.5 inline-block bg-gold text-ink text-xs font-semibold rounded-md px-3 py-1.5">

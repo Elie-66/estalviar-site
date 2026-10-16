@@ -100,7 +100,7 @@ function Confirmation() {
                 {c.image
                   ? <img src={c.image} alt="" className={`h-5 w-fit max-w-[60%] object-contain object-left ${logoEnBlanc(c) ? "brightness-0 invert opacity-90" : "rounded"}`} />
                   : <span className="text-white text-sm font-semibold">{c.marque}</span>}
-                <span className="text-white text-2xl font-semibold font-[family-name:var(--font-fraunces)]">
+                <span className="text-white text-2xl font-semibold font-[family-name:var(--font-titre)]">
                   {c.montant}<span className="text-gold text-base ml-0.5">€</span>
                 </span>
               </div>

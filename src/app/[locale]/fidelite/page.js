@@ -155,7 +155,7 @@ export default function Fidelite() {
                   <span aria-hidden className="absolute inset-x-0 top-0 h-1 rounded-t-2xl" style={{ background: p.couleur }} />
                   <div className="flex items-center gap-3">
                     <div>
-                      <p className="text-ivory font-semibold text-xl leading-tight font-[family-name:var(--font-fraunces)]">
+                      <p className="text-ivory font-semibold text-xl leading-tight font-[family-name:var(--font-titre)]">
                         {tFid(`${p.cle}Nom`)}
                         {estActuel && <span className="ml-2 align-middle text-xs font-sans font-medium text-gold">{t("palierActuel")}</span>}
                       </p>
@@ -195,7 +195,7 @@ export default function Fidelite() {
           <ol className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[1, 2, 3, 4].map((n) => (
               <li key={n} className="relative">
-                <span className="text-gold text-4xl font-semibold leading-none font-[family-name:var(--font-fraunces)]">{n}</span>
+                <span className="text-gold text-4xl font-semibold leading-none font-[family-name:var(--font-titre)]">{n}</span>
                 <h3 className="mt-3 text-ivory font-medium">{t(`etape${n}Titre`, { j: regles.joursAttente })}</h3>
                 <p className="mt-1.5 text-sm text-ivory/60 leading-relaxed">
                   {t(`etape${n}Texte`, { j: regles.joursAttente, min: regles.commandeMinimum, max: regles.plafondPourcent })}

@@ -22,7 +22,8 @@
   --color-prune: var(--color-prune);
   --color-bleu: var(--color-bleu);
   --color-rouille: var(--color-rouille);
-  --font-fraunces: var(--font-fraunces);
+  --font-titre: var(--font-titre);
+  --font-logo: var(--font-logo);
   --font-inter: var(--font-inter);
   --font-space-mono: var(--font-space-mono);
 }
@@ -34,7 +35,7 @@ body {
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-fraunces);
+  font-family: var(--font-titre);
 }
 
 .text-technique {
@@ -55,7 +56,10 @@ h1, h2, h3, h4 {
   animation: defilement 30s linear infinite;
 }
 :root {
-  --font-fraunces: 'Fraunces Variable', 'Fraunces', serif;
+  /* Titres et textes en serif du site */
+  --font-titre: 'Brygada 1918', Georgia, serif;
+  /* Uniquement le logo « ESTALVIAR. » */
+  --font-logo: 'Fraunces Variable', 'Fraunces', serif;
   --font-inter: 'Inter Variable', 'Inter', sans-serif;
   --font-space-mono: 'Space Mono', monospace;
 }

@@ -66,7 +66,7 @@ export default function Footer() {
 
         {/* La marque */}
         <div className="mb-8 md:mb-0">
-          <p className="text-lg uppercase tracking-wide text-ivory font-[family-name:var(--font-fraunces)]">
+          <p className="text-lg uppercase tracking-wide text-ivory font-[family-name:var(--font-logo)]">
             Estalviar<span className="text-gold">.</span>
           </p>
           <p className="mt-3 text-sm text-ivory/60 max-w-[16rem]">

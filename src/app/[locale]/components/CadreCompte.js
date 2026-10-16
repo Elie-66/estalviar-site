@@ -19,10 +19,10 @@ export default function CadreCompte({ titre, sousTitre, children, pied }) {
           <div className="absolute left-40 top-0 w-64 aspect-[1.586/1] rounded-2xl rotate-3 shadow-[0_30px_60px_-25px_rgba(0,0,0,0.9)] p-5 flex flex-col justify-between border border-white/10"
             style={{ background: "linear-gradient(150deg, #C9A227 0%, #4a3a10 100%)" }}>
             <span className="self-end text-white/70 text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
-            <span className="text-white text-3xl font-semibold font-[family-name:var(--font-fraunces)]">25 <span className="text-base">{t("points")}</span></span>
+            <span className="text-white text-3xl font-semibold font-[family-name:var(--font-titre)]">25 <span className="text-base">{t("points")}</span></span>
           </div>
         </div>
-        <p className="text-2xl font-semibold text-ivory font-[family-name:var(--font-fraunces)]">{t("avantagesTitre")}</p>
+        <p className="text-2xl font-semibold text-ivory font-[family-name:var(--font-titre)]">{t("avantagesTitre")}</p>
         <p className="mt-4 text-ivory/70 leading-relaxed max-w-[30rem]">{t("avantagesTexte")}</p>
       </div>
 

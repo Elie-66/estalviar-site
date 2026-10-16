@@ -180,7 +180,7 @@ export default function AdminAudience() {
           {chiffres.map((c) => (
             <div key={c.nom} className="py-5 md:px-4 md:first:pl-0 max-md:border-b max-md:border-ivory/10 max-md:last:border-b-0">
               <dt className="text-sm text-ivory/60">{c.nom}</dt>
-              <dd className="mt-1.5 text-2xl md:text-[28px] font-semibold text-ivory font-[family-name:var(--font-fraunces)] tabular-nums">{c.valeur}</dd>
+              <dd className="mt-1.5 text-2xl md:text-[28px] font-semibold text-ivory font-[family-name:var(--font-titre)] tabular-nums">{c.valeur}</dd>
               <dd className="mt-1"><Evolution actuel={c.actuel || 0} avant={c.avant || 0} /></dd>
               <dd className="mt-1 text-xs text-ivory/40">{c.aide}</dd>
             </div>

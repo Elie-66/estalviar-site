@@ -169,7 +169,7 @@ export default function PageCagnotte({ params }) {
             <p className={`text-lg font-medium ${fonce ? "text-ink" : "text-white"}`}>{t("pour", { prenom: cagnotte.beneficiaire })}</p>
             {cagnotte.message && <p className={`text-sm italic mt-0.5 ${fonce ? "text-ink/60" : "text-white/65"}`}>« {cagnotte.message} »</p>}
             <div className={`h-px my-3 ${fonce ? "bg-ink/20" : "bg-white/25"}`} />
-            <p className={`text-4xl sm:text-5xl font-semibold leading-none font-[family-name:var(--font-fraunces)] ${fonce ? "text-ink" : "text-white"}`}>
+            <p className={`text-4xl sm:text-5xl font-semibold leading-none font-[family-name:var(--font-titre)] ${fonce ? "text-ink" : "text-white"}`}>
               {euros(cagnotte.montant_collecte)}
             </p>
           </div>

@@ -91,7 +91,7 @@ export default async function MaCarte({ params }) {
                 </span>
               )
             ) : (
-              <span className="text-2xl font-semibold font-[family-name:var(--font-fraunces)]">{marque}</span>
+              <span className="text-2xl font-semibold font-[family-name:var(--font-titre)]">{marque}</span>
             )}
             <span className="opacity-60 text-[10px] tracking-[0.2em] font-[family-name:var(--font-space-mono)]">ESTALVIAR</span>
           </div>
@@ -100,7 +100,7 @@ export default async function MaCarte({ params }) {
             {commande.message && (
               <p className="text-sm sm:text-[15px] italic opacity-80 leading-snug line-clamp-2 mb-3 max-w-[85%]">« {commande.message} »</p>
             )}
-            <p className="text-4xl sm:text-5xl font-semibold font-[family-name:var(--font-fraunces)] leading-none">
+            <p className="text-4xl sm:text-5xl font-semibold font-[family-name:var(--font-titre)] leading-none">
               {montant}<span className="text-gold text-2xl sm:text-3xl ml-1.5">€</span>
             </p>
           </div>

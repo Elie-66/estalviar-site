@@ -178,7 +178,7 @@ export default function CreerCagnotte() {
           </div>
         )}
         <div className={`h-px mb-3 ${fonce ? "bg-ink/20" : "bg-white/25"}`} />
-        <p className={`text-4xl sm:text-5xl font-semibold leading-none font-[family-name:var(--font-fraunces)] ${fonce ? "text-ink" : "text-white"}`}>
+        <p className={`text-4xl sm:text-5xl font-semibold leading-none font-[family-name:var(--font-titre)] ${fonce ? "text-ink" : "text-white"}`}>
           {montantLibre ? "?" : (montantObjectif || 0)}<span className="text-2xl text-gold ml-1">€</span>
         </p>
       </div>

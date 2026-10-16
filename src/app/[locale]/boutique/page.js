@@ -208,7 +208,7 @@ export default function Boutique() {
             return (
               <button key={r.cle} type="button" role="tab" aria-selected={actif} onClick={() => changerOnglet(r.cle)}
                 className={`group relative pb-3 text-left transition-colors ${actif ? "text-ivory" : "text-ivory/30 hover:text-ivory/60"}`}>
-                <span className="block text-[1.7rem] sm:text-4xl font-semibold leading-none tracking-tight font-[family-name:var(--font-fraunces)] whitespace-nowrap">
+                <span className="block text-[1.7rem] sm:text-4xl font-semibold leading-none tracking-tight font-[family-name:var(--font-titre)] whitespace-nowrap">
                   {r.titre}
                   <sup className="ml-1.5 text-xs sm:text-sm font-normal font-sans tabular-nums align-super opacity-60">{r.nombre}</sup>
                 </span>

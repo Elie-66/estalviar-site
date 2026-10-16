@@ -88,7 +88,7 @@ export default function CartePhysique() {
         <div className="mt-8 border border-gold/30 bg-gold/5 rounded-xl p-6 text-center">
           <p className="text-sm text-gold mb-1">{t("activee")}</p>
           <p className="text-sm text-ivory/50 mt-1">{t("solde")}</p>
-          <p className="text-4xl font-semibold text-ivory mt-2 font-[family-name:var(--font-fraunces)]">
+          <p className="text-4xl font-semibold text-ivory mt-2 font-[family-name:var(--font-titre)]">
             {resultat.solde} <span className="text-gold text-xl">€</span>
           </p>
           <a

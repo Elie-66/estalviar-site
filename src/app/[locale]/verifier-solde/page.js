@@ -61,7 +61,7 @@ export default function VerifierSolde() {
           <p className="text-sm text-gold mb-1">{t("resultatTitre")}</p>
           <p className="text-ivory text-lg font-medium">{resultat.marque}</p>
           <p className="text-sm text-ivory/50 mt-1">{t("resultatMontant")}</p>
-          <p className="text-4xl font-semibold text-ivory mt-2 font-[family-name:var(--font-fraunces)]">
+          <p className="text-4xl font-semibold text-ivory mt-2 font-[family-name:var(--font-titre)]">
             {resultat.montant} <span className="text-gold text-xl">€</span>
           </p>
           <p className="text-xs text-ivory/40 mt-4 leading-relaxed">

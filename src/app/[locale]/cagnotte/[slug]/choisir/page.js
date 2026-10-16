@@ -180,7 +180,7 @@ export default function ChoisirCarte({ params }) {
                   ? <img src={carteActuelle.image} alt={carteActuelle.nom}
                       className={`h-7 w-fit max-w-[55%] object-contain object-left ${!designActuel.texteFonce && logoEnBlanc(carteActuelle) ? "brightness-0 invert" : "rounded"}`} />
                   : <span className={`text-sm font-semibold ${designActuel.texteFonce ? "text-ink" : "text-white"}`}>{carteActuelle.nom}</span>}
-                <p className={`text-3xl font-semibold font-[family-name:var(--font-fraunces)] ${designActuel.texteFonce ? "text-ink" : "text-white"}`}>
+                <p className={`text-3xl font-semibold font-[family-name:var(--font-titre)] ${designActuel.texteFonce ? "text-ink" : "text-white"}`}>
                   {sel.montant || 0}<span className="text-gold text-lg ml-0.5">€</span>
                 </p>
               </div>
