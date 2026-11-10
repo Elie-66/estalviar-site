@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { usePanier } from "../context/PanierContext";
 import { supabase } from "../../../lib/supabase";
+import RechercheHeader from "./RechercheHeader";
 
 export default function Header() {
   const pathname = usePathname();
@@ -83,15 +84,20 @@ export default function Header() {
   ];
 
   return (
-    <header className="print:hidden fixed top-0 left-0 right-0 h-[74px] bg-ink/80 backdrop-blur-md border-b border-ivory/10 z-50">
-      <div className="max-w-[1240px] mx-auto h-full px-6 flex items-center justify-between">
+    <header className="print:hidden fixed top-0 left-0 right-0 h-[74px] bg-ink border-b border-ivory/10 z-50">
+      <div className="max-w-[1240px] mx-auto h-full px-6 flex items-center gap-6">
 
         <LogoEstalviar
           href={`/${segments[1]}`}
-          className="text-xl font-semibold uppercase tracking-wide text-ivory font-[family-name:var(--font-logo)]"
+          className="shrink-0 text-xl font-semibold uppercase tracking-wide text-ivory font-[family-name:var(--font-logo)]"
         />
 
-        <nav className="hidden md:flex items-center gap-8 text-ivory/80">
+        {/* Recherche d'enseigne, entre le logo et le menu (grands écrans) */}
+        <div className="hidden lg:block flex-1 min-w-0 max-w-[360px]">
+          <RechercheHeader locale={segments[1]} />
+        </div>
+
+        <nav className="hidden md:flex items-center gap-6 ml-auto shrink-0 text-[15px] text-ivory/80">
           {liensNav.map((lien) => (
             <a key={lien.href} href={lien.href} className="hover:text-ivory transition-colors">
               {lien.label}
@@ -99,7 +105,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 shrink-0 ml-auto md:ml-0">
           <select
             defaultValue={segments[1]}
             onChange={(e) => {
@@ -113,10 +119,14 @@ export default function Header() {
               </option>
             ))}
           </select>
-          <a href={`/${segments[1]}/panier`} className="relative text-ivory/80 hover:text-ivory">
-            🛒
+          <a href={`/${segments[1]}/panier`} aria-label={t.has("panier") ? t("panier") : "Panier"} className="relative text-ivory/80 hover:text-ivory flex items-center min-h-11">
+            <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6.2" />
+              <circle cx="9.5" cy="20" r="1.3" />
+              <circle cx="17" cy="20" r="1.3" />
+            </svg>
             {articles.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-gold text-ink text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+              <span className="absolute top-0 -right-2 bg-gold text-ink text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                 {articles.length}
               </span>
             )}
@@ -165,6 +175,9 @@ export default function Header() {
 
       {menuOuvert && (
         <div className="md:hidden absolute inset-x-0 top-full h-[calc(100dvh-74px)] overflow-y-auto bg-ink border-t border-ivory/10 px-6 py-6">
+          <div className="mb-4">
+            <RechercheHeader locale={segments[1]} id="recherche-menu" onChoix={() => setMenuOuvert(false)} />
+          </div>
           <nav className="flex flex-col gap-1">
             {liensNav.map((lien) => (
               <a

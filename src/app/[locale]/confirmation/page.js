@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePanier } from "../context/PanierContext";
 import { supabase } from "../../../lib/supabase";
 import { logoEnBlanc } from "../../../lib/couleursCartes";
+import { suivre } from "../../../lib/analytics";
 
 export default function PageConfirmation() {
   return (
@@ -45,6 +46,11 @@ function Confirmation() {
         });
         localStorage.removeItem("estalviar-emails-beneficiaires");
         if (res.ok) {
+          suivre("commande_payee", {
+            nb_cartes: copie.length,
+            total: copie.reduce((somme, a) => somme + (Number(a.montant) || 0), 0),
+            marques: [...new Set(copie.map((a) => a.marque))],
+          });
           setCartes(copie);
           setStatut("succes");
           videPanier();

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePanier } from "../context/PanierContext";
 import { supabase } from "../../../lib/supabase";
 import { fetchSession } from "../../../lib/fetchSession";
+import { suivre } from "../../../lib/analytics";
 import { ChampMotDePasse, classeChamp, motDePasseValide } from "../components/CadreCompte";
 
 function Etape({ numero, titre, children }) {
@@ -193,6 +194,14 @@ export default function Paiement() {
       });
       const data = await res.json();
       if (data.url) {
+        suivre("paiement_commence", {
+          nb_cartes: articles.length,
+          total: totalAPayer,
+          cashback_utilise: reductionCashback > 0,
+          code_partenaire: !!codeAffiche,
+          facture_societe: !!factureSociete,
+          connecte: !!utilisateurConnecte,
+        });
         window.location.href = data.url;
       } else {
         setErreur(data.error || t("erreurInconnue"));

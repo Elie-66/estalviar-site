@@ -6,5 +6,6 @@ export default createMiddleware({
 });
 
 export const config = {
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  // « ingest » : statistiques PostHog, ne doivent pas être redirigées vers /fr/...
+  matcher: ['/((?!api|_next|ingest|.*\\..*).*)']
 };

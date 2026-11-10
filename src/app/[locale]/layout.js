@@ -20,6 +20,7 @@ import { PanierProvider } from "./context/PanierContext";
 import BanniereCookies from "./components/BanniereCookies";
 import GestionSession from "./components/GestionSession";
 import MesureAudience from "./components/MesureAudience";
+import ThemePage from "./components/ThemePage";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -59,7 +60,7 @@ export default async function RootLayout({ children, params }) {
           <PanierProvider>
             <Header />
             {/* Bloc normal (pas flex) : les pages occupent toute la largeur et ne débordent jamais sur téléphone */}
-            <main className="flex-1 w-full">{children}</main>
+            <ThemePage>{children}</ThemePage>
             <Footer />
             <BanniereCookies />
             <GestionSession />

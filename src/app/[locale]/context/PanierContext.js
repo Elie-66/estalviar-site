@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { suivre } from "../../../lib/analytics";
 
 const PanierContext = createContext(null);
 
@@ -24,6 +25,14 @@ export function PanierProvider({ children }) {
 
   const ajouterArticle = (article) => {
     setArticles((prev) => [...prev, { ...article, id: Date.now() }]);
+    // Jamais le bénéficiaire ni le message : seulement la marque, le montant et le design
+    suivre("carte_ajoutee_panier", {
+      marque: article.marque,
+      slug: article.slug,
+      montant: article.montant,
+      design: article.design,
+      envoi_programme: !!article.dateEnvoi,
+    });
   };
 
   const retirerArticle = (id) => {

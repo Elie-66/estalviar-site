@@ -78,3 +78,37 @@ h1, h2, h3, h4 {
   body { background: #fff !important; color: #12172B !important; }
   .imprimer-couleurs { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ───────────────────────────────────────────────────────────
+   Thème clair des pages (tout sauf l'accueil et l'admin)
+   Appliqué par components/ThemePage.js sur <main>.
+   Header et footer restent bleu nuit.
+   On inverse les deux couleurs de base : ce qui était un fond
+   sombre devient clair, ce qui était un texte clair devient sombre.
+   ─────────────────────────────────────────────────────────── */
+.theme-clair {
+  --color-ink: #F6F5F2;
+  --color-ink-secondary: #FFFFFF;
+  --color-ivory: #12172B;
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+
+/* Textes sombres posés sur du clair (cartes claires, pastilles, boutons or) : ils restent sombres */
+.theme-clair .text-ink { color: #12172B; }
+.theme-clair .text-ink\/40 { color: rgb(18 23 43 / 0.4); }
+.theme-clair .text-ink\/45 { color: rgb(18 23 43 / 0.45); }
+.theme-clair .text-ink\/50 { color: rgb(18 23 43 / 0.5); }
+.theme-clair .text-ink\/60 { color: rgb(18 23 43 / 0.6); }
+.theme-clair .text-ink\/70 { color: rgb(18 23 43 / 0.7); }
+.theme-clair .text-ink\/80 { color: rgb(18 23 43 / 0.8); }
+
+/* Les blocs qui étaient volontairement clairs deviennent blancs */
+.theme-clair .bg-ivory { background-color: #FFFFFF; }
+
+/* Boutons et pastilles sombres : ils restent bleu nuit avec texte clair */
+.theme-clair .bg-ink.text-ivory:not(option) { background-color: #12172B; color: #F6F2E9; }
+.theme-clair :is(.bg-corail, .bg-vert, .bg-prune, .bg-bleu, .bg-rouille).text-ivory { color: #F6F2E9; }
+
+/* L'or en texte est trop pâle sur fond clair : on le fonce pour qu'il reste lisible */
+.theme-clair .text-gold { color: #8A6D10; }

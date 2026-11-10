@@ -367,6 +367,7 @@ export const confidentialite = {
               ["Demandes de devis, contact, rétractation", "Nom, entreprise, email, téléphone, contenu de la demande", "Mesures précontractuelles, obligation légale (rétractation)"],
               ["Sécurité du site", "Adresse IP et tentatives de connexion ou d'envoi de formulaires", "Intérêt légitime (protéger le site et les comptes)"],
               ["Statistiques de fréquentation (anonymes, sans cookie)", "Page consultée, site d'origine, pays, type d'appareil et navigateur. L'adresse IP n'est pas conservée : un identifiant anonyme, renouvelé chaque jour, sert seulement à compter les visiteurs", "Intérêt légitime (mesurer la fréquentation du site)"],
+              ["Amélioration du parcours d'achat (anonyme, sans cookie)", "Pages vues, clics, étapes du parcours (ajout au panier, paiement) avec la marque et le montant des cartes. Jamais votre nom, votre email, vos messages ni le code des cartes. L'identifiant anonyme change chaque jour", "Intérêt légitime (comprendre où le parcours bloque pour l'améliorer)"],
               ["Comptabilité", "Commandes et paiements", "Obligation légale"],
             ],
           },
@@ -392,6 +393,7 @@ export const confidentialite = {
             "**Netlify** : hébergement du site ;",
             "**Stripe** : paiement en ligne et prévention de la fraude ;",
             "**Resend** : envoi des emails (cartes, confirmations, newsletter) ;",
+            "**PostHog** : statistiques anonymes sur l'utilisation du site, hébergées dans l'Union européenne ;",
             "**Tillo** : fourniture des cartes cadeaux (seules les informations de commande nécessaires lui sont transmises).",
           ],
         },
@@ -507,6 +509,7 @@ export const cookies = {
       blocs: [
         "Nous n'utilisons **aucun cookie publicitaire, de réseau social ou de mesure d'audience**. Si nous en ajoutons un jour, ils ne seront déposés qu'après votre accord, via le bandeau cookies, et cette page sera mise à jour.",
         "Pour savoir combien de personnes visitent le site et d'où elles viennent, nous comptons les pages vues **de façon anonyme, sans rien déposer sur votre appareil** : page consultée, site d'origine, pays, type d'appareil et navigateur. Votre adresse IP n'est pas conservée et l'identifiant anonyme utilisé change chaque jour : il est impossible de vous reconnaître d'une visite à l'autre. Ces statistiques ne sont partagées avec personne et sont effacées au bout de 13 mois.",
+        "Pour améliorer le site, nous utilisons aussi **PostHog** (hébergé dans l'Union européenne), réglé **sans aucun cookie ni stockage sur votre appareil**. Il mesure les pages vues, les clics et les grandes étapes du parcours d'achat (ajout au panier, paiement), sans jamais collecter votre nom, votre email, vos messages ni le code de vos cartes. L'identifiant anonyme qu'il calcule change chaque jour. Nous n'enregistrons pas vos sessions de navigation.",
         "Si votre navigateur envoie le signal « Do Not Track » ou « Global Privacy Control », vos visites ne sont pas comptées.",
       ],
     },

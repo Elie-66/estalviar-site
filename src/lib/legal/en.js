@@ -364,6 +364,7 @@ export const confidentialite = {
               ["Quotation, contact and withdrawal requests", "Name, company, email, phone, content of the request", "Pre-contractual measures, legal obligation (withdrawal)"],
               ["Site security", "IP address and login or form submission attempts", "Legitimate interest (protecting the site and accounts)"],
               ["Visit statistics (anonymous, cookie-free)", "Page viewed, referring site, country, device type and browser. Your IP address is not stored: an anonymous identifier, renewed every day, is only used to count visitors", "Legitimate interest (measuring site traffic)"],
+              ["Improving the checkout journey (anonymous, cookie-free)", "Pages viewed, clicks, journey steps (add to basket, payment) with the brand and amount of the cards. Never your name, email, messages or card codes. The anonymous identifier changes every day", "Legitimate interest (understanding where the journey gets stuck in order to improve it)"],
               ["Accounting", "Orders and payments", "Legal obligation"],
             ],
           },
@@ -389,6 +390,7 @@ export const confidentialite = {
             "**Netlify**: website hosting;",
             "**Stripe**: online payment and fraud prevention;",
             "**Resend**: sending emails (cards, confirmations, newsletter);",
+            "**PostHog**: anonymous statistics on how the site is used, hosted in the European Union;",
             "**Tillo**: supply of gift cards (only the order information required is passed on).",
           ],
         },
@@ -504,6 +506,7 @@ export const cookies = {
       blocs: [
         "We use **no advertising, social network or audience measurement cookies**. If we ever add any, they will only be set after your consent, via the cookie banner, and this page will be updated.",
         "To know how many people visit the site and where they come from, we count page views **anonymously, without storing anything on your device**: page viewed, referring site, country, device type and browser. Your IP address is not stored and the anonymous identifier we use changes every day, so you cannot be recognised from one visit to the next. These statistics are not shared with anyone and are deleted after 13 months.",
+        "To improve the site, we also use **PostHog** (hosted in the European Union), set up **with no cookies and nothing stored on your device**. It measures page views, clicks and the main steps of the checkout journey (add to basket, payment), without ever collecting your name, email, messages or card codes. The anonymous identifier it calculates changes every day. We do not record your browsing sessions.",
         "If your browser sends a \"Do Not Track\" or \"Global Privacy Control\" signal, your visits are not counted.",
       ],
     },
