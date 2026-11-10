@@ -34,8 +34,12 @@ export async function generateMetadata({ params }) {
     title: { default: titre, template: "%s | Estalviar" },
     description,
     alternates: alternates(locale),
-    openGraph: { title: titre, description, siteName: "Estalviar", locale, type: "website" },
-    twitter: { card: "summary_large_image", title: titre, description },
+    openGraph: {
+      title: titre, description, siteName: "Estalviar", locale, type: "website",
+      // Image affichée quand on partage un lien du site (WhatsApp, Facebook, LinkedIn…)
+      images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "Estalviar, cartes cadeaux personnalisées" }],
+    },
+    twitter: { card: "summary_large_image", title: titre, description, images: ["/twitter-image.png"] },
   };
 }
 

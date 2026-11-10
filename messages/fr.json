@@ -632,7 +632,7 @@
   },
   "cookiesBandeau": {
     "titre": "Cookies",
-    "texte": "Ce site n'utilise que les cookies nécessaires à son fonctionnement (panier, connexion, langue). Aucune publicité, aucun pistage.",
+    "texte": "Ce site n'utilise que les cookies nécessaires à son fonctionnement (panier, connexion, langue). Aucune publicité. La fréquentation est mesurée de façon anonyme, sans cookie.",
     "lien": "En savoir plus",
     "ok": "Compris"
   },

@@ -27,6 +27,16 @@ export async function POST(req) {
     if (!EMAIL_VALIDE.test(emailCreateur || '')) {
       return NextResponse.json({ error: 'Email du créateur invalide' }, { status: 400 });
     }
+    // Anti-spam : pas plus de 5 cagnottes par heure avec le même email
+    const ilYAUneHeure = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: recentes } = await supabase
+      .from('cagnottes')
+      .select('*', { count: 'exact', head: true })
+      .eq('email_createur', emailCreateur.trim())
+      .gte('created_at', ilYAUneHeure);
+    if (recentes >= 5) {
+      return NextResponse.json({ error: 'Trop de cagnottes créées. Réessayez dans une heure.' }, { status: 429 });
+    }
     if (envoiBeneficiaire && !EMAIL_VALIDE.test(emailBeneficiaire || '')) {
       return NextResponse.json({ error: 'Email du bénéficiaire invalide' }, { status: 400 });
     }

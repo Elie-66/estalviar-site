@@ -46,6 +46,7 @@ export default function Home() {
   const [marquesHero, setMarquesHero] = useState(apercus);
   const [fabriquees, setFabriquees] = useState([]); // enseignes fabriquées en France
   const [catalogue, setCatalogue] = useState([]); // toutes les enseignes actives
+  const [nouveautes, setNouveautes] = useState([]); // dernières enseignes ajoutées
   const [avecEvenement, setAvecEvenement] = useState(false); // bandeau d'événement affiché en haut
 
   useEffect(() => {
@@ -78,6 +79,14 @@ export default function Home() {
       if (avecLogo.length >= 3) setMarquesHero(avecLogo);
 
       setFabriquees(tri.filter((c) => c.made_in_france).slice(0, 4));
+      // Les dernières enseignes ajoutées au catalogue (hors celles déjà dans « Les plus offertes »)
+      const dejaAffichees = new Set(tri.slice(0, 12).map((c) => c.slug));
+      setNouveautes(
+        [...(toutesCartes || [])]
+          .filter((c) => c.created_at && !dejaAffichees.has(c.slug))
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 6)
+      );
       setCatalogue(toutesCartes || []);
     };
     charger();
@@ -130,11 +139,11 @@ export default function Home() {
               <span className="text-[#4A4F5E] mr-1">{tx.pour}</span>
               {tx.occasions.map((o) => (
                 <a
-                  key={o}
-                  href={`/${locale}/boutique`}
+                  key={o.nom}
+                  href={`/${locale}/boutique${o.lien}`}
                   className="px-3.5 py-2 rounded-full bg-white border border-[#E0D8C6] text-ink hover:border-ink transition-colors"
                 >
-                  {o}
+                  {o.nom}
                 </a>
               ))}
             </div>
@@ -190,6 +199,29 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               {populaires.map((carte) => (
+                <VignetteEnseigne
+                  key={carte.slug}
+                  carte={carte}
+                  href={`/${locale}/boutique/${carte.slug}`}
+                  categorie={traduireCategorie(carte.categorie)}
+                  prix={tx.des(carte.montant_min)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Nouvelles enseignes : montre un catalogue qui grandit */}
+      {nouveautes.length >= 3 && (
+        <section>
+          <div className="max-w-[1240px] mx-auto px-6 pt-16 pb-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
+              <h2 className={titreSection}>{tx.nouveautes}</h2>
+              <a href={`/${locale}/boutique`} className={lien}>{tx.toutesEnseignes}</a>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              {nouveautes.map((carte) => (
                 <VignetteEnseigne
                   key={carte.slug}
                   carte={carte}
